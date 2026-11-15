@@ -9,9 +9,9 @@ Entraînement aux entretiens de Digital Analytics Consultant : 3 rounds de 30 mi
 ## Clé Gemini (facultative)
 1. Crée une clé sur Google AI Studio (aistudio.google.com, rubrique « Get API key »).
 2. Accueil, engrenage, champ « Clé API », puis « Tester la clé ». La liste des modèles se remplit.
-3. Modèle par défaut : gemini-2.5-flash (sans réflexion, pour la vitesse), repli : gemini-2.5-flash-lite.
+3. Le test fait un vrai appel et choisit seul le meilleur modèle Flash autorisé par ta clé (si un modèle répond 404, l'app passe au suivant).
 
-Sans clé, tout marche en mode local : questions de la banque, évaluation par règles (mention « évaluation locale (règles) »).
+Sous chaque réponse notée moins de 4, une « Réponse modèle » rédigée par Gemini (trame locale sans clé), sans chiffre inventé. Sans clé, tout marche en mode local : questions de la banque, évaluation par règles (mention « évaluation locale (règles) »).
 
 ## Limites du plan gratuit
 Quotas par minute et par jour (variables selon le modèle). L'app envoie une seule requête par réponse, espacée d'au moins 6 secondes, et affiche le compteur du jour dans les réglages. En cas de quota atteint (429), elle passe en mode local pendant le délai indiqué par Google.

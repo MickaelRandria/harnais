@@ -177,6 +177,10 @@ html[data-theme="nuit"] .act[aria-pressed="true"]{color:#8DB8FF}
 .critere b{text-align:right}
 .fb h4{margin:6px 0 2px;font-size:1rem}
 .fb p{margin:0}
+.rm{border-left:3px solid var(--orange);padding:8px 0 8px 12px;display:flex;flex-direction:column;gap:6px}
+.rm-texte{line-height:1.55}
+.rep-deb{box-shadow:none}
+.rep-deb summary span:first-child{font-weight:600}
 .puces{display:flex;flex-wrap:wrap;gap:6px}
 .puce{font-size:.9rem;padding:4px 10px;border-radius:999px;background:rgba(242,162,92,.18);border:1px solid rgba(242,162,92,.5)}
 .puce.ok{background:rgba(76,217,100,.15);border-color:rgba(76,217,100,.5)}
@@ -662,7 +666,7 @@ const store = {
   del(k){ try{ localStorage.removeItem(PFX+k); }catch(e){} },
   cles(){ const out=[]; try{ for(let i=0;i<localStorage.length;i++){ const k=localStorage.key(i); if(k && k.startsWith(PFX)) out.push(k.slice(PFX.length)); } }catch(e){} return out; }
 };
-const DEF_REGLAGES = { fournisseur:"gemini", modele:"gemini-2.5-flash", modeles:[], langue:"fr-FR", langueEn:"en-GB", voix:true, vitesse:1, continu:false, envoiProjets:true, taille:"normal", theme:"auto", avisApi:false, chrono:false, interruption:false, sceptique:false };
+const DEF_REGLAGES = { fournisseur:"gemini", modele:"gemini-flash-latest", modeles:[], reponseModeleAuto:true, langue:"fr-FR", langueEn:"en-GB", voix:true, vitesse:1, continu:false, envoiProjets:true, taille:"normal", theme:"auto", avisApi:false, chrono:false, interruption:false, sceptique:false };
 const DEF_PROFIL = { prenom:"", dateEntretien:"2026-11-17", heure:"", role:"Digital Analytics Consultant" };
 function profil(){ return Object.assign({}, DEF_PROFIL, store.get("profil", {})); }
 function reglages(){ return Object.assign({}, DEF_REGLAGES, store.get("reglages", {})); }
@@ -864,21 +868,30 @@ async function geminiJSON(systeme, contents, opts={}){
   if(!(await avisConfidentialite())) throw new ErrGem("refus", "Appel annulé, mode local.");
   return enFile(async () => {
     const R = reglages(); const cle = cleApi();
-    const modeles = Array.from(new Set([R.modele || "gemini-2.5-flash", "gemini-2.5-flash", "gemini-2.5-flash-lite"]));
-    let derniereErr = null;
-    for(const m of modeles){
-      let avecThinking = /flash/.test(m);
+    let modeles = chaineModeles(R.modele, GEM.dispo || R.modeles);
+    let derniereErr = null, listeChargee = !!GEM.dispo;
+    for(let idx = 0; idx < modeles.length && idx < 6; idx++){
+      const m = modeles[idx];
+      let avecThinking = true;
       for(let essai = 0; essai < 3; essai++){
         const gen = { temperature: opts.temperature ?? 0.7, responseMimeType:"application/json" };
-        if(avecThinking) gen.thinkingConfig = { thinkingBudget: 0 };
+        if(avecThinking){ const tc = configReflexion(m); if(tc) gen.thinkingConfig = tc; }
         const corps = { systemInstruction:{ parts:[{ text:systeme }] }, contents, generationConfig:gen };
         await attendreCreneau();
         let res;
         try{
           res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+encodeURIComponent(m)+":generateContent", { method:"POST", headers:{ "Content-Type":"application/json", "x-goog-api-key":cle }, body:JSON.stringify(corps) });
         }catch(e){ throw new ErrGem("reseau", "Réseau indisponible, mode local pour cette réponse."); }
+        if(res.status === 404){
+          GEM.dernier = 0; /* un 404 ne consomme pas de quota : on essaie le suivant tout de suite */
+          derniereErr = new ErrGem("modele", "Aucun modèle Gemini accessible avec cette clé (dernier essai : "+m+"). Va dans Réglages, puis « Tester la clé ».");
+          if(!listeChargee){
+            listeChargee = true;
+            try{ const ms = await listerModeles(cle); GEM.dispo = ms; majReglages({ modeles:ms }); modeles = modeles.slice(0, idx+1).concat(chaineModeles(null, ms).filter(x => !modeles.slice(0, idx+1).includes(x))); }catch(e){}
+          }
+          break;
+        }
         incrCompteur();
-        if(res.status === 404){ derniereErr = new ErrGem("modele", "Modèle "+m+" introuvable."); break; }
         if(res.status === 429){
           let delai = 60; try{ const j = await res.json(); const d = ((j.error||{}).details||[]).find(x => x.retryDelay); if(d) delai = Math.ceil(parseFloat(d.retryDelay)) || 60; }catch(e){}
           GEM.localJusqua = Date.now() + delai*1000;
@@ -887,6 +900,7 @@ async function geminiJSON(systeme, contents, opts={}){
         if(res.status === 400 || res.status === 401 || res.status === 403){
           let msg = ""; try{ const j = await res.json(); msg = (j.error||{}).message || ""; }catch(e){}
           if(/thinking/i.test(msg) && avecThinking){ avecThinking = false; continue; }
+          if(res.status === 400 && /not found|not supported|deprecated|no longer|unknown model|invalid model/i.test(msg)){ GEM.dernier = 0; derniereErr = new ErrGem("modele", "Modèle "+m+" indisponible : "+msg.slice(0,100)); break; }
           if(res.status !== 400 || /api key|api_key|permission|unauth/i.test(msg)){ GEM.cleRefusee = true; throw new ErrGem("cle", "Clé refusée par Google AI Studio. Vérifie-la dans les réglages."); }
           throw new ErrGem("requete", "Requête refusée par Gemini ("+msg.slice(0,120)+").");
         }
@@ -896,7 +910,12 @@ async function geminiJSON(systeme, contents, opts={}){
         const c0 = (data.candidates||[])[0];
         if(!c0 || c0.finishReason === "SAFETY") throw new ErrGem("bloque", "Réponse bloquée par le filtre de Gemini, évaluation locale.");
         const txt = lireTexte(data);
-        try{ return { obj: JSON.parse(txt), modele: m }; }
+        try{
+          const obj = JSON.parse(txt);
+          if(m !== reglages().modele){ majReglages({ modele:m }); if(typeof toast === "function") toast("Modèle Gemini choisi automatiquement : "+m); }
+          GEM.modeleOK = m;
+          return { obj, modele: m };
+        }
         catch(e){ derniereErr = new ErrGem("json", "JSON invalide renvoyé par Gemini."); if(essai >= 1) break; }
       }
       if(derniereErr && derniereErr.type === "json") throw new ErrGem("json", "JSON invalide après une nouvelle tentative, évaluation locale.");
@@ -904,8 +923,57 @@ async function geminiJSON(systeme, contents, opts={}){
     throw derniereErr || new ErrGem("modele", "Aucun modèle disponible.");
   });
 }
+/* Choix du modèle : on ne suppose plus qu'un nom fixe existe, on part de la liste que la clé autorise */
+const MODELES_SECOURS = ["gemini-flash-latest", "gemini-flash-lite-latest", "gemini-2.5-flash", "gemini-2.5-flash-lite"];
+const EXCLUS_MODELE = /embedding|imagen|image|tts|audio|live|aqa|gemma|learnlm|robotics|computer|veo|banana|native|vision|exp-|thinking/i;
+function rangModele(n){
+  const fam = /flash-lite/.test(n) ? 2 : /flash/.test(n) ? 3 : /pro/.test(n) ? 1 : 0;
+  const v = parseFloat((n.match(/gemini-(\d+(?:\.\d+)?)/) || [])[1] || "0");
+  const stable = /preview|exp/.test(n) ? 0 : 1;
+  return stable * 1000 + fam * 100 + v;
+}
+function classerModeles(liste){
+  return (liste || []).filter(n => /^gemini/.test(n) && !EXCLUS_MODELE.test(n)).sort((a,b) => rangModele(b) - rangModele(a));
+}
+function chaineModeles(choisi, dispo){
+  const classes = classerModeles(dispo);
+  const base = [choisi].concat(classes.slice(0, 4)).concat(MODELES_SECOURS).filter(Boolean);
+  const uniq = Array.from(new Set(base));
+  /* si la liste des modèles autorisés est connue, on écarte ceux qui n'y sont pas */
+  if(!(dispo && dispo.length)) return uniq;
+  const res = uniq.filter(n => dispo.includes(n)).concat(uniq.filter(n => !dispo.includes(n) && n === choisi));
+  return res.length ? res : uniq;
+}
+function meilleurModele(dispo){ return classerModeles(dispo)[0] || null; }
+function configReflexion(m){
+  if(/gemini-2\.5-flash/.test(m)) return { thinkingBudget: 0 };
+  if(/gemini-2\.5-pro/.test(m)) return { thinkingBudget: 128 };
+  if(/gemini-(\d+)/.test(m) && Number(m.match(/gemini-(\d+)/)[1]) >= 3) return { thinkingLevel: "low" };
+  if(/latest/.test(m)) return { thinkingLevel: "low" };
+  return null;
+}
+async function listerModeles(cle){
+  const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models?pageSize=1000", { headers:{ "x-goog-api-key":cle } });
+  if(!res.ok) throw new ErrGem("liste", "Liste des modèles indisponible ("+res.status+").");
+  const j = await res.json();
+  return (j.models||[]).filter(m => (m.supportedGenerationMethods||[]).includes("generateContent")).map(m => m.name.replace(/^models\//,""));
+}
+/* Essai réel d'un appel generateContent (texte neutre, aucune donnée personnelle) */
+async function trouverModeleFonctionnel(cle, dispo, choisi){
+  for(const m of chaineModeles(choisi, dispo).slice(0, 6)){
+    let res;
+    try{ res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+encodeURIComponent(m)+":generateContent", { method:"POST", headers:{ "Content-Type":"application/json", "x-goog-api-key":cle },
+      body:JSON.stringify({ contents:[{ role:"user", parts:[{ text:"Réponds seulement : OK" }] }], generationConfig:{ maxOutputTokens:64 } }) }); }
+    catch(e){ throw new ErrGem("reseau", "Réseau indisponible pendant le test."); }
+    if(res.status !== 404) incrCompteur();
+    if(res.ok) return { modele:m };
+    if(res.status === 429) return { modele:m, quota:true };
+    if(res.status === 401 || res.status === 403){ let msg=""; try{ msg = ((await res.json()).error||{}).message || ""; }catch(e){} throw new ErrGem("cle", "Clé refusée ("+res.status+"). "+msg.slice(0,140)); }
+  }
+  return null;
+}
 async function testerCle(cle){
-  const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models?pageSize=200", { headers:{ "x-goog-api-key":cle } });
+  const res = await fetch("https://generativelanguage.googleapis.com/v1beta/models?pageSize=1000", { headers:{ "x-goog-api-key":cle } });
   if(!res.ok){
     let msg=""; try{ msg = ((await res.json()).error||{}).message || ""; }catch(e){}
     if(res.status===400 || res.status===401 || res.status===403) throw new ErrGem("cle", "Clé refusée ("+res.status+"). "+msg.slice(0,140));
@@ -958,6 +1026,73 @@ function projetsJSON(){
   if(!reglages().envoiProjets) return "Non transmis (option désactivée par le candidat). Si un chiffre est évoqué, demande sa source.";
   return JSON.stringify(projets().map(p => ({ nom:p.nom, contexte:p.contexte, role:p.role, outils:p.outils, difficulte:p.difficulte, resultat:p.resultat||"[à compléter]", lecon:p.lecon })));
 }
+/* ---------- Réponse modèle (exemple de réponse à 5/5) ---------- */
+const PROMPT_REPONSE_MODELE = `Tu es coach d'entretien pour un poste de Digital Analytics Consultant junior chez fifty-five (conseil en data et technologie pour le marketing, Paris). On te donne une question d'entretien, les points attendus, la réponse du candidat, son profil et ses projets. Écris la réponse que le candidat aurait dû donner pour obtenir 5 sur 5, à l'oral, à la première personne, exactement comme il la prononcerait.
+
+Règles :
+1. 120 à 200 mots, phrases courtes, registre professionnel et naturel. Pas de liste, pas de markdown, pas d'emoji, aucun tiret long.
+2. Première phrase : la réponse directe à la question. Dernière phrase : conclusion, recommandation ou prochaine étape.
+3. Question comportementale, de motivation ou pitch : structure STAR (situation, tâche, action personnelle, résultat, leçon) appuyée sur un projet réel du candidat, choisi dans ses données.
+4. Question technique ou cas pratique : couvre tous les points attendus avec un vocabulaire précis (outil, paramètre, méthode, étape de recette), et relie au moins une fois à un enjeu business.
+5. N'invente jamais un chiffre, un outil, un client ou une mission absents des données fournies. Si un chiffre manque, écris exactement [à compléter]. Pour GA4, GTM ou Piano, le candidat les a vus en projet scolaire seulement : ne prétends pas qu'il les a utilisés en production.
+6. Garde les bonnes idées de la réponse du candidat et corrige ce qui manquait.
+7. Langue de la réponse : {LANGUE}.
+
+Réponds uniquement avec un objet JSON valide : { "reponse_modele": "le texte complet", "pourquoi": ["trois raisons courtes pour lesquelles cette réponse est meilleure"] }`;
+
+function projetPertinent(q, question){
+  const ps = projets(); if(!ps.length) return null;
+  const tags = (q && q.tags || []).map(norm), txt = norm(question || (q && q.enonce) || "");
+  let best = null, bs = 0;
+  ps.forEach(p => {
+    const mc = String(p.motsCles||"").split("|").map(norm).filter(Boolean);
+    let s = 0;
+    mc.forEach(k => { if(txt.includes(k)) s += 3; if(tags.some(t => t && (k.includes(t) || t.includes(k)))) s += 2; });
+    if(txt.includes(norm(p.nom).split(",")[0])) s += 1;
+    if(s > bs){ bs = s; best = p; }
+  });
+  return best || ps.find(p => p.lecon && p.difficulte) || ps[0];
+}
+function reponseModeleLocale(q, question, lang){
+  const type = q ? q.type : "question";
+  const en = lang === "en";
+  const v = x => (x && String(x).trim()) ? String(x).trim().replace(/[.\s]+$/,"") : "[à compléter]";
+  const vm = x => { const t = v(x); return /^[A-Z][a-zé]/.test(t) && !/^[A-Z]{2}/.test(t) ? t.charAt(0).toLowerCase()+t.slice(1) : t; };
+  if(type === "star" || type === "pitch" || type === "piege"){
+    const p = projetPertinent(q, question);
+    if(p){
+      const texte = en
+        ? "A good example is my project « "+p.nom+" ». The context: "+vm(p.contexte)+". My role: "+vm(p.role)+". The main difficulty: "+vm(p.difficulte)+". I used "+v(p.outils)+". The result: "+v(p.resultat)+". What I learned: "+vm(p.lecon)+"."
+        : "Je vais prendre l'exemple du projet « "+p.nom+" ». Le contexte : "+vm(p.contexte)+". Mon rôle : "+vm(p.role)+". La difficulté principale : "+vm(p.difficulte)+". Pour y répondre, j'ai utilisé "+v(p.outils)+". Le résultat : "+v(p.resultat)+". Ce que j'en retiens : "+vm(p.lecon)+".";
+      return { texte:sansTiret(texte), pourquoi:[ en ? "STAR built only from your real project data." : "Trame STAR construite uniquement avec les données réelles de ton projet.", en ? "Replace each [à compléter] with your real figure." : "Remplace chaque [à compléter] par ton vrai chiffre, ou dis que tu ne l'as pas.", en ? "With a Gemini key, you get a fully written answer." : "Avec une clé Gemini active, tu obtiens une réponse entièrement rédigée." ], source:"local" };
+    }
+  }
+  const pts = (q && q.attendu || []).map(a => a.point);
+  if(!pts.length) return null;
+  const ord = en ? ["First","Then","Next","After that","Finally"] : ["D'abord","Ensuite","Puis","Après","Enfin"];
+  const corps = pts.map((p,i) => (i === pts.length-1 && i > 0 ? ord[4] : ord[Math.min(i,3)])+", "+p.charAt(0).toLowerCase()+p.slice(1)+" : [une phrase concrète]").join(". ");
+  const texte = en
+    ? "I would answer in "+pts.length+" steps. "+corps+". To conclude, I would recommend the first action and say how I would measure it."
+    : "Je répondrais en "+pts.length+" temps. "+corps+". Pour conclure, je recommande la première action à lancer et la façon de la mesurer.";
+  return { texte:sansTiret(texte), pourquoi:[ en ? "Covers every expected point, in order." : "Couvre tous les points attendus, dans l'ordre.", en ? "Opens with the answer, closes with a recommendation." : "Ouvre par la réponse, ferme sur une recommandation.", en ? "Local outline: a Gemini key gives a fully written answer." : "Trame locale : une clé Gemini active donne une réponse entièrement rédigée." ], source:"local" };
+}
+async function genererReponseModele(q, question, texte, lang){
+  const en = lang === "en";
+  const systeme = remplir(PROMPT_REPONSE_MODELE, { LANGUE: en ? "anglais" : "français" });
+  const pieges = q && q.pieges && q.pieges.length ? q.pieges.join(" ; ") : "aucun";
+  const contenu = "Question posée : "+question+"\nType de question : "+(q ? q.type : "question")+
+    "\nPoints attendus : "+(q && q.attendu && q.attendu.length ? q.attendu.map(a => a.point).join(", ") : "non précisés")+
+    "\nPièges à éviter : "+pieges+"\nRéponse du candidat : "+texte+
+    "\nProfil du candidat : "+profilCandidat()+"\nProjets du candidat : "+projetsJSON();
+  const { obj, modele } = await geminiJSON(systeme, [{ role:"user", parts:[{ text:contenu }] }], { temperature:0.5 });
+  if(!obj || typeof obj.reponse_modele !== "string" || obj.reponse_modele.trim().length < 40) throw new ErrGem("json", "Réponse modèle vide renvoyée par Gemini.");
+  return { texte:sansTiret(obj.reponse_modele.trim()), pourquoi:(Array.isArray(obj.pourquoi) ? obj.pourquoi : []).slice(0,3).map(sansTiret), source:"gemini", modele };
+}
+function majReponseStockee(id, patch){
+  if(!id) return; const rep = store.get("reponses", []); const r = rep.find(x => x.id === id);
+  if(r){ Object.assign(r, patch); store.set("reponses", rep); }
+}
+
 function remplir(tpl, v){ return tpl.replace(/\{([A-Z_]+)\}/g, (m,k) => v[k] != null ? String(v[k]) : m); }
 
 /* ---------- Voix ---------- */
@@ -1504,6 +1639,7 @@ async function envoyer(meta){
   const rec = { id:uid(), date:new Date().toISOString(), sessionId:S.cle, round:roundCourant(S), module: q ? q.module : S.module, questionId: q ? q.id : null, type: q ? q.type : "question",
     question: questionTexte, texte, lang:S.lang, scores:fb.scores, note:fb.note, source:fb.source, wpm:ev.wpm, rempMin:ev.rempMin, nbRemp:ev.nbRemp, tics:ev.tics, nbChiffres:ev.nbChiffres, nw:ev.nw, xp, manquants:ev.manquants };
   enregistrerReponse(rec); S.reps.push(rec);
+  Object.assign(msg, { qId: q ? q.id : null, question: questionTexte, lang: S.lang, recId: rec.id });
   if(gemErr && gemErr.type !== "refus") S.msgs.push({ qui:"sys", texte:gemErr.message });
   if(d.apres >= 100 && d.avant < 100) S.msgs.push({ qui:"sys", texte:MANAGERS[S.manager].court+" vaincu : barre de défi à 100." });
   S.msgs.push({ qui:"m", texte:texteM });
@@ -1511,7 +1647,42 @@ async function envoyer(meta){
   verifierBadges();
   renderFil(); majEntete(); sauverEncours();
   VOIX.parler(texteM, S.lang);
+  if(fb.note < 4 && reglages().reponseModeleAuto !== false) lancerReponseModele(S.msgs.indexOf(msg));
   if(fin){ S.attente = true; setTimeout(() => finRound("cloture"), 2500); }
+}
+/* Réponse modèle : générée par Gemini si possible, sinon trame locale à partir des points attendus et des projets */
+async function lancerReponseModele(i){
+  const s = S; if(!s) return;
+  const m = s.msgs[i]; if(!m || !m.fb || m.fb.rmEnCours || m.fb.reponse_modele) return;
+  const q = m.qId ? qS(s, m.qId) : null, lang = m.lang || s.lang, question = m.question || "";
+  let r = null;
+  if(geminiActif()){
+    m.fb.rmEnCours = true; majCarteFb(s, i);
+    try{ r = await genererReponseModele(q, question, m.texte, lang); }
+    catch(e){ r = reponseModeleLocale(q, question, lang); if(r) r.erreur = (e && e.message) || "Gemini indisponible."; }
+    m.fb.rmEnCours = false;
+  } else r = reponseModeleLocale(q, question, lang);
+  if(!r){ if(S === s) toast("Pas de réponse modèle disponible pour cette question."); majCarteFb(s, i); return; }
+  m.fb.reponse_modele = r;
+  majReponseStockee(m.recId, { reponseModele:r });
+  const rr = (s.reps||[]).find(x => x.id === m.recId); if(rr) rr.reponseModele = r;
+  majCarteFb(s, i);
+  if(S === s && !s.fini) sauverEncours();
+}
+function majCarteFb(s, i){
+  if(S !== s) return;
+  const el = document.getElementById("fb-"+i), m = s.msgs[i]; if(!el || !m || !m.fb) return;
+  const ouvert = el.open; el.outerHTML = carteFeedback(m.fb, i, ouvert);
+}
+function blocReponseModele(r, i, enCours, cible){
+  if(enCours) return '<div class="rm"><h4>Réponse modèle</h4><p class="muet">Rédaction en cours par Gemini...</p></div>';
+  if(!r) return '<div class="rm"><button class="btn btn-petit btn-bleu" data-action="'+(cible==="rep"?"reponseModeleRep":"reponseModele")+'" data-arg="'+esc(String(i))+'">'+ic("etoile")+'Voir une réponse modèle</button></div>';
+  return '<div class="rm"><h4>Réponse modèle <span class="source">'+(r.source === "gemini" ? "rédigée par Gemini" : "trame locale")+'</span></h4>'+
+    '<p class="rm-texte">'+esc(r.texte)+'</p>'+
+    (r.pourquoi && r.pourquoi.length ? '<ul class="prose petit" style="margin:4px 0 0">'+r.pourquoi.map(x => '<li>'+esc(x)+'</li>').join("")+'</ul>' : "")+
+    (r.erreur ? '<p class="muet petit">Gemini : '+esc(r.erreur)+'</p>' : "")+
+    '<p class="muet petit">Les [à compléter] restent à remplir avec tes vrais chiffres. Entraîne-toi à la redire avec tes mots.</p>'+
+    '<div class="flex"><button class="btn btn-petit" data-action="ecouterModele" data-arg="'+esc(String(i))+'" data-cible="'+(cible||"msg")+'">'+ic("lecture")+'Écouter</button></div></div>';
 }
 function passer(){
   if(!S || S.fini || S.attente) return;
@@ -1645,14 +1816,15 @@ function carteFeedback(fb, i, ouvert){
     const lib = fb.wpm < 120 ? "rythme lent" : fb.wpm > 180 ? "rythme rapide" : fb.wpm > 160 ? "un peu rapide" : "bon rythme";
     debit = '<div><h4>Débit : '+fb.wpm+' mots par minute, '+lib+'</h4><div class="jauge" role="img" aria-label="Débit '+fb.wpm+' mots par minute, cible 120 à 160"><i style="left:calc('+pos+'% - 2px)"></i></div><p class="muet petit">Cible 120 à 160. Mots de remplissage : '+(fb.rempMin != null ? fb.rempMin+" par minute" : fb.nbRemp)+'.</p></div>';
   } else debit = '<p class="muet petit">Débit non mesuré (réponse écrite).</p>';
-  return '<details class="fb" '+(ouvert?"open":"")+'><summary><span>Feedback : '+fb.note+'/5 <span class="xp-gain">+'+(fb.xp||0)+' XP</span></span><span class="source">'+(fb.source === "gemini" ? "évaluation Gemini" : "évaluation locale (règles)")+'</span></summary>'+
+  return '<details class="fb" id="fb-'+i+'" '+(ouvert?"open":"")+'><summary><span>Feedback : '+fb.note+'/5 <span class="xp-gain">+'+(fb.xp||0)+' XP</span></span><span class="source">'+(fb.source === "gemini" ? "évaluation Gemini" : "évaluation locale (règles)")+'</span></summary>'+
     '<div class="criteres">'+crit+'</div>'+
     '<div><h4>Point fort</h4><p>'+esc(fb.point_fort)+'</p></div>'+
     '<div><h4>À améliorer</h4><p>'+esc(fb.point_a_ameliorer)+'</p></div>'+
-    '<div><h4>Version améliorée</h4><p>'+esc(fb.version_amelioree)+'</p></div>'+
+    blocReponseModele(fb.reponse_modele, i, fb.rmEnCours, "msg")+
+    '<div><h4>Pistes de reformulation</h4><p>'+esc(fb.version_amelioree)+'</p></div>'+
     '<div><h4>Vocabulaire</h4>'+voc+'</div>'+aff+debit+
     (fb.source === "gemini" && fb.noteLocale != null ? '<p class="muet petit">Règles locales : '+fb.noteLocale+'/5.</p>' : "")+
-    '<button class="btn btn-petit" data-action="garderFiche" data-arg="'+i+'">'+ic("etoile")+'Garder cette version dans mes fiches</button></details>';
+    '<button class="btn btn-petit" data-action="garderFiche" data-arg="'+i+'">'+ic("etoile")+'Garder '+(fb.reponse_modele ? "la réponse modèle" : "cette version")+' dans mes fiches</button></details>';
 }
 
 /* micro */
@@ -1777,7 +1949,8 @@ function rDebrief(id){
    '<div class="carte"><h3>Exercice pour demain</h3><p>'+esc(d.exercice_demain)+'</p><h3 style="margin-top:10px">Phrase clé</h3><p style="font-weight:700">'+esc(d.phrase_cle)+'</p></div>'+
    (geminiActif() && d.source !== "gemini" && reps.length ? '<button class="btn" data-action="debriefGemini" data-arg="'+esc(id)+'">Demander un débrief à Gemini</button>' : "")+
    '<div class="flex">'+(suite ? '<button class="btn btn-bleu" data-action="roundSuivant">Round suivant</button>' : "")+'<button class="btn'+(suite?"":" btn-bleu")+'" data-go="entrainer">Retour au programme</button></div>'+
-   (reps.length ? '<div class="carte"><h3>Réponses</h3><table class="tab"><thead><tr><th>Question</th><th>Note</th></tr></thead><tbody>'+reps.map(r => '<tr><td>'+esc((r.question||"").slice(0,140))+'</td><td>'+r.note+'/5</td></tr>').join("")+'</tbody></table></div>' : "")+
+   (reps.length ? '<div class="carte"><h3>Réponses</h3><p class="muet petit">Touche une réponse pour la relire et voir la réponse modèle.</p><div class="groupe">'+reps.map(r => '<details class="fb rep-deb"><summary><span>'+esc((r.question||"").slice(0,120))+'</span><span class="source">'+r.note+'/5</span></summary>'+
+     '<div><h4>Ta réponse</h4><p>'+esc(r.texte||"")+'</p></div>'+blocReponseModele(r.reponseModele, r.id, false, "rep")+'</details>').join("")+'</div></div>' : "")+
   '</div>';
   $$(".axe-ok").forEach(c => c.addEventListener("change", () => {
     if($$(".axe-ok").every(x => x.checked)){
@@ -2047,7 +2220,7 @@ function editProjet(i){
 function rReglages(){
   const R = reglages(), p = profil(), cle = cleApi(), c = compteurJour();
   const opt = (v, l, cur) => '<option value="'+v+'"'+(v===cur?" selected":"")+'>'+l+'</option>';
-  const modeles = Array.from(new Set([R.modele, "gemini-2.5-flash", "gemini-2.5-flash-lite"].concat(R.modeles||[]))).filter(Boolean);
+  const modeles = Array.from(new Set([R.modele].concat(classerModeles(R.modeles||[])).concat(MODELES_SECOURS))).filter(Boolean);
   E().innerHTML = entete("Réglages","accueil")+'<div class="contenu">'+
    '<div class="carte groupe"><h3>Profil</h3>'+
     '<label class="champ">Prénom<input id="rg-prenom" value="'+esc(p.prenom)+'" autocomplete="given-name"></label>'+
@@ -2057,8 +2230,9 @@ function rReglages(){
     '<label class="champ">Clé API Gemini<div class="flex" style="flex-wrap:nowrap"><input type="password" id="rg-cle" value="'+esc(cle)+'" autocomplete="off" spellcheck="false" placeholder="Colle ta clé ici"><button class="btn-icone" data-action="voirCle" aria-label="Afficher ou masquer la clé">'+ic("oeil")+'</button></div><small>Stockée sur cet appareil uniquement. Jamais incluse par défaut dans l\'export.</small></label>'+
     '<button class="btn" data-action="testerCle">Tester la clé</button><p id="test-res" class="petit" aria-live="polite"></p>'+
     '<label class="champ">Modèle<select id="rg-modele">'+modeles.map(m => opt(m,m,R.modele)).join("")+'</select></label>'+
-    '<label class="champ">Ou saisie libre du modèle<input id="rg-modele-libre" placeholder="exemple : gemini-2.5-flash-lite" spellcheck="false"></label>'+
+    '<label class="champ">Ou saisie libre du modèle<input id="rg-modele-libre" placeholder="exemple : gemini-flash-latest" spellcheck="false"></label>'+
     '<label class="interrupteur">Envoyer mes fiches projets à l\'API<input type="checkbox" id="rg-projets" '+(R.envoiProjets?"checked":"")+'></label>'+
+    '<label class="interrupteur">Réponse modèle automatique quand la note est sous 4<input type="checkbox" id="rg-rm-auto" '+(R.reponseModeleAuto!==false?"checked":"")+'></label>'+
     '<p class="avert petit">Les textes de tes réponses, et les projets si l\'option est activée, sont envoyés à Google AI Studio. Ne saisis pas de chiffres confidentiels. Sans clé, aucun texte ne quitte l\'appareil, à part la reconnaissance vocale du navigateur.</p>'+
     '<p class="muet petit">Requêtes Gemini aujourd\'hui : '+c.n+'. Une requête par réponse, au moins 6 secondes entre deux requêtes.</p></div>'+
    '<div class="carte groupe"><h3>Voix</h3>'+
@@ -2085,7 +2259,7 @@ function enregistrerReglages(){
   const pr = Object.assign(profil(), { prenom:$("#rg-prenom").value.trim(), dateEntretien:$("#rg-date").value, heure:$("#rg-heure").value });
   store.set("profil", pr);
   const libre = $("#rg-modele-libre").value.trim();
-  majReglages({ fournisseur:$("#rg-four").value, modele: libre || $("#rg-modele").value, envoiProjets:$("#rg-projets").checked, langue:$("#rg-langue").value, langueEn:$("#rg-langue-en").value,
+  majReglages({ fournisseur:$("#rg-four").value, modele: libre || $("#rg-modele").value, envoiProjets:$("#rg-projets").checked, reponseModeleAuto:$("#rg-rm-auto").checked, langue:$("#rg-langue").value, langueEn:$("#rg-langue-en").value,
     voix:$("#rg-voix").checked, vitesse:Number($("#rg-vitesse").value), continu:$("#rg-continu").checked, taille:$("#rg-taille").value, theme:$("#rg-theme").value });
   const k = $("#rg-cle").value.trim();
   if(k !== cleApi()){ store.set("secrets.gemini", k); GEM.cleRefusee = false; GEM.localJusqua = 0; }
@@ -2203,7 +2377,7 @@ const ACTIONS = {
   async finRoundBtn(){ if(!S || S.fini) return; if(await confirmer("Terminer maintenant et voir le débrief ?","Terminer")) finRound("manuel"); },
   roundSuivant(){ if(!S || !S.suite) return; S.ri++; S.fini = false; initRound(S); sauverEncours(); go("session"); },
   garderFiche(el){ if(!S) return; const i = Number(el.dataset.arg), m = S.msgs[i]; if(!m || !m.fb) return; let q = ""; for(let j=i-1;j>=0;j--) if(S.msgs[j].qui === "m"){ q = S.msgs[j].texte; break; }
-    const f = store.get("fiches", []); f.push({ date:new Date().toISOString(), question:q, texte:m.fb.version_amelioree }); store.set("fiches", f); toast("Version gardée dans tes fiches (Fiche de poche)."); },
+    const f = store.get("fiches", []); f.push({ date:new Date().toISOString(), question:q, texte:(m.fb.reponse_modele && m.fb.reponse_modele.texte) || m.fb.version_amelioree }); store.set("fiches", f); toast("Gardée dans tes fiches (Fiche de poche)."); },
   supprFiche(el){ const f = store.get("fiches", []); f.splice(Number(el.dataset.arg),1); store.set("fiches", f); rPoche(); },
   quizVocab, repQuiz(el){ repQuiz(Number(el.dataset.arg)); },
   ajoutLigne(){ const p = planCourant(); p.push({ nom:"", page:"", declencheur:"", params:"", dest:"GA4", consent:"oui", statut:"à créer" }); store.set("plan", p); rAtelier(); },
@@ -2223,10 +2397,33 @@ const ACTIONS = {
   async testerCle(){ const k = $("#rg-cle").value.trim() || cleApi(); const z = $("#test-res");
     if(!k){ z.textContent = "Saisis une clé d'abord."; return; }
     z.textContent = "Test en cours...";
-    try{ const ms = await testerCle(k); store.set("secrets.gemini", k); GEM.cleRefusee = false; GEM.localJusqua = 0; majReglages({ modeles:ms });
-      z.innerHTML = '<span class="msg-ok">Clé valide : '+ms.length+' modèles compatibles generateContent.</span>'+(ms.includes(reglages().modele) ? "" : ' <span class="msg-err">Le modèle choisi ('+esc(reglages().modele)+') n\'est pas dans la liste.</span>');
-      const sel = $("#rg-modele"), cur = reglages().modele; sel.innerHTML = Array.from(new Set([cur].concat(ms))).map(m => '<option'+(m===cur?" selected":"")+'>'+esc(m)+'</option>').join("");
+    try{ const ms = await testerCle(k); store.set("secrets.gemini", k); GEM.cleRefusee = false; GEM.localJusqua = 0; GEM.dispo = ms; majReglages({ modeles:ms });
+      const avant = reglages().modele;
+      z.innerHTML = '<span class="msg-ok">Clé valide : '+ms.length+' modèles autorisés.</span> Essai d\'un appel réel...';
+      const t = await trouverModeleFonctionnel(k, ms, ms.includes(avant) ? avant : meilleurModele(ms));
+      if(t && t.modele){ majReglages({ modele:t.modele }); GEM.modeleOK = t.modele;
+        z.innerHTML = '<span class="msg-ok">Clé valide. Modèle testé et utilisé : '+esc(t.modele)+'.</span>'+(t.quota ? ' <span class="msg-err">Quota du moment atteint, réessaie dans une minute.</span>' : "")+(t.modele !== avant ? ' <span class="muet">(remplace '+esc(avant)+', indisponible pour ta clé)</span>' : "");
+      } else z.innerHTML = '<span class="msg-err">Clé valide, mais aucun modèle n\'a répondu à un appel réel. Modèles autorisés : '+esc(classerModeles(ms).slice(0,6).join(", ") || "aucun")+'.</span>';
+      const sel = $("#rg-modele"), cur = reglages().modele; sel.innerHTML = Array.from(new Set([cur].concat(classerModeles(ms)))).map(m => '<option'+(m===cur?" selected":"")+'>'+esc(m)+'</option>').join("");
     }catch(e){ z.innerHTML = '<span class="msg-err">'+esc(e.message || "Test impossible (réseau ?).")+'</span>'; } },
+  reponseModele(el){ lancerReponseModele(Number(el.dataset.arg)); },
+  async reponseModeleRep(el){
+    const id = el.dataset.arg, rep = store.get("reponses", []), r = rep.find(x => x.id === id); if(!r) return;
+    const q = r.questionId ? qParId(r.questionId) : null;
+    el.disabled = true; el.textContent = geminiActif() ? "Rédaction en cours par Gemini..." : "Préparation...";
+    let res = null;
+    if(geminiActif()){ try{ res = await genererReponseModele(q, r.question||"", r.texte||"", r.lang); }catch(e){ res = reponseModeleLocale(q, r.question, r.lang); if(res) res.erreur = e.message; } }
+    else res = reponseModeleLocale(q, r.question, r.lang);
+    if(!res){ el.textContent = "Pas de réponse modèle pour cette question."; return; }
+    majReponseStockee(id, { reponseModele:res });
+    const box = el.closest(".rm"); if(box) box.outerHTML = blocReponseModele(res, id, false, "rep");
+  },
+  ecouterModele(el){
+    let r = null, lang = "fr";
+    if(el.dataset.cible === "rep"){ const x = store.get("reponses", []).find(y => y.id === el.dataset.arg); if(x){ r = x.reponseModele; lang = x.lang || "fr"; } }
+    else if(S){ const m = S.msgs[Number(el.dataset.arg)]; if(m && m.fb){ r = m.fb.reponse_modele; lang = m.lang || S.lang; } }
+    if(r && r.texte){ VOIX.taire(); VOIX.parler(r.texte, lang); }
+  },
   enregistrerReglages,
   exportJSON(){ telecharger("harnais-export-"+jourISO()+".json", JSON.stringify(exporterTout($("#rg-exp-cle").checked), null, 2), "application/json"); toast("Export téléchargé."); },
   importJSON(){ $("#rg-import").click(); },
