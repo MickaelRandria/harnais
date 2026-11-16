@@ -1,6 +1,6 @@
 # Harnais
 
-Entraînement aux entretiens de Digital Analytics Consultant : 3 rounds de 30 minutes avec 3 managers simulés (technique, CRO et analyse, conseil), feedback sur chaque réponse, progression, modules.
+Entraînement aux entretiens de Digital Analytics Consultant : 3 rounds de 30 minutes avec 3 managers simulés (technique, CRO et analyse, conseil), feedback sur chaque réponse, progression, modules. Interface mobile, et web app sur ordinateur (menu latéral, retours dans un panneau à droite). Avec Gemini, le manager pose aussi ses propres questions, adaptées à ton parcours, et chaque module propose « Nouvelles questions (IA) ».
 
 ## Ouvrir l'app
 - En ligne (téléphone compris) : l'adresse GitHub Pages du dépôt, en HTTPS, donc le micro fonctionne.

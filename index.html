@@ -167,21 +167,51 @@ html[data-theme="nuit"] .act[aria-pressed="true"]{color:#8DB8FF}
 .chrono-rep.alerte{color:#fff;background:#B54708}
 
 /* feedback */
-.fb{align-self:stretch;border-radius:var(--r);background:var(--carte);border:1px solid var(--ligne);padding:14px;display:flex;flex-direction:column;gap:10px;box-shadow:var(--ombre)}
-.fb summary{cursor:pointer;font-weight:700;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:8px;min-height:32px}
+.fb{align-self:stretch;border-radius:var(--r);background:var(--carte);border:1px solid var(--ligne);padding:0;box-shadow:var(--ombre);margin:6px 0 10px;overflow:hidden}
+.fb summary{cursor:pointer;font-weight:700;list-style:none;display:flex;justify-content:space-between;align-items:center;gap:12px;min-height:44px}
 .fb summary::-webkit-details-marker{display:none}
 .fb .source{font-size:.85rem;color:var(--txt2);font-weight:500}
-.criteres{display:grid;gap:6px}
+.fb p{margin:0}
+.fb-tete{padding:16px 18px}
+.fb[open] .fb-tete{border-bottom:1px solid var(--ligne)}
+.fb-note{flex:none;display:inline-flex;align-items:baseline;justify-content:center;min-width:72px;padding:8px 12px;border-radius:14px;font-size:1.6rem;font-weight:800;line-height:1;font-variant-numeric:tabular-nums}
+.fb-note small{font-size:.85rem;font-weight:700;opacity:.8;margin-left:2px}
+.n-bon{background:rgba(76,217,100,.18);color:var(--vert-txt)}
+.n-moyen{background:rgba(242,162,92,.2);color:var(--orange-txt)}
+.n-faible{background:rgba(229,72,77,.15);color:var(--rouge-txt)}
+.fb-titre{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px}
+.fb-titre b{font-size:1.05rem}
+.fb-chevron{width:10px;height:10px;border-right:2px solid var(--txt2);border-bottom:2px solid var(--txt2);transform:rotate(45deg);margin:0 6px 4px 0;transition:transform .2s}
+.fb[open] .fb-chevron{transform:rotate(-135deg);margin-bottom:-4px}
+.fb-corps{padding:18px;display:flex;flex-direction:column;gap:16px}
+.fb-bloc{display:flex;flex-direction:column;gap:8px;line-height:1.6}
+.fb-bloc h4{display:flex;align-items:center;gap:8px;margin:0;font-size:.8rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--txt2)}
+.fb-bloc h4 .ic{width:18px;height:18px}
+.fb-bloc h4 .source{text-transform:none;letter-spacing:0;font-weight:600;margin-left:auto}
+.ton-vert,.ton-orange,.ton-bleu{padding:14px 16px;border-radius:14px}
+.ton-vert{background:rgba(76,217,100,.12);border:1px solid rgba(76,217,100,.35)}
+.ton-vert h4{color:var(--vert-txt)}
+.ton-orange{background:rgba(242,162,92,.14);border:1px solid rgba(242,162,92,.45)}
+.ton-orange h4{color:var(--orange-txt)}
+.ton-bleu{background:rgba(31,111,224,.09);border:1px solid rgba(31,111,224,.35)}
+.ton-bleu h4{color:var(--bleu)}
+html[data-theme="nuit"] .ton-bleu h4,.force-nuit .ton-bleu h4{color:#9CC2FF}
+.criteres{display:grid;gap:12px}
+.crit{display:flex;flex-direction:column;gap:6px;font-size:.95rem}
+.crit-l{display:flex;justify-content:space-between;gap:8px}
+.crit .barre{flex:none;height:8px}
 .critere{display:grid;grid-template-columns:130px 1fr 34px;gap:8px;align-items:center;font-size:.95rem}
 .critere .barre{height:8px}
 .critere b{text-align:right}
-.fb h4{margin:6px 0 2px;font-size:1rem}
-.fb p{margin:0}
-.rm{border-left:3px solid var(--orange);padding:8px 0 8px 12px;display:flex;flex-direction:column;gap:6px}
-.rm-texte{line-height:1.55}
-.rep-deb{box-shadow:none}
+.rm{display:flex;flex-direction:column;gap:10px}
+.rm-vide{align-items:flex-start}
+.rm-texte{line-height:1.7;font-size:1.02rem}
+.rm .prose{padding-left:1.2em}
+.rep-deb{box-shadow:none;margin:0}
+.rep-deb>summary{padding:14px 16px}
+.rep-deb>div,.rep-deb>.rm{margin:0 16px 16px}
 .rep-deb summary span:first-child{font-weight:600}
-.puces{display:flex;flex-wrap:wrap;gap:6px}
+.puces{display:flex;flex-wrap:wrap;gap:8px}
 .puce{font-size:.9rem;padding:4px 10px;border-radius:999px;background:rgba(242,162,92,.18);border:1px solid rgba(242,162,92,.5)}
 .puce.ok{background:rgba(76,217,100,.15);border-color:rgba(76,217,100,.5)}
 .jauge{position:relative;height:12px;border-radius:999px;background:linear-gradient(90deg,#9DB7E6 0%,#9DB7E6 37.5%,#4CD964 37.5%,#4CD964 62.5%,#F2C14E 62.5%,#F2C14E 75%,#F2A25C 75%,#F2A25C 100%)}
@@ -253,6 +283,82 @@ label.champ{display:flex;flex-direction:column;gap:6px;font-weight:600}
 .prose ul{margin:.3em 0;padding-left:1.2em}
 .prose li{margin:.25em 0}
 .poche h3{margin-top:4px}
+/* session : structure (mobile d'abord) */
+.sess-corps{flex:1;min-height:0;display:flex;flex-direction:column}
+.sess-gauche{flex:1;min-height:0;display:flex;flex-direction:column}
+.panneau{display:none}
+.fil{gap:16px;padding:18px 14px 24px}
+.fil>*{flex-shrink:0}
+.actions-sess{max-width:560px;width:100%;margin:0 auto}
+.bulle{padding:14px 16px;line-height:1.55}
+.fb-lien{align-self:flex-end;display:inline-flex;align-items:center;gap:8px;min-height:40px;padding:6px 14px;border-radius:999px;border:1px solid var(--ligne);background:var(--carte);color:var(--txt);font-weight:600;cursor:pointer;margin-top:-6px}
+.fb-lien .ic{width:18px;height:18px;color:var(--bleu)}
+.fb-lien[aria-pressed="true"]{border-color:var(--bleu);box-shadow:0 0 0 2px rgba(31,111,224,.25)}
+.nav-marque{display:none}
+.nav .lib{display:none}
+.contenu{gap:20px;padding:12px 18px 32px}
+.carte{padding:18px}
+
+/* ---------- Grand écran : vraie web app ---------- */
+@media (min-width:1024px){
+  .decor{display:none}
+  body{background:var(--fond)}
+  #app{max-width:none;margin:0;min-height:100vh;border-radius:0;box-shadow:none;display:grid;grid-template-columns:248px minmax(0,1fr);grid-template-areas:"nav main";align-items:start}
+  #app.plein{grid-template-columns:minmax(0,1fr);grid-template-areas:"main"}
+  main{grid-area:main;min-height:100vh}
+  .nav{grid-area:nav;position:sticky;top:0;height:100vh;flex-direction:column;justify-content:flex-start;align-items:stretch;gap:6px;padding:28px 16px;border-radius:0}
+  .nav-marque{display:flex;align-items:center;gap:10px;color:#fff;font-weight:800;font-size:1.3rem;padding:4px 12px 24px}
+  .nav-marque svg{width:34px;height:34px}
+  .nav button{width:100%;flex-direction:row;justify-content:flex-start;gap:14px;padding:12px 16px;min-height:52px;font-weight:600;font-size:1rem}
+  .nav button:hover{background:rgba(255,255,255,.06)}
+  .nav button[aria-current="page"]{background:rgba(255,255,255,.12)}
+  .nav .lib{display:inline}
+  .nav .point{margin-left:auto}
+  .entete{padding:36px 48px 8px}
+  .entete h1{font-size:2rem}
+  .contenu{padding:20px 48px 56px;gap:24px;max-width:1240px}
+  .carte{padding:24px}
+  .hero{min-height:400px}
+  .hero-haut{padding:40px 48px 0}
+  .hero h1{font-size:2.8rem}
+  .hero-corps{padding:20px 48px 36px;max-width:640px}
+  .rangee{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));overflow:visible;margin:0;padding:4px 0}
+  .rangee .tuile-act{flex:none}
+  .grille-mod{grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:16px}
+  .grille-mod button{padding:20px;min-height:140px}
+  .bento{grid-template-columns:repeat(4,1fr);gap:16px}
+  .chaleur{grid-template-columns:repeat(3,1fr)}
+  .carte .graph{max-width:460px;margin:0 auto}
+  .grille-desk{display:block;column-count:2;column-gap:24px}
+  .grille-desk>*{break-inside:avoid;margin:0 0 24px;width:100%}
+  .grille-desk>.pleine{column-span:all}
+  .frise{max-width:760px}
+  .modale .boite{max-width:620px;padding:28px}
+  .toast{bottom:32px}
+  /* session en deux colonnes : conversation à gauche, retours à droite */
+  .session{height:100vh}
+  .sess-haut{padding:16px 28px}
+  .defi{padding:10px 28px}
+  .sess-corps{flex-direction:row}
+  .sess-gauche{border-right:1px solid var(--ligne)}
+  .fil{padding:28px 40px 32px;gap:18px}
+  .fil .bulle{max-width:76%;font-size:1.05rem}
+  .sess-bas{padding:16px 40px 20px}
+  .zone-saisie textarea{min-height:64px}
+  .panneau{display:block;flex:0 0 clamp(400px,36vw,560px);overflow-y:auto;padding:28px 28px 40px;background:var(--fond2)}
+  .panneau .fb{margin:0;box-shadow:none}
+  .panneau-tete{display:flex;flex-direction:column;gap:8px;margin-bottom:14px}
+  .panneau-q{font-weight:700;font-size:1.1rem;line-height:1.45;margin:0}
+  .panneau-rep{margin:0 0 16px;border-radius:14px;border:1px solid var(--ligne);background:var(--carte);padding:12px 16px}
+  .panneau-rep summary{cursor:pointer;font-weight:600;color:var(--txt2)}
+  .panneau-rep p{margin:10px 0 2px;line-height:1.6}
+  .panneau-vide{display:flex;flex-direction:column;gap:12px;align-items:flex-start;padding:32px 8px;color:var(--txt)}
+  .panneau-vide>.ic{width:40px;height:40px;color:var(--bleu)}
+}
+@media (min-width:1500px){
+  .fil{padding-left:64px;padding-right:64px}
+  .sess-bas{padding-left:64px;padding-right:64px}
+}
 @media print{.nav,.decor{display:none}#app{box-shadow:none;margin:0}}
 </style>
 </head>
@@ -269,6 +375,7 @@ label.champ{display:flex;flex-direction:column;gap:6px;font-weight:600}
 <div id="app">
   <main id="ecran" tabindex="-1"></main>
   <nav class="nav" id="nav" aria-label="Navigation principale">
+    <div class="nav-marque" aria-hidden="true"><svg viewBox="0 0 32 32"><rect width="32" height="32" rx="8" fill="#1F6FE0"/><path d="M4 26 L13 12 L18 19 L22 14 L28 26Z" fill="#F2A25C"/><circle cx="23" cy="8" r="3" fill="#F6E7B8"/></svg>Harnais</div>
     <button data-go="accueil" aria-label="Accueil"></button>
     <button data-go="entrainer" aria-label="Entraîner"></button>
     <button data-go="progression" aria-label="Progression"></button>
@@ -1088,6 +1195,32 @@ async function genererReponseModele(q, question, texte, lang){
   if(!obj || typeof obj.reponse_modele !== "string" || obj.reponse_modele.trim().length < 40) throw new ErrGem("json", "Réponse modèle vide renvoyée par Gemini.");
   return { texte:sansTiret(obj.reponse_modele.trim()), pourquoi:(Array.isArray(obj.pourquoi) ? obj.pourquoi : []).slice(0,3).map(sansTiret), source:"gemini", modele };
 }
+/* ---------- Nouvelles questions générées pour un module ---------- */
+const PROMPT_QUESTIONS = `Tu prépares un candidat à un entretien pour un poste de Digital Analytics Consultant junior chez fifty-five (conseil en data et technologie pour le marketing, Paris). Génère {N} questions d'entretien NOUVELLES pour le module « {MODULE} » ({DESC}), telles qu'un manager les poserait à l'oral.
+
+Règles :
+1. Varie les formats : question technique précise, mise en situation chez un client, demande d'exemple vécu, arbitrage entre deux options, question sur une limite ou un risque, question piège bienveillante.
+2. Ancre au moins deux questions dans le parcours réel du candidat ou dans un de ses projets (sans inventer de chiffre ni de mission).
+3. Aucune question ne doit reprendre une de celles déjà connues listées plus bas.
+4. Phrases naturelles et courtes, registre oral, tutoiement. Aucun tiret long.
+5. Langue : {LANGUE}.
+
+Profil du candidat : {PROFIL}
+Projets du candidat : {PROJETS}
+Questions déjà connues : {CONNUES}
+
+Réponds uniquement avec un objet JSON valide : { "questions": [ { "enonce": "la question", "type": "question" ou "star" ou "cas", "points_attendus": ["3 à 5 points courts qu'une bonne réponse doit couvrir"] } ] }`;
+async function genererQuestionsModule(moduleId, n){
+  const m = MODULES.find(x => x.id === moduleId) || { nom:moduleId, desc:"" };
+  const en = moduleId === "anglais";
+  const connues = QB.filter(q => q.module === moduleId).map(q => q.enonce.slice(0, 90)).slice(0, 25).join(" | ") || "aucune";
+  const sys = remplir(PROMPT_QUESTIONS, { N:n || 5, MODULE:m.nom, DESC:m.desc || "", LANGUE: en ? "anglais" : "français", PROFIL:profilCandidat(), PROJETS:projetsJSON(), CONNUES:connues });
+  const { obj } = await geminiJSON(sys, [{ role:"user", parts:[{ text: en ? "Generate the questions." : "Génère les questions." }] }], { temperature:0.9 });
+  const qs = (obj && Array.isArray(obj.questions) ? obj.questions : []).filter(x => x && typeof x.enonce === "string" && x.enonce.trim().length > 10).slice(0, n || 5);
+  if(!qs.length) throw new ErrGem("json", "Gemini n'a renvoyé aucune question exploitable.");
+  return qs.map(x => ({ enonce:sansTiret(x.enonce.trim()), type:["question","star","cas"].includes(x.type) ? x.type : "question",
+    points:(Array.isArray(x.points_attendus) ? x.points_attendus : []).filter(p => typeof p === "string" && p.trim()).slice(0,5).map(p => sansTiret(p.trim())) }));
+}
 function majReponseStockee(id, patch){
   if(!id) return; const rep = store.get("reponses", []); const r = rep.find(x => x.id === id);
   if(r){ Object.assign(r, patch); store.set("reponses", rep); }
@@ -1359,7 +1492,7 @@ function route(){
   const h = location.hash.slice(1) || "accueil"; const [nom, arg] = h.split("/");
   if(nom !== "session" && S && !S.fini && !S.pause){ pauser(); sauverEncours(); }
   if(nom !== "session") arreterTick();
-  const nav = $("#nav"); nav.classList.toggle("cache", nom === "session");
+  const nav = $("#nav"); nav.classList.toggle("cache", nom === "session"); $("#app").classList.toggle("plein", nom === "session");
   const onglet = { accueil:"accueil", reglages:"accueil", entrainer:"entrainer", debrief:"entrainer", progression:"progression", modules:"modules", module:"modules" }[nom] || "accueil";
   $$("#nav button").forEach(b => { if(b.dataset.go === onglet) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current"); });
   const R = { accueil:rAccueil, entrainer:rEntrainer, progression:rProgression, modules:rModules, module:rModule, reglages:rReglages, session:rSession, debrief:rDebrief }[nom] || rAccueil;
@@ -1472,10 +1605,27 @@ function choisirQuestion(s, ph){
   }
   return null;
 }
-const ACCUSES_FR = ["D'accord.","Merci.","Entendu.","Je note."], ACCUSES_EN = ["Okay.","Thanks.","Got it.","Noted."];
-function prochaineQuestion(s, avecAccuse){
+/* Réactions variées, selon la qualité de la réponse, pour un enchaînement plus naturel en mode local */
+const REACTIONS = {
+  fr:{ bon:["Très clair, merci.","C'est précis, j'aime bien.","Bien, c'est exactement le niveau de détail attendu.","Parfait, c'est concret.","Ok, c'est carré."],
+       moyen:["D'accord.","Je vois.","Merci, je note.","Entendu.","Ok, ça me donne une idée."],
+       faible:["D'accord, on pourra y revenir.","Je note, on creusera peut-être plus tard.","Ok, passons à autre chose.","Entendu, avançons."] },
+  en:{ bon:["Very clear, thanks.","That's precise, I like it.","Good, that's concrete."], moyen:["Okay.","I see.","Thanks, noted.","Got it."], faible:["Okay, we may come back to that.","Noted, let's move on."] }
+};
+const TRANSITIONS = {
+  fr:["Changeons d'angle.","Autre sujet.","Je voudrais t'entendre sur autre chose.","Restons dans le concret.","Question suivante.","Petit changement de sujet.","Allons un peu plus loin."],
+  en:["Let's change angle.","Another topic.","Next question.","Let's stay concrete."]
+};
+function reaction(s, ev){
+  const L = REACTIONS[s.lang === "en" ? "en" : "fr"], k = !ev ? "moyen" : ev.note >= 3.8 ? "bon" : ev.note >= 2.5 ? "moyen" : "faible";
+  const r = rand(hash(s.id + s.asked.length + "r"))();
+  const T = TRANSITIONS[s.lang === "en" ? "en" : "fr"];
+  const t = r < 0.45 ? " "+T[Math.floor(rand(hash(s.id + s.asked.length + "t"))() * T.length)] : "";
+  return L[k][Math.floor(r * L[k].length)] + t;
+}
+function prochaineQuestion(s, avecAccuse, ev){
   const ph = phaseCourante(s), en = s.lang === "en";
-  const acc = avecAccuse ? (en ? ACCUSES_EN : ACCUSES_FR)[s.asked.length % 4]+" " : "";
+  const acc = avecAccuse ? reaction(s, ev)+" " : "";
   const nq = choisirQuestion(s, ph);
   if(!nq){
     if(!roundCourant(s)) return { kind:"fin", texte: en ? "That's all for this series. Have a look at your debrief." : "C'est tout pour cette série. Regarde ton débrief." };
@@ -1483,7 +1633,9 @@ function prochaineQuestion(s, avecAccuse){
   }
   const php = nq._phase || ph; delete nq._phase;
   const pre = (php.id !== s.phaseId && php.intro) ? php.intro+" " : "";
-  return { kind:"question", texte: acc+pre+nq.enonce, qId:nq.id, phaseId:php.id };
+  /* avec Gemini, une question sur deux environ est laissée libre (même thème, adaptée au parcours et à la dernière réponse) */
+  const libre = ["questions","rh"].includes(php.kind) && nq.type !== "recruteur" && rand(hash(s.id + s.asked.length + "l"))() < 0.5;
+  return { kind:"question", texte: acc+pre+nq.enonce, qId:nq.id, phaseId:php.id, libre, enonceBanque:nq.enonce };
 }
 function appliquerPlan(s, plan){ if(plan.qId){ s.qId = plan.qId; if(!s.asked.includes(plan.qId)) s.asked.push(plan.qId); s.relance = false; s.phaseId = plan.phaseId; } }
 const CONTROLES_FR = ["D'où vient ce chiffre, précisément ?","Quelles sont les limites de cette donnée ?","Et si le résultat avait été inverse, qu'aurais-tu fait ?","Comment as-tu vérifié que la mesure était juste ?"];
@@ -1516,7 +1668,7 @@ function planifier(s, texte, ev, meta){
     return { kind:"chiffre", texte: en ? "You mentioned "+nom+". What is the actual result, in figures? If you didn't measure it, just say so." : "Tu parles de « "+nom+" ». Quel est le chiffre réel du résultat ? Si tu ne l'as pas mesuré, dis-le simplement." };
   }
   if(q && ev.note < 2.5 && !s.relance){ s.relance = true; return { kind:"relance", texte: relanceTexte(ev, en, q.type) }; }
-  return prochaineQuestion(s, true);
+  return prochaineQuestion(s, true, ev);
 }
 function recouvre(msg, cible){
   const a = norm(msg), mots2 = norm(cible).split(/[^a-z0-9]+/).filter(w => w.length > 4 && !STOP.has(w));
@@ -1524,12 +1676,29 @@ function recouvre(msg, cible){
   const n = mots2.filter(w => a.includes(w.slice(0, Math.max(5, w.length-2)))).length;
   return n >= 2 || n/mots2.length >= 0.3;
 }
+/* Gemini a-t-il posé la question de la banque, une question à lui, ou relancé ? On suit la question réellement posée pour l'évaluation suivante. */
+function motsClesPoint(p){ return Array.from(new Set(norm(p).split(/[^a-z0-9_]+/).filter(w => w.length > 3 && !STOP.has(w)).map(w => w.length > 6 ? w.slice(0, w.length-2) : w))).slice(0, 6); }
+function suivreQuestionGemini(s, plan, obj, texteM){
+  const qp = typeof obj.question_posee === "string" ? sansTiret(obj.question_posee.trim()) : "";
+  const banque = qS(s, plan.qId);
+  if(!qp){ if(recouvre(texteM, plan.enonceBanque || plan.texte)) appliquerPlan(s, plan); else s.relance = true; return; }
+  if(!plan.libre && recouvre(qp, plan.enonceBanque || plan.texte)){ appliquerPlan(s, plan); return; }
+  const pts = (Array.isArray(obj.points_attendus) ? obj.points_attendus : []).filter(x => typeof x === "string" && x.trim()).slice(0, 5).map(x => sansTiret(x.trim()));
+  const id = "gen-"+uid();
+  s.custom = s.custom || {};
+  s.custom[id] = { id, module: banque ? banque.module : (s.module || "technique"), round:0, niveau:"junior", type: banque ? banque.type : "question", genere:true,
+    enonce: qp, tags: banque ? banque.tags : [], pieges:[],
+    attendu: pts.length ? pts.map(p => ({ point:p, mots_cles:motsClesPoint(p) })) : (banque ? banque.attendu : []) };
+  if(plan.qId && !s.asked.includes(plan.qId)) s.asked.push(plan.qId); /* le thème de la banque est consommé */
+  s.qId = id; s.asked.push(id); s.relance = false; s.phaseId = plan.phaseId;
+}
 function dernierMessageManager(s){ for(let i=s.msgs.length-1;i>=0;i--) if(s.msgs[i].qui === "m") return s.msgs[i].texte; return ""; }
 function derniersEchanges(h){ let c = h.slice(-20); while(c.length && c[0].role !== "user") c = c.slice(1); return c; }
 async function appelEntretien(s, plan){
   const ph = phaseCourante(s), M = MANAGERS[s.manager], q = questionCourante(s);
   const SUGG = {
-    question:"Si la réponse est suffisante, enchaîne avec cette question de la banque (reformule-la à l'oral) : « "+plan.texte+" ».",
+    question:"Si la réponse est suffisante, enchaîne naturellement, comme dans une vraie conversation : une courte réaction à ce qu'il vient de dire (variée, sans compliment systématique, sans donner de note), puis cette question de la banque, reformulée avec tes propres mots : « "+(plan.enonceBanque || plan.texte)+" ». Si tu poses cette nouvelle question, ajoute au JSON un champ \"question_posee\" (la question seule, en une phrase). Si la réponse est insuffisante, relance plutôt sur la même question, sans ajouter ce champ.",
+    question_libre:"Si la réponse est suffisante, enchaîne naturellement, comme dans une vraie conversation : une courte réaction à ce qu'il vient de dire (variée, sans compliment systématique, sans donner de note), puis une NOUVELLE question de ton choix, sur le thème de la phase, absente des sujets déjà couverts. Ancre-la dans le parcours du candidat, dans un de ses projets, ou dans un détail précis de sa dernière réponse. Varie le format : mise en situation, question technique précise, demande d'exemple vécu, arbitrage entre deux options, question sur une limite. Thème possible pour t'inspirer : « "+(plan.enonceBanque || plan.texte)+" ». Ajoute alors au JSON deux champs : \"question_posee\" (la question seule, en une phrase) et \"points_attendus\" (3 à 5 points courts qu'une bonne réponse doit couvrir). Si la réponse est insuffisante, relance plutôt sur la même question, sans ajouter ces champs.",
     fin:"Le temps est écoulé ou les questions sont terminées : remercie le candidat et clôture en une ou deux phrases.",
     interruption:"Le candidat vient d'être coupé après 60 secondes : demande-lui sa conclusion en une phrase.",
     controle:"Mode sceptique : pose une question de contrôle sur sa dernière réponse (source du chiffre, limites, résultat inverse).",
@@ -1540,7 +1709,7 @@ async function appelEntretien(s, plan){
   const attendu = q && q.attendu.length ? " Points attendus pour la question en cours (pour le feedback seulement, ne les révèle pas) : "+q.attendu.map(a=>a.point).join(", ")+"." : "";
   const vars = {
     ROLE_MANAGER:M.role, STYLE_MANAGER:M.style, PHASE: ph.label + (s.lang === "en" ? " (phase Anglais : tout se passe en anglais)" : ""),
-    CONSIGNES_PHASE: ph.consignes+" "+(SUGG[plan.kind]||SUGG.relance)+attendu+" Score moyen actuel du candidat : "+(s.notes.length ? r1(moy(s.notes)) : "aucun")+" sur 5.",
+    CONSIGNES_PHASE: ph.consignes+" "+((plan.kind === "question" && plan.libre ? SUGG.question_libre : SUGG[plan.kind]) || SUGG.relance)+attendu+" Score moyen actuel du candidat : "+(s.notes.length ? r1(moy(s.notes)) : "aucun")+" sur 5.",
     MINUTES_RESTANTES: Math.max(0, Math.ceil(tempsRestant(s)/60)), PROFIL_CANDIDAT: profilCandidat(), PROJETS_JSON: projetsJSON(),
     SUJETS_COUVERTS: s.asked.map(id => { const x = qS(s,id); return x ? x.enonce.slice(0,80) : id; }).join(" | ") || "aucun",
     MODE: s.modes.sceptique ? "sceptique" : s.modes.interruption ? "interruption" : "normal"
@@ -1624,7 +1793,7 @@ async function envoyer(meta){
   if(!S || S.fini) return;
   let fin = plan.kind === "fin";
   if(texteM){
-    if(plan.kind === "question" && recouvre(texteM, plan.texte)) appliquerPlan(S, plan);
+    if(plan.kind === "question") suivreQuestionGemini(S, plan, obj, texteM);
     if(obj.phase_suivante === "cloture" && phaseCourante(S).kind === "questions_au_recruteur" && S.recruteurN >= 1) fin = true;
   } else {
     texteM = plan.texte; appliquerPlan(S, plan);
@@ -1675,9 +1844,9 @@ function majCarteFb(s, i){
   const ouvert = el.open; el.outerHTML = carteFeedback(m.fb, i, ouvert);
 }
 function blocReponseModele(r, i, enCours, cible){
-  if(enCours) return '<div class="rm"><h4>Réponse modèle</h4><p class="muet">Rédaction en cours par Gemini...</p></div>';
-  if(!r) return '<div class="rm"><button class="btn btn-petit btn-bleu" data-action="'+(cible==="rep"?"reponseModeleRep":"reponseModele")+'" data-arg="'+esc(String(i))+'">'+ic("etoile")+'Voir une réponse modèle</button></div>';
-  return '<div class="rm"><h4>Réponse modèle <span class="source">'+(r.source === "gemini" ? "rédigée par Gemini" : "trame locale")+'</span></h4>'+
+  if(enCours) return '<div class="rm fb-bloc ton-bleu"><h4>'+ic("etoile")+'Réponse modèle</h4><p class="muet">Rédaction en cours par Gemini...</p></div>';
+  if(!r) return '<div class="rm rm-vide"><button class="btn btn-petit btn-bleu" data-action="'+(cible==="rep"?"reponseModeleRep":"reponseModele")+'" data-arg="'+esc(String(i))+'">'+ic("etoile")+'Voir une réponse modèle</button></div>';
+  return '<div class="rm fb-bloc ton-bleu"><h4>'+ic("etoile")+'Réponse modèle <span class="source">'+(r.source === "gemini" ? "rédigée par Gemini" : "trame locale")+'</span></h4>'+
     '<p class="rm-texte">'+esc(r.texte)+'</p>'+
     (r.pourquoi && r.pourquoi.length ? '<ul class="prose petit" style="margin:4px 0 0">'+r.pourquoi.map(x => '<li>'+esc(x)+'</li>').join("")+'</ul>' : "")+
     (r.erreur ? '<p class="muet petit">Gemini : '+esc(r.erreur)+'</p>' : "")+
@@ -1721,6 +1890,7 @@ function rSession(){
    '<div class="sess-titre"><div class="role" id="s-role"></div><div class="phase" id="s-phase"></div></div>'+
    '<button class="minuteur" id="s-min" data-action="pauseSession" aria-label="Minuteur du round, toucher pour mettre en pause ou reprendre">30:00</button></header>'+
    '<div class="defi"><span>Défi</span><div class="barre" role="progressbar" aria-label="Barre de défi du manager" aria-valuemin="0" aria-valuemax="100" id="s-defi-b"><i id="s-defi"></i></div><span id="s-defi-v">0/100</span></div>'+
+   '<div class="sess-corps"><div class="sess-gauche">'+
    '<div class="fil" id="fil" aria-live="polite" aria-relevant="additions"></div>'+
    '<div class="sess-bas"><div class="chrono-rep cache" id="s-chrono" aria-live="off"></div>'+
    '<div class="zone-saisie"><label class="sr" for="saisie">Ta réponse</label><textarea id="saisie" rows="2" placeholder="'+(VOIX.dispo ? (en ? "Speak with the mic, or type here" : "Parle avec le micro, ou écris ici") : (en ? "Type your answer" : "Écris ta réponse"))+'"></textarea>'+
@@ -1731,7 +1901,8 @@ function rSession(){
    '<button class="micro" id="micro" aria-label="Micro : maintenir pour parler, ou toucher pour démarrer puis arrêter">'+ic("micro")+'</button>'+
    '<button class="act" data-action="indice">'+ic("ampoule")+'Indice</button>'+
    '<button class="act" data-action="finRoundBtn" aria-label="Fin de round">'+ic("drapeau")+'Fin</button></div>'+
-   '<div class="info-voix" id="info-voix">'+(VOIX.dispo ? "Maintiens le micro (ou la barre espace sur PC) pour parler. Chrome envoie l'audio aux serveurs de Google pour la reconnaissance." : "Reconnaissance vocale indisponible sur ce navigateur : mode écrit seul.")+'</div></div></section>';
+   '<div class="info-voix" id="info-voix">'+(VOIX.dispo ? "Maintiens le micro (ou la barre espace sur PC) pour parler. Chrome envoie l'audio aux serveurs de Google pour la reconnaissance." : "Reconnaissance vocale indisponible sur ce navigateur : mode écrit seul.")+'</div></div></div>'+
+   '<aside class="panneau" id="panneau" aria-label="Retours sur tes réponses"></aside></div></section>';
   const ta = $("#saisie");
   ta.addEventListener("input", () => { if(S && !S.debutFrappe && ta.value.trim()) S.debutFrappe = Date.now(); });
   ta.addEventListener("keydown", e => { if(e.key === "Enter" && (e.ctrlKey || e.metaKey)){ e.preventDefault(); envoyer(); } });
@@ -1794,37 +1965,61 @@ function tick(){
     if(voixLongue || ecritLong){ S.debutFrappe = 0; envoyer({ interrompu:true }); }
   }
 }
+/* Sur grand écran, les retours vont dans le panneau de droite ; sur mobile, ils restent dans le fil */
+const DESK = window.matchMedia("(min-width: 1024px)");
+DESK.addEventListener && DESK.addEventListener("change", () => { if(nomRoute() === "session" && S) renderFil(); });
 function renderFil(){
   const f = $("#fil"); if(!f || !S) return;
-  const M = MANAGERS[S.manager];
-  let derFb = -1; S.msgs.forEach((m,i) => { if(m.fb) derFb = i; });
+  const M = MANAGERS[S.manager], desk = DESK.matches;
+  let derFb = -1, n = 0; S.msgs.forEach((m,i) => { if(m.fb) derFb = i; });
+  if(desk && (S.fbSel == null || !S.msgs[S.fbSel] || !S.msgs[S.fbSel].fb || S.fbAuto !== derFb)){ S.fbSel = derFb; S.fbAuto = derFb; }
   f.innerHTML = S.msgs.map((m,i) => {
     if(m.qui === "m") return '<div class="bulle m"><span class="qui">'+esc(M.court)+'</span>'+esc(m.texte)+'</div>';
     if(m.qui === "sys") return '<div class="bulle sys">'+esc(m.texte)+'</div>';
-    return '<div class="bulle c"><span class="qui">Toi'+(m.interrompu?" (interrompu)":"")+'</span>'+esc(m.texte)+'</div>'+(m.fb ? carteFeedback(m.fb, i, i === derFb) : "");
+    if(m.fb) n++;
+    const lien = m.fb ? '<button class="fb-lien" data-action="voirFb" data-arg="'+i+'" aria-pressed="'+(i === S.fbSel)+'">'+ic("graphique")+'Retour n°'+n+' : <b>'+m.fb.note+'/5</b></button>' : "";
+    return '<div class="bulle c"><span class="qui">Toi'+(m.interrompu?" (interrompu)":"")+'</span>'+esc(m.texte)+'</div>'+(m.fb ? (desk ? lien : carteFeedback(m.fb, i, i === derFb)) : "");
   }).join("") + (S.attente && !S.fini ? '<div class="ecrit" aria-label="Le manager réfléchit"><span></span><span></span><span></span></div>' : "");
   f.scrollTop = f.scrollHeight;
+  renderPanneau();
+}
+function renderPanneau(){
+  const p = $("#panneau"); if(!p || !S) return;
+  if(!DESK.matches){ p.innerHTML = ""; return; }
+  const i = S.fbSel, m = i != null ? S.msgs[i] : null;
+  if(!m || !m.fb){
+    p.innerHTML = '<div class="panneau-vide">'+ic("graphique")+'<h2>Tes retours s\'afficheront ici</h2><p class="muet">Après chaque réponse : la note sur les 5 critères, ce qui marche, ce qui manque, et une réponse modèle à 5 sur 5 quand ta note est sous 4.</p><p class="muet petit">Astuce : maintiens la barre espace pour parler, Ctrl + Entrée pour envoyer.</p></div>';
+    return;
+  }
+  const nb = S.msgs.slice(0, i+1).filter(x => x.fb).length;
+  p.innerHTML = '<div class="panneau-tete"><span class="etiquette"><span class="anneau"></span>Retour n°'+nb+'</span><p class="panneau-q">'+esc(m.question || "")+'</p></div>'+
+    '<details class="panneau-rep"><summary>Ta réponse</summary><p>'+esc(m.texte)+'</p></details>'+
+    carteFeedback(m.fb, i, true);
+  p.scrollTop = 0;
 }
 const LIB_CRIT = { structure:"Structure", precision:"Précision technique", impact:"Impact business", clarte:"Clarté", concision:"Concision" };
 function carteFeedback(fb, i, ouvert){
-  const crit = Object.keys(LIB_CRIT).map(k => '<div class="critere"><span>'+LIB_CRIT[k]+'</span><div class="barre"><i style="width:'+(fb.scores[k]*20)+'%"></i></div><b>'+fb.scores[k]+'/5</b></div>').join("");
+  const crit = Object.keys(LIB_CRIT).map(k => '<div class="crit"><div class="crit-l"><span>'+LIB_CRIT[k]+'</span><b>'+fb.scores[k]+'/5</b></div><div class="barre"><i style="width:'+(fb.scores[k]*20)+'%"></i></div></div>').join("");
   const voc = (fb.vocabulaire||[]).length ? '<div class="puces">'+fb.vocabulaire.map(v => '<span class="puce">« '+esc(v.dit)+' »'+(v.n>1?" x"+v.n:"")+' : '+esc(v.propose)+'</span>').join("")+'</div>' : '<div class="puces"><span class="puce ok">Aucun tic ni mot de remplissage détecté</span></div>';
-  const aff = (fb.affirmations_a_verifier||[]).length ? '<div><h4>Affirmations à étayer</h4><ul class="prose" style="margin:0">'+fb.affirmations_a_verifier.map(a => '<li>'+esc(a)+'</li>').join("")+'</ul></div>' : "";
+  const aff = (fb.affirmations_a_verifier||[]).length ? '<section class="fb-bloc"><h4>Affirmations à étayer</h4><ul class="prose" style="margin:0">'+fb.affirmations_a_verifier.map(a => '<li>'+esc(a)+'</li>').join("")+'</ul></section>' : "";
   let debit;
   if(fb.wpm){
     const pos = clamp((fb.wpm - 60) / 160 * 100, 0, 100);
     const lib = fb.wpm < 120 ? "rythme lent" : fb.wpm > 180 ? "rythme rapide" : fb.wpm > 160 ? "un peu rapide" : "bon rythme";
-    debit = '<div><h4>Débit : '+fb.wpm+' mots par minute, '+lib+'</h4><div class="jauge" role="img" aria-label="Débit '+fb.wpm+' mots par minute, cible 120 à 160"><i style="left:calc('+pos+'% - 2px)"></i></div><p class="muet petit">Cible 120 à 160. Mots de remplissage : '+(fb.rempMin != null ? fb.rempMin+" par minute" : fb.nbRemp)+'.</p></div>';
+    debit = '<section class="fb-bloc"><h4>Débit : '+fb.wpm+' mots par minute, '+lib+'</h4><div class="jauge" role="img" aria-label="Débit '+fb.wpm+' mots par minute, cible 120 à 160"><i style="left:calc('+pos+'% - 2px)"></i></div><p class="muet petit">Cible 120 à 160. Mots de remplissage : '+(fb.rempMin != null ? fb.rempMin+" par minute" : fb.nbRemp)+'.</p></section>';
   } else debit = '<p class="muet petit">Débit non mesuré (réponse écrite).</p>';
-  return '<details class="fb" id="fb-'+i+'" '+(ouvert?"open":"")+'><summary><span>Feedback : '+fb.note+'/5 <span class="xp-gain">+'+(fb.xp||0)+' XP</span></span><span class="source">'+(fb.source === "gemini" ? "évaluation Gemini" : "évaluation locale (règles)")+'</span></summary>'+
-    '<div class="criteres">'+crit+'</div>'+
-    '<div><h4>Point fort</h4><p>'+esc(fb.point_fort)+'</p></div>'+
-    '<div><h4>À améliorer</h4><p>'+esc(fb.point_a_ameliorer)+'</p></div>'+
+  const ton = fb.note >= 3.8 ? "bon" : fb.note >= 2.5 ? "moyen" : "faible";
+  return '<details class="fb" id="fb-'+i+'" '+(ouvert?"open":"")+'><summary class="fb-tete"><span class="fb-note n-'+ton+'">'+fb.note+'<small>/5</small></span>'+
+    '<span class="fb-titre"><b>Ton retour</b><span class="source">'+(fb.source === "gemini" ? "Évaluation Gemini" : "Évaluation locale (règles)")+' · <span class="xp-gain">+'+(fb.xp||0)+' XP</span></span></span><span class="fb-chevron" aria-hidden="true"></span></summary>'+
+    '<div class="fb-corps">'+
+    '<section class="fb-bloc"><h4>Les 5 critères</h4><div class="criteres">'+crit+'</div></section>'+
+    '<section class="fb-bloc ton-vert"><h4>'+ic("coche")+'Point fort</h4><p>'+esc(fb.point_fort)+'</p></section>'+
+    '<section class="fb-bloc ton-orange"><h4>'+ic("cible")+'À améliorer</h4><p>'+esc(fb.point_a_ameliorer)+'</p></section>'+
     blocReponseModele(fb.reponse_modele, i, fb.rmEnCours, "msg")+
-    '<div><h4>Pistes de reformulation</h4><p>'+esc(fb.version_amelioree)+'</p></div>'+
-    '<div><h4>Vocabulaire</h4>'+voc+'</div>'+aff+debit+
+    '<section class="fb-bloc"><h4>Pistes de reformulation</h4><p>'+esc(fb.version_amelioree)+'</p></section>'+
+    '<section class="fb-bloc"><h4>Vocabulaire</h4>'+voc+'</section>'+aff+debit+
     (fb.source === "gemini" && fb.noteLocale != null ? '<p class="muet petit">Règles locales : '+fb.noteLocale+'/5.</p>' : "")+
-    '<button class="btn btn-petit" data-action="garderFiche" data-arg="'+i+'">'+ic("etoile")+'Garder '+(fb.reponse_modele ? "la réponse modèle" : "cette version")+' dans mes fiches</button></details>';
+    '<button class="btn btn-petit" data-action="garderFiche" data-arg="'+i+'">'+ic("etoile")+'Garder '+(fb.reponse_modele ? "la réponse modèle" : "cette version")+' dans mes fiches</button></div></details>';
 }
 
 /* micro */
@@ -2008,8 +2203,8 @@ function rProgression(){
   const best = {};
   sess.forEach(s => { const k = s.round ? "Round "+s.round : (s.titre||"Libre").split(" · ")[0]; if(s.nb && (best[k] == null || s.scoreMoyen > best[k])) best[k] = s.scoreMoyen; });
   const bestMod = {}; rep.forEach(r => { const k = nomModule(r.module); if(bestMod[k] == null || r.note > bestMod[k]) bestMod[k] = r.note; });
-  E().innerHTML = '<div class="entete"><h1>Progression</h1></div><div class="contenu">'+
-   '<div class="bento">'+
+  E().innerHTML = '<div class="entete"><h1>Progression</h1></div><div class="contenu grille-desk">'+
+   '<div class="bento pleine">'+
     '<div class="tuile"><span class="val">'+roundsOk+'</span><span class="lib">rounds complétés</span></div>'+
     '<div class="tuile"><span class="val">'+(r7.length ? r1(moy(r7.map(r=>r.note))) : "n/d")+'</span><span class="lib">score moyen sur 7 jours</span></div>'+
     '<div class="tuile"><span class="val">'+serieCourante()+'</span><span class="lib">jours de série</span></div>'+
@@ -2048,7 +2243,8 @@ function rModule(id){
   if(id === "automobile") extra = '<div class="carte"><h3>Vocabulaire des secteurs</h3><table class="tab"><tbody>'+VOCAB_AUTO.map(([a,b]) => '<tr><th>'+esc(a)+'</th><td>'+esc(b)+'</td></tr>').join("")+'</tbody></table></div>';
   if(id === "anglais") extra = '<div class="carte"><h3>Vocabulary (30)</h3><table class="tab"><tbody>'+VOCAB_EN.map(([a,b]) => '<tr><th lang="en">'+esc(a)+'</th><td>'+esc(b)+'</td></tr>').join("")+'</tbody></table><p class="muet petit">Reconnaissance vocale en '+esc(reglages().langueEn)+' (modifiable dans les réglages). Hésitations suivies : uh, um, like, so basically.</p></div>';
   E().innerHTML = entete(m.nom)+'<div class="contenu"><p class="muet">'+qs.length+' questions. Manager : '+esc((MANAGERS[m.manager]||MANAGERS.C).role)+'.</p>'+
-    '<div class="flex"><button class="btn btn-bleu" data-action="lancerModule" data-arg="'+id+'">S\'entraîner (5 questions)</button>'+(id === "anglais" ? '<button class="btn" data-action="lancerModuleTout" data-arg="anglais">Les 15 questions</button>' : "")+'</div>'+extra+listeQuestions(qs)+'</div>';
+    '<div class="flex"><button class="btn btn-bleu" data-action="lancerModule" data-arg="'+id+'">S\'entraîner (5 questions)</button>'+
+    '<button class="btn" data-action="questionsIA" data-arg="'+id+'"'+(geminiActif() ? "" : ' disabled title="Demande une clé Gemini active"')+'>'+ic("eclair")+'Nouvelles questions (IA)</button>'+(id === "anglais" ? '<button class="btn" data-action="lancerModuleTout" data-arg="anglais">Les 15 questions</button>' : "")+'</div>'+extra+listeQuestions(qs)+'</div>';
 }
 function rCas(){
   const qs = QB.filter(q => q.module === "cas");
@@ -2221,7 +2417,7 @@ function rReglages(){
   const R = reglages(), p = profil(), cle = cleApi(), c = compteurJour();
   const opt = (v, l, cur) => '<option value="'+v+'"'+(v===cur?" selected":"")+'>'+l+'</option>';
   const modeles = Array.from(new Set([R.modele].concat(classerModeles(R.modeles||[])).concat(MODELES_SECOURS))).filter(Boolean);
-  E().innerHTML = entete("Réglages","accueil")+'<div class="contenu">'+
+  E().innerHTML = entete("Réglages","accueil")+'<div class="contenu grille-desk">'+
    '<div class="carte groupe"><h3>Profil</h3>'+
     '<label class="champ">Prénom<input id="rg-prenom" value="'+esc(p.prenom)+'" autocomplete="given-name"></label>'+
     '<div class="grille2"><label class="champ">Date de l\'entretien<input type="date" id="rg-date" value="'+esc(p.dateEntretien)+'"></label><label class="champ">Heure (facultatif)<input type="time" id="rg-heure" value="'+esc(p.heure)+'"></label></div></div>'+
@@ -2407,9 +2603,21 @@ const ACTIONS = {
       const sel = $("#rg-modele"), cur = reglages().modele; sel.innerHTML = Array.from(new Set([cur].concat(classerModeles(ms)))).map(m => '<option'+(m===cur?" selected":"")+'>'+esc(m)+'</option>').join("");
     }catch(e){ z.innerHTML = '<span class="msg-err">'+esc(e.message || "Test impossible (réseau ?).")+'</span>'; } },
   reponseModele(el){ lancerReponseModele(Number(el.dataset.arg)); },
+  voirFb(el){ if(!S) return; S.fbSel = Number(el.dataset.arg); renderPanneau(); $$(".fb-lien").forEach(b => b.setAttribute("aria-pressed", String(Number(b.dataset.arg) === S.fbSel))); },
+  async questionsIA(el){
+    const id = el.dataset.arg; if(!geminiActif()){ toast("Ajoute une clé Gemini dans les réglages pour générer des questions."); return; }
+    const lib = el.innerHTML; el.disabled = true; el.textContent = "Gemini prépare 5 questions...";
+    try{
+      const qs = await genererQuestionsModule(id, 5);
+      const custom = {}, ids = qs.map((x, i) => { const gid = "ia-"+id+"-"+uid()+"-"+i; custom[gid] = { id:gid, module:id, round:0, niveau:"junior", type:x.type, genere:true, enonce:x.enonce, tags:[id], pieges:[],
+        attendu: x.points.length ? x.points.map(p => ({ point:p, mots_cles:motsClesPoint(p) })) : (x.type === "star" ? parseAttendu(STAR_FR) : x.type === "cas" ? parseAttendu(CAS_ATTENDU) : []) }; return gid; });
+      if(await verifierEncours()) lancerLibre(id, ids.length, ids, custom, nomModule(id)+" · questions IA");
+    }catch(e){ toast((e && e.message) || "Génération impossible."); }
+    finally{ if(document.body.contains(el)){ el.disabled = false; el.innerHTML = lib; } }
+  },
   async reponseModeleRep(el){
     const id = el.dataset.arg, rep = store.get("reponses", []), r = rep.find(x => x.id === id); if(!r) return;
-    const q = r.questionId ? qParId(r.questionId) : null;
+    const q = (r.questionId ? qParId(r.questionId) : null) || { type:r.type || "question", attendu:[], tags:[], pieges:[] };
     el.disabled = true; el.textContent = geminiActif() ? "Rédaction en cours par Gemini..." : "Préparation...";
     let res = null;
     if(geminiActif()){ try{ res = await genererReponseModele(q, r.question||"", r.texte||"", r.lang); }catch(e){ res = reponseModeleLocale(q, r.question, r.lang); if(res) res.erreur = e.message; } }
@@ -2443,7 +2651,7 @@ $("#modale").addEventListener("click", e => { if(e.target.id === "modale" && MOD
 /* ---------- Démarrage ---------- */
 function init(){
   const ICN = { accueil:"maison", entrainer:"lune", progression:"cercle", modules:"grille" };
-  $$("#nav button").forEach(b => b.innerHTML = ic(ICN[b.dataset.go])+'<span class="point"></span>');
+  $$("#nav button").forEach(b => b.innerHTML = ic(ICN[b.dataset.go])+'<span class="lib">'+esc(b.getAttribute("aria-label"))+'</span><span class="point"></span>');
   appliquerTheme(); setInterval(appliquerTheme, 60000);
   const enc = store.get("encours", null);
   if(enc){ S = enc; if(!S.fini && !S.pause){ S.ecoule += Math.max(0, (S.sauveA||Date.now()) - S.reprise); S.pause = true; } S.attente = false; if(S.fini && !S.suite){ store.del("encours"); S = null; } }
