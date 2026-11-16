@@ -145,6 +145,8 @@ html[data-theme="nuit"] .tuile-act .ic{color:#9CC2FF}
 .bulle .qui{display:block;font-size:.85rem;font-weight:700;opacity:.85;margin-bottom:2px}
 .ecrit{align-self:flex-start;color:var(--txt2);padding:4px 8px}
 .ecrit span{display:inline-block;width:8px;height:8px;border-radius:50%;background:currentColor;margin-right:4px;animation:rebond 1s infinite}
+.ecrit{display:flex;align-items:center;flex-wrap:wrap;gap:4px}
+.ecrit-txt{font-style:normal;font-size:.95rem;margin:0 8px}
 .ecrit span:nth-child(2){animation-delay:.15s}.ecrit span:nth-child(3){animation-delay:.3s}
 @keyframes rebond{0%,80%,100%{transform:translateY(0);opacity:.4}40%{transform:translateY(-5px);opacity:1}}
 .sess-bas{border-top:1px solid var(--ligne);background:var(--fond2);padding:10px 12px calc(10px + env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:8px}
@@ -954,8 +956,39 @@ function geminiActif(){
   return R.fournisseur === "gemini" && !!cleApi() && !GEM.cleRefusee && Date.now() >= GEM.localJusqua;
 }
 class ErrGem extends Error{ constructor(type, msg, extra){ super(msg); this.type=type; Object.assign(this, extra||{}); } }
-function enFile(fn){ const p = GEM.file.then(fn, fn); GEM.file = p.catch(()=>{}); return p; }
-async function attendreCreneau(){ const att = GEM.dernier + 6000 - Date.now(); if(att > 0) await new Promise(r=>setTimeout(r, att)); GEM.dernier = Date.now(); }
+/* File d'attente à deux priorités : le manager (haute) passe avant les réponses modèles (basse).
+   Une tâche basse en cours est interrompue si une tâche haute arrive, puis relancée ensuite. */
+const FILE = { haute:[], basse:[], actif:null };
+function enFile(fn, prio){
+  return new Promise((res, rej) => {
+    const t = { fn, res, rej, prio: prio === "basse" ? "basse" : "haute" };
+    FILE[t.prio].push(t);
+    if(t.prio === "haute" && FILE.actif && FILE.actif.prio === "basse" && FILE.actif.ctrl) FILE.actif.ctrl.abort("preempt");
+    pomperFile();
+  });
+}
+async function pomperFile(){
+  if(FILE.actif) return;
+  const t = FILE.haute.shift() || FILE.basse.shift(); if(!t) return;
+  FILE.actif = t; t.ctrl = new AbortController(); t.debut = Date.now();
+  try{ t.res(await t.fn(t)); }
+  catch(e){ if(e && e.type === "preempt") FILE.basse.unshift(t); else t.rej(e); }
+  finally{ FILE.actif = null; setTimeout(pomperFile, 0); }
+}
+/* Abandon par l'utilisateur de l'appel haute priorité en cours (bouton « Continuer sans attendre ») */
+function annulerAppelManager(){ if(FILE.actif && FILE.actif.prio === "haute" && FILE.actif.ctrl){ FILE.actif.ctrl.abort("user"); return true; } return false; }
+function appelEnCours(){ return FILE.actif ? { prio:FILE.actif.prio, depuis:FILE.actif.debut } : null; }
+async function attendreCreneau(signal){
+  const att = GEM.dernier + 6000 - Date.now();
+  if(att > 0) await new Promise((r, j) => { const to = setTimeout(r, att); if(signal) signal.addEventListener("abort", () => { clearTimeout(to); r(); }, { once:true }); });
+  GEM.dernier = Date.now();
+}
+function errAbort(signal){
+  const r = signal && signal.reason;
+  if(r === "preempt") return new ErrGem("preempt", "Interrompu par un appel prioritaire.");
+  if(r === "user") return new ErrGem("annule", "Gemini ignoré pour cette réponse : question suivante en mode local.");
+  return new ErrGem("lent", "Gemini a mis trop de temps à répondre, mode local pour cette réponse.");
+}
 function lireTexte(data){
   const parts = (((data||{}).candidates||[])[0]||{}).content ? data.candidates[0].content.parts || [] : [];
   return parts.filter(p => !p.thought).map(p => p.text || "").join("").replace(/^\s*```(?:json)?\s*/i,"").replace(/\s*```\s*$/,"").trim();
@@ -973,22 +1006,28 @@ async function avisConfidentialite(){
 }
 async function geminiJSON(systeme, contents, opts={}){
   if(!(await avisConfidentialite())) throw new ErrGem("refus", "Appel annulé, mode local.");
-  return enFile(async () => {
+  const delaiMax = opts.delai || (opts.priorite === "basse" ? 45000 : 25000);
+  return enFile(async (tache) => {
     const R = reglages(); const cle = cleApi();
+    const signal = tache.ctrl.signal;
+    const minuteur = setTimeout(() => tache.ctrl.abort("timeout"), delaiMax);
+    try{
     let modeles = chaineModeles(R.modele, GEM.dispo || R.modeles);
     let derniereErr = null, listeChargee = !!GEM.dispo;
     for(let idx = 0; idx < modeles.length && idx < 6; idx++){
       const m = modeles[idx];
-      let avecThinking = true;
-      for(let essai = 0; essai < 3; essai++){
+      const options = optionsReflexion(m);
+      let iRef = GEM.reflexionOK && GEM.reflexionOK[m] != null ? GEM.reflexionOK[m] : 0;
+      for(let essai = 0; essai < 4; essai++){
         const gen = { temperature: opts.temperature ?? 0.7, responseMimeType:"application/json" };
-        if(avecThinking){ const tc = configReflexion(m); if(tc) gen.thinkingConfig = tc; }
+        const tc = options[Math.min(iRef, options.length-1)]; if(tc) gen.thinkingConfig = tc;
         const corps = { systemInstruction:{ parts:[{ text:systeme }] }, contents, generationConfig:gen };
-        await attendreCreneau();
+        await attendreCreneau(signal);
+        if(signal.aborted) throw errAbort(signal);
         let res;
         try{
-          res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+encodeURIComponent(m)+":generateContent", { method:"POST", headers:{ "Content-Type":"application/json", "x-goog-api-key":cle }, body:JSON.stringify(corps) });
-        }catch(e){ throw new ErrGem("reseau", "Réseau indisponible, mode local pour cette réponse."); }
+          res = await fetch("https://generativelanguage.googleapis.com/v1beta/models/"+encodeURIComponent(m)+":generateContent", { method:"POST", headers:{ "Content-Type":"application/json", "x-goog-api-key":cle }, body:JSON.stringify(corps), signal });
+        }catch(e){ if(signal.aborted) throw errAbort(signal); throw new ErrGem("reseau", "Réseau indisponible, mode local pour cette réponse."); }
         if(res.status === 404){
           GEM.dernier = 0; /* un 404 ne consomme pas de quota : on essaie le suivant tout de suite */
           derniereErr = new ErrGem("modele", "Aucun modèle Gemini accessible avec cette clé (dernier essai : "+m+"). Va dans Réglages, puis « Tester la clé ».");
@@ -1006,13 +1045,13 @@ async function geminiJSON(systeme, contents, opts={}){
         }
         if(res.status === 400 || res.status === 401 || res.status === 403){
           let msg = ""; try{ const j = await res.json(); msg = (j.error||{}).message || ""; }catch(e){}
-          if(/thinking/i.test(msg) && avecThinking){ avecThinking = false; continue; }
+          if(/thinking/i.test(msg) && iRef < options.length-1){ iRef++; continue; }
           if(res.status === 400 && /not found|not supported|deprecated|no longer|unknown model|invalid model/i.test(msg)){ GEM.dernier = 0; derniereErr = new ErrGem("modele", "Modèle "+m+" indisponible : "+msg.slice(0,100)); break; }
           if(res.status !== 400 || /api key|api_key|permission|unauth/i.test(msg)){ GEM.cleRefusee = true; throw new ErrGem("cle", "Clé refusée par Google AI Studio. Vérifie-la dans les réglages."); }
           throw new ErrGem("requete", "Requête refusée par Gemini ("+msg.slice(0,120)+").");
         }
         if(!res.ok){ derniereErr = new ErrGem("serveur", "Gemini indisponible (erreur "+res.status+")."); break; }
-        let data; try{ data = await res.json(); }catch(e){ derniereErr = new ErrGem("json","Réponse illisible."); continue; }
+        let data; try{ data = await res.json(); }catch(e){ if(signal.aborted) throw errAbort(signal); derniereErr = new ErrGem("json","Réponse illisible."); continue; }
         if((data.promptFeedback||{}).blockReason) throw new ErrGem("bloque", "Réponse bloquée par le filtre de Gemini, évaluation locale.");
         const c0 = (data.candidates||[])[0];
         if(!c0 || c0.finishReason === "SAFETY") throw new ErrGem("bloque", "Réponse bloquée par le filtre de Gemini, évaluation locale.");
@@ -1020,7 +1059,7 @@ async function geminiJSON(systeme, contents, opts={}){
         try{
           const obj = JSON.parse(txt);
           if(m !== reglages().modele){ majReglages({ modele:m }); if(typeof toast === "function") toast("Modèle Gemini choisi automatiquement : "+m); }
-          GEM.modeleOK = m;
+          GEM.modeleOK = m; GEM.reflexionOK = GEM.reflexionOK || {}; GEM.reflexionOK[m] = iRef;
           return { obj, modele: m };
         }
         catch(e){ derniereErr = new ErrGem("json", "JSON invalide renvoyé par Gemini."); if(essai >= 1) break; }
@@ -1028,7 +1067,8 @@ async function geminiJSON(systeme, contents, opts={}){
       if(derniereErr && derniereErr.type === "json") throw new ErrGem("json", "JSON invalide après une nouvelle tentative, évaluation locale.");
     }
     throw derniereErr || new ErrGem("modele", "Aucun modèle disponible.");
-  });
+    } finally { clearTimeout(minuteur); }
+  }, opts.priorite);
 }
 /* Choix du modèle : on ne suppose plus qu'un nom fixe existe, on part de la liste que la clé autorise */
 const MODELES_SECOURS = ["gemini-flash-latest", "gemini-flash-lite-latest", "gemini-2.5-flash", "gemini-2.5-flash-lite"];
@@ -1052,6 +1092,14 @@ function chaineModeles(choisi, dispo){
   return res.length ? res : uniq;
 }
 function meilleurModele(dispo){ return classerModeles(dispo)[0] || null; }
+/* Réflexion au minimum pour la vitesse ; on descend la liste si le modèle refuse un réglage */
+function optionsReflexion(m){
+  if(/gemini-2\.5-flash/.test(m)) return [{ thinkingBudget: 0 }, null];
+  if(/gemini-2\.5-pro/.test(m)) return [{ thinkingBudget: 128 }, null];
+  if(/flash/.test(m) && (/latest/.test(m) || Number((m.match(/gemini-(\d+)/)||[])[1]) >= 3)) return [{ thinkingLevel: "minimal" }, { thinkingLevel: "low" }, null];
+  if(/latest/.test(m) || Number((m.match(/gemini-(\d+)/)||[])[1]) >= 3) return [{ thinkingLevel: "low" }, null];
+  return [null];
+}
 function configReflexion(m){
   if(/gemini-2\.5-flash/.test(m)) return { thinkingBudget: 0 };
   if(/gemini-2\.5-pro/.test(m)) return { thinkingBudget: 128 };
@@ -1191,7 +1239,7 @@ async function genererReponseModele(q, question, texte, lang){
     "\nPoints attendus : "+(q && q.attendu && q.attendu.length ? q.attendu.map(a => a.point).join(", ") : "non précisés")+
     "\nPièges à éviter : "+pieges+"\nRéponse du candidat : "+texte+
     "\nProfil du candidat : "+profilCandidat()+"\nProjets du candidat : "+projetsJSON();
-  const { obj, modele } = await geminiJSON(systeme, [{ role:"user", parts:[{ text:contenu }] }], { temperature:0.5 });
+  const { obj, modele } = await geminiJSON(systeme, [{ role:"user", parts:[{ text:contenu }] }], { temperature:0.5, priorite:"basse" });
   if(!obj || typeof obj.reponse_modele !== "string" || obj.reponse_modele.trim().length < 40) throw new ErrGem("json", "Réponse modèle vide renvoyée par Gemini.");
   return { texte:sansTiret(obj.reponse_modele.trim()), pourquoi:(Array.isArray(obj.pourquoi) ? obj.pourquoi : []).slice(0,3).map(sansTiret), source:"gemini", modele };
 }
@@ -1215,7 +1263,7 @@ async function genererQuestionsModule(moduleId, n){
   const en = moduleId === "anglais";
   const connues = QB.filter(q => q.module === moduleId).map(q => q.enonce.slice(0, 90)).slice(0, 25).join(" | ") || "aucune";
   const sys = remplir(PROMPT_QUESTIONS, { N:n || 5, MODULE:m.nom, DESC:m.desc || "", LANGUE: en ? "anglais" : "français", PROFIL:profilCandidat(), PROJETS:projetsJSON(), CONNUES:connues });
-  const { obj } = await geminiJSON(sys, [{ role:"user", parts:[{ text: en ? "Generate the questions." : "Génère les questions." }] }], { temperature:0.9 });
+  const { obj } = await geminiJSON(sys, [{ role:"user", parts:[{ text: en ? "Generate the questions." : "Génère les questions." }] }], { temperature:0.9, delai:60000 });
   const qs = (obj && Array.isArray(obj.questions) ? obj.questions : []).filter(x => x && typeof x.enonce === "string" && x.enonce.trim().length > 10).slice(0, n || 5);
   if(!qs.length) throw new ErrGem("json", "Gemini n'a renvoyé aucune question exploitable.");
   return qs.map(x => ({ enonce:sansTiret(x.enonce.trim()), type:["question","star","cas"].includes(x.type) ? x.type : "question",
@@ -1781,7 +1829,8 @@ async function envoyer(meta){
   S.msgs.push(msg);
   const ev = evaluerLocal(texte, q, { lang:S.lang, duree, questionTexte });
   const plan = planifier(S, texte, ev, meta);
-  S.attente = true; renderFil();
+  S.attente = true; S.attenteDepuis = Date.now(); renderFil();
+  const tAttente = setInterval(majAttente, 1000);
   let fb = ev, texteM = null, gemErr = null, obj = null;
   if(geminiActif()){
     S.hist.push({ role:"user", parts:[{ text:(S.lang === "en" ? "Candidate's answer: " : "Réponse du candidat : ")+texte }] });
@@ -1790,6 +1839,7 @@ async function envoyer(meta){
   } else if(reglages().fournisseur === "gemini" && cleApi() && Date.now() < GEM.localJusqua){
     gemErr = { message:"Mode local (quota gratuit) encore "+Math.ceil((GEM.localJusqua-Date.now())/60000)+" min." , type:"quota" };
   }
+  clearInterval(tAttente); S && (S.attenteDepuis = 0);
   if(!S || S.fini) return;
   let fin = plan.kind === "fin";
   if(texteM){
@@ -1949,6 +1999,7 @@ function tick(){
     S.msgs.push({ qui:"m", texte:t }); renderFil(); VOIX.parler(t, S.lang);
     setTimeout(() => finRound("temps"), 1500); return;
   }
+  majAttente();
   if(S.attente) return;
   const lim = limiteReponse(S), ta = $("#saisie");
   if(lim){
@@ -1979,9 +2030,19 @@ function renderFil(){
     if(m.fb) n++;
     const lien = m.fb ? '<button class="fb-lien" data-action="voirFb" data-arg="'+i+'" aria-pressed="'+(i === S.fbSel)+'">'+ic("graphique")+'Retour n°'+n+' : <b>'+m.fb.note+'/5</b></button>' : "";
     return '<div class="bulle c"><span class="qui">Toi'+(m.interrompu?" (interrompu)":"")+'</span>'+esc(m.texte)+'</div>'+(m.fb ? (desk ? lien : carteFeedback(m.fb, i, i === derFb)) : "");
-  }).join("") + (S.attente && !S.fini ? '<div class="ecrit" aria-label="Le manager réfléchit"><span></span><span></span><span></span></div>' : "");
+  }).join("") + (S.attente && !S.fini ? '<div class="ecrit" aria-label="Le manager réfléchit"><span></span><span></span><span></span><em class="ecrit-txt" id="ecrit-txt"></em><button class="btn btn-petit cache" id="ecrit-stop" data-action="sansGemini">Continuer sans attendre Gemini</button></div>' : "");
   f.scrollTop = f.scrollHeight;
+  majAttente();
   renderPanneau();
+}
+/* Indicateur d'attente : durée écoulée, et bouton pour continuer sans Gemini après 8 secondes */
+function majAttente(){
+  const t = $("#ecrit-txt"), b = $("#ecrit-stop"); if(!t || !S) return;
+  const a = appelEnCours();
+  if(!S.attente || !S.attenteDepuis){ t.textContent = ""; return; }
+  const sec = Math.round((Date.now() - S.attenteDepuis) / 1000);
+  t.textContent = a && a.prio === "haute" ? "Gemini prépare la réponse du manager... "+sec+" s" : sec >= 2 ? "En file d'attente Gemini... "+sec+" s" : "";
+  if(b) b.classList.toggle("cache", !(sec >= 8 && a && a.prio === "haute"));
 }
 function renderPanneau(){
   const p = $("#panneau"); if(!p || !S) return;
@@ -2104,7 +2165,7 @@ async function demanderDebriefGemini(id){
   if(!transcript){ toast("Rien à analyser."); return; }
   const sys = "Tu es le module de débrief de l'application Harnais. Contexte : entretien pour un poste de Digital Analytics Consultant (CDI, Paris) chez fifty-five, cabinet de conseil en data et technologie pour le marketing. Profil du candidat, seule source de faits : "+profilCandidat()+" Projets : "+projetsJSON()+" Tu ne joues plus le manager : tu fais un débrief honnête, précis et bienveillant, en français, avec des exemples tirés de ses réponses. N'invente aucun chiffre. N'utilise jamais de tiret long ni de demi-cadratin. Réponds uniquement avec un objet JSON valide : {\"score_global\": 0 à 5, \"forces\": [3 phrases], \"axes\": [3 phrases], \"exercice_demain\": \"une phrase\", \"phrase_cle\": \"une phrase à retenir\"}";
   try{
-    const { obj } = await geminiJSON(sys, [{ role:"user", parts:[{ text:"Transcription :\n"+transcript }] }], { temperature:0.4 });
+    const { obj } = await geminiJSON(sys, [{ role:"user", parts:[{ text:"Transcription :\n"+transcript }] }], { temperature:0.4, delai:60000 });
     const ok = obj && Array.isArray(obj.forces) && Array.isArray(obj.axes) && obj.forces.length && obj.axes.length && isFinite(Number(obj.score_global));
     if(!ok) throw new ErrGem("json","Débrief Gemini incomplet, débrief local conservé.");
     const d = { score_global:clamp(r1(Number(obj.score_global)),0,5), forces:obj.forces.slice(0,3).map(sansTiret), axes:obj.axes.slice(0,3).map(sansTiret), exercice_demain:sansTiret(obj.exercice_demain||""), phrase_cle:sansTiret(obj.phrase_cle||""), source:"gemini" };
@@ -2260,7 +2321,7 @@ async function genererCas(){
   toast("Génération du cas en cours...");
   const sys = "Tu génères des cas pratiques d'entretien pour un poste de Digital Analytics Consultant chez fifty-five (équipe automobile, mobilité, industrie, média et divertissement). Réponds uniquement avec un objet JSON valide : {\"titre\": \"...\", \"secteur\": \"...\", \"enonce\": \"3 à 5 phrases qui posent un problème mesurable, avec des chiffres présentés comme fictifs\"}. Pas de tiret long, pas de markdown. Le cas doit demander un diagnostic puis une recommandation.";
   try{
-    const { obj } = await geminiJSON(sys, [{ role:"user", parts:[{ text:"Génère un nouveau cas pour le secteur : "+sec+". Évite ces cas déjà connus : "+QB.filter(q => q.module === "cas").map(q => q.enonce.slice(0,70)).join(" | ") }] }], { temperature:0.9 });
+    const { obj } = await geminiJSON(sys, [{ role:"user", parts:[{ text:"Génère un nouveau cas pour le secteur : "+sec+". Évite ces cas déjà connus : "+QB.filter(q => q.module === "cas").map(q => q.enonce.slice(0,70)).join(" | ") }] }], { temperature:0.9, delai:60000 });
     if(!obj || typeof obj.enonce !== "string" || obj.enonce.length < 30) throw new ErrGem("json","Cas généré invalide, réessaie ou tire un cas de la banque.");
     const id = "gen-"+uid();
     const q = { id, module:"cas", round:0, niveau:"junior", type:"cas", enonce:sansTiret((obj.titre ? obj.titre+" : " : "")+obj.enonce), tags:["cas","genere"], attendu:parseAttendu(CAS_ATTENDU), pieges:[] };
@@ -2603,6 +2664,7 @@ const ACTIONS = {
       const sel = $("#rg-modele"), cur = reglages().modele; sel.innerHTML = Array.from(new Set([cur].concat(classerModeles(ms)))).map(m => '<option'+(m===cur?" selected":"")+'>'+esc(m)+'</option>').join("");
     }catch(e){ z.innerHTML = '<span class="msg-err">'+esc(e.message || "Test impossible (réseau ?).")+'</span>'; } },
   reponseModele(el){ lancerReponseModele(Number(el.dataset.arg)); },
+  sansGemini(){ if(!annulerAppelManager()) toast("Aucun appel en cours."); },
   voirFb(el){ if(!S) return; S.fbSel = Number(el.dataset.arg); renderPanneau(); $$(".fb-lien").forEach(b => b.setAttribute("aria-pressed", String(Number(b.dataset.arg) === S.fbSel))); },
   async questionsIA(el){
     const id = el.dataset.arg; if(!geminiActif()){ toast("Ajoute une clé Gemini dans les réglages pour générer des questions."); return; }
