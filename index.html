@@ -447,6 +447,10 @@ html[data-theme="nuit"] .lex-ecoute{color:#9CC2FF}
 .entraine{padding:14px 16px;border-radius:14px;background:var(--carte);border:2px solid var(--bleu)}
 .entraine textarea{width:100%;box-sizing:border-box;min-height:110px;border-radius:12px;border:1px solid var(--ligne);background:var(--champ);color:var(--txt);font:inherit;font-size:1.02rem;line-height:1.5;padding:10px 12px;resize:vertical}
 .rep-type-fr{margin-top:6px}
+.qc-panneau .rep-type{border-radius:var(--r);box-shadow:var(--ombre)}
+.qc-affiche .qc-panneau .rep-type p{font-size:.92rem;line-height:1.5}
+.qc-affiche .qc-panneau .rep-type .rep-type-txt{font-size:1.08rem;line-height:1.6}
+.qc-questions .qc-pan-bloc{box-shadow:none}
 .qc-affiche .entraine p,.qc-affiche .coach p{font-size:1rem}
 .qc-affiche .coach .rm-texte{font-size:1.08rem}
 .rep-type-fr>summary{cursor:pointer;font-weight:700;color:var(--txt2)}
@@ -1056,7 +1060,7 @@ const PLAN_EXEMPLE = [
    Chaque étape : [titre court, "mot-clé|mot-clé", "phrase de développement"].
    annonce : facultative (sinon construite à partir des titres).
    ===================================================================== */
-const VERSION_APP = "17 nov. 2026, n°13"; /* à changer à chaque mise en ligne, visible dans Réglages et Quel cas */
+const VERSION_APP = "17 nov. 2026, n°14"; /* à changer à chaque mise en ligne, visible dans Réglages et Quel cas */
 const FAMILLES_METHODES = [
   { id:"tracking", nom:"Tracking", ic:"etiquette" },
   { id:"cro", nom:"CRO et média", ic:"cible" },
@@ -3520,14 +3524,14 @@ function renderAffichageQC(){
       '<button class="btn btn-petit" data-action="pleinEcranQC">'+ic("grille")+'Plein écran <kbd>F</kbd></button>'+
       '<button class="btn btn-petit" data-action="aideClavier" aria-label="Raccourcis clavier"><kbd>?</kbd></button></div></div>'+
     '<h2 class="qc-titre">'+esc(m.titre)+'</h2>'+
-    blocQuestionFiche(m)+blocPlanFiche(m)+blocEntrainementQC(m)+
+    blocQuestionFiche(m)+blocPlanFiche(m)+
     '<div class="annonce-meth"><p>« '+esc(annonceMethode(m))+' »</p><button class="btn btn-petit" data-action="copierAnnonce" data-arg="'+m.id+'">'+ic("copier")+'Copier</button>'+'<button class="btn btn-petit" data-action="ecouterAnnonce" data-arg="'+m.id+'">'+ic("lecture")+tr("ecouter")+'</button>'+'</div>'+
     '<ol class="qc-etapes">'+m.etapes.map((e, i) => '<li data-i="'+i+'" data-action="selEtapeQC" class="'+(QC.etapeSel === i ? "selection " : "")+(notes[String(i)] ? "a-note" : "")+'"><span class="etape-num">'+(i+1)+'</span><span class="qc-et-corps"><span class="qc-et-ligne"><button class="qc-et-titre" data-action="selEtapeQC" aria-pressed="'+(QC.etapeSel === i)+'">'+esc(e[0])+'</button><span class="qc-note-marque" title="Cette étape a une note" aria-label="Note">'+ic("crayon")+'</span>'+
       '<button class="qc-info qc-info-inline" data-action="defEtapeQC" aria-expanded="false" aria-label="Définition de l\'étape '+(i+1)+' : '+esc(e[0])+'">i</button></span>'+
       '<span class="qc-mc">'+esc(String(e[1]||"").split("|").join(" · "))+'</span><span class="qc-def">'+esc(e[2]||"")+'</span></span></li>').join("")+'</ol>'+
     blocPiegesFiche(m)+
     '<div class="fb-bloc ton-vert"><h4>'+ic("drapeau")+tr("conclusion")+'</h4><p>« '+esc(m.conclusion||"")+' »</p></div>'+
-    blocReponseType(m, true)+blocMotsFiche(m)+
+    '<div id="qc-questions" class="qc-questions"></div>'+blocMotsFiche(m)+
   '</div><aside class="qc-panneau" id="qc-panneau" aria-label="Notes et questions probables"></aside></div>'+histo;
   renderPanneauQC();
   brancherEntrainementQC();
@@ -3703,7 +3707,13 @@ function renderPanneauQC(){
         '<small id="qc-note-etat">Enregistré automatiquement sur cet ordinateur.</small></label></section>'
     : '<section class="qc-pan-bloc qc-pan-vide">'+ic("crayon")+'<p><b>Clique sur une étape</b> pour voir sa définition et ajouter tes notes.</p></section>';
   const qs = questionsCas(m.id);
-  const blocQ = '<section class="qc-pan-bloc"><h3>'+tr("questions")+'</h3>'+
+  p.innerHTML = blocEtape + blocReponseType(m, true);
+  renderQuestionsQC();
+  brancherNoteQC();
+}
+function htmlQuestionsQC(m){
+  const qs = questionsCas(m.id);
+  return '<section class="qc-pan-bloc"><h3>'+tr("questions")+'</h3>'+
     '<ul class="qc-pan-q">'+qs.map(x => '<li><span class="qc-pan-q-txt">« '+esc(x.q)+' »'+
         (x.src === "ia" ? ' <span class="qc-tag">IA</span>' : x.src === "perso" ? ' <span class="qc-tag">perso</span>' : "")+'</span>'+
         (x.p ? '<span class="qc-pan-piste">'+esc(x.p)+'</span>' : "")+
@@ -3714,7 +3724,12 @@ function renderPanneauQC(){
       '<button class="btn btn-petit btn-bleu" data-action="ajoutQuestionQC">Ajouter</button></details>'+
     (geminiActif() ? '<button class="btn btn-petit" data-action="questionsIAQC" id="qc-btn-ia">'+ic("eclair")+'D\'autres questions (IA)</button>' : '<p class="muet petit">Avec une clé Gemini active, un bouton propose d\'autres questions adaptées à ton parcours.</p>')+
   '</section>';
-  p.innerHTML = blocEtape + blocQ;
+}
+function renderQuestionsQC(){
+  const z = $("#qc-questions"), m = METHODES.find(x => x.id === QC.affiche);
+  if(z) z.innerHTML = m ? htmlQuestionsQC(m) : "";
+}
+function brancherNoteQC(){
   const t = $("#qc-note");
   if(t) t.addEventListener("input", () => {
     majNoteEtape(t.dataset.code, Number(t.dataset.i), t.value);
@@ -3749,11 +3764,11 @@ Object.assign(ACTIONS, {
     const q = ($("#qc-q-new").value || "").trim(), p = ($("#qc-p-new").value || "").trim();
     if(!q){ toast("Écris d'abord la question."); return; }
     const o = store.get("questionsPerso", {}) || {}; (o[QC.affiche] = o[QC.affiche] || []).push({ q, p }); store.set("questionsPerso", o);
-    renderPanneauQC(); toast("Question ajoutée.");
+    renderQuestionsQC(); toast("Question ajoutée.");
   },
   supprQuestionQC(el){
     const o = store.get("questionsPerso", {}) || {}; const l = o[QC.affiche] || []; l.splice(Number(el.dataset.arg), 1);
-    if(l.length) o[QC.affiche] = l; else delete o[QC.affiche]; store.set("questionsPerso", o); renderPanneauQC();
+    if(l.length) o[QC.affiche] = l; else delete o[QC.affiche]; store.set("questionsPerso", o); renderQuestionsQC();
   },
   async questionsIAQC(el){
     const m = METHODES.find(x => x.id === QC.affiche); if(!m) return;
@@ -3761,7 +3776,7 @@ Object.assign(ACTIONS, {
     try{
       const qs = await genererQuestionsCasIA(m);
       const o = store.get("questionsIA", {}) || {}; o[m.id] = (o[m.id] || []).concat(qs).slice(-12); store.set("questionsIA", o);
-      if(QC.affiche === m.id) renderPanneauQC();
+      if(QC.affiche === m.id) renderQuestionsQC();
       toast(qs.length + " questions ajoutées par Gemini.");
     }catch(e){ toast((e && e.message) || "Génération impossible."); if(document.body.contains(el)){ el.disabled = false; el.textContent = "D'autres questions (IA)"; } }
   }
@@ -4260,12 +4275,12 @@ const REPONSES_TYPES = {
 function reponseType(code){ const r = REPONSES_TYPES[code]; return r ? (langueMeth() === "en" ? r.en : r.fr) : ""; }
 function blocReponseType(m, ouvert){
   const r = REPONSES_TYPES[m.id]; if(!r) return "";
-  return '<details class="fb-bloc rep-type"'+(ouvert ? " open" : "")+'><summary><h4>'+ic("texte")+'Réponse type en anglais simple</h4></summary>'+
-    '<p class="muet petit">Un exemple pour t\'aider à parler avec tes mots, pas un texte à réciter.</p>'+
-    '<p class="rep-type-txt" lang="en">'+esc(r.en)+'</p>'+
-    '<div class="flex"><button class="btn btn-petit" data-action="copierReponseType" data-arg="'+m.id+'">'+ic("copier")+'Copy</button>'+
-    '<button class="btn btn-petit" data-action="ecouterReponseType" data-arg="'+m.id+'">'+ic("lecture")+'Listen</button></div>'+
-    '<details class="rep-type-fr"><summary>Version française</summary><p class="rep-type-txt">'+esc(r.fr)+'</p></details></details>';
+  const en = langueMeth() === "en";
+  return '<details class="fb-bloc rep-type"'+(ouvert ? " open" : "")+'><summary><h4>'+ic("texte")+(en ? "Model answer (simple English)" : "Réponse type")+'</h4></summary>'+
+    '<p class="muet petit">'+(en ? "An example to help you speak with your own words. Not a script." : "Un exemple pour t\'aider à parler avec tes mots, pas un texte à réciter.")+'</p>'+
+    '<p class="rep-type-txt"'+(en ? ' lang="en"' : "")+'>'+esc(en ? r.en : r.fr)+'</p>'+
+    '<div class="flex"><button class="btn btn-petit" data-action="copierReponseType" data-arg="'+m.id+'">'+ic("copier")+(en ? "Copy" : "Copier")+'</button>'+
+    '<button class="btn btn-petit" data-action="ecouterReponseType" data-arg="'+m.id+'">'+ic("lecture")+tr("ecouter")+'</button></div></details>';
 }
 /* Durée des derniers appels Gemini, affichée dans Réglages */
 function libDureesGemini(){
@@ -4275,8 +4290,8 @@ function libDureesGemini(){
   return '<p class="muet petit">Derniers appels Gemini : '+d.map(x => s(x.total)+(x.total - x.gemini > 1500 ? " (dont "+s(x.total - x.gemini)+" d'attente)" : "")+", "+esc(x.m)).join(" ; ")+'.</p>';
 }
 Object.assign(ACTIONS, {
-  copierReponseType(el){ const r = REPONSES_TYPES[el.dataset.arg]; if(r) copier(r.en); },
-  ecouterReponseType(el){ const r = REPONSES_TYPES[el.dataset.arg]; if(r){ VOIX.taire(); VOIX.parler(r.en, "en"); } }
+  copierReponseType(el){ const r = REPONSES_TYPES[el.dataset.arg]; if(r) copier(langueMeth() === "en" ? r.en : r.fr); },
+  ecouterReponseType(el){ const r = REPONSES_TYPES[el.dataset.arg]; if(r){ VOIX.taire(); const en = langueMeth() === "en"; VOIX.parler(en ? r.en : r.fr, en ? "en" : "fr"); } }
 });
 
 /* =====================================================================
@@ -4367,7 +4382,6 @@ function ouvrirAideClavier(){
     l('<kbd>1</kbd> à <kbd>9</kbd>', "Aller directement à une étape")+
     l('<kbd>Espace</kbd>', "Déplier ou replier la définition de l'étape")+
     l('<kbd>N</kbd>', "Écrire une note sur l'étape (Échap pour sortir)")+
-    l('<kbd>M</kbd>', "Écrire ou dicter ma réponse, puis Corriger (Échap pour sortir)")+
     l('<kbd>R</kbd>', "Descendre à la réponse type, de A à Z")+
     l('<kbd>L</kbd>', "Écouter l'étape choisie, sinon la réponse type")+
     l('<kbd>←</kbd> <kbd>→</kbd>', "Cas précédent ou suivant dans l'historique")+
@@ -4413,7 +4427,7 @@ function choisirEtapeClavier(i){
   return true;
 }
 function allerReponseType(){
-  const r = document.querySelector(".feuille-meth .rep-type") || document.querySelector(".qc-aff-main .rep-type");
+  const r = document.querySelector(".feuille-meth .rep-type") || document.querySelector(".qc-affiche .rep-type");
   if(!r) return false;
   r.open = true;
   defilerVers(r, "start", () => { const s = r.querySelector("summary"); if(s) try{ s.focus({ preventScroll:true }); }catch(e){} });
@@ -4475,7 +4489,6 @@ document.addEventListener("keydown", e => {
     return;
   }
   if(lettre === "N"){ e.preventDefault(); if(sel == null) choisirEtapeClavier(0); const t = $("#qc-note"); if(t){ t.focus(); flashTouche("N", tr("notes")); } return; }
-  if(lettre === "M"){ e.preventDefault(); const t = $("#qc-rep"); if(t){ t.focus({ preventScroll:true }); defilerVers(t, "nearest"); flashTouche("M", "Ma réponse"); } return; }
   if(lettre === "R"){ e.preventDefault(); if(allerReponseType()) flashTouche("R", "Réponse type"); return; }
   if(lettre === "L"){
     e.preventDefault();
@@ -4687,7 +4700,8 @@ const FICHES = {
 
 function blocQuestionFiche(m){
   const f = FICHES[m.id]; if(!f) return "";
-  return '<div class="fiche-q"><span class="fiche-lbl">Question possible</span><p>'+esc(f.qFr)+'</p><p class="fiche-q-en" lang="en">'+esc(f.qEn)+'</p></div>';
+  const en = langueMeth() === "en";
+  return '<div class="fiche-q"><span class="fiche-lbl">'+(en ? "Possible question" : "Question possible")+'</span><p'+(en ? ' lang="en"' : "")+'>'+esc(en ? f.qEn : f.qFr)+'</p></div>';
 }
 function blocPlanFiche(m){
   return '<div class="fiche-plan"><span class="fiche-lbl">'+(langueMeth() === "en" ? "Plan" : "Plan à retenir")+'</span><ol>'+
@@ -4702,8 +4716,8 @@ function blocPiegesFiche(m){
     (items.length === 1 ? '<p>'+esc(items[0])+'</p>' : '<ul class="fiche-vig">'+items.map(x => '<li>'+esc(x)+'</li>').join("")+'</ul>')+'</div>';
 }
 function blocMotsFiche(m){
-  const f = FICHES[m.id]; if(!f || !f.mots) return "";
-  return '<div class="fiche-mots"><span class="fiche-lbl">Mots utiles</span><ul>'+f.mots.map(x => '<li><b lang="en">'+esc(x[0])+'</b><span>'+esc(x[1])+'</span></li>').join("")+'</ul></div>';
+  const f = FICHES[m.id]; if(!f || !f.mots || langueMeth() !== "en") return "";
+  return '<div class="fiche-mots"><span class="fiche-lbl">Useful words</span><ul>'+f.mots.map(x => '<li><b lang="en">'+esc(x[0])+'</b><span>'+esc(x[1])+'</span></li>').join("")+'</ul></div>';
 }
 
 /* ---------- Coach dans l'Affichage : ma réponse, puis correction ---------- */
