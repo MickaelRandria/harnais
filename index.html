@@ -582,6 +582,22 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-width:1.6e
 .qc-f-consulting{--accent:#8B6CE0;--accent-txt:#5B3FB8}
 .qc-f-ia{--accent:#14A38B;--accent-txt:#0B6E5E}
 .qc-f-moi{--accent:#E0567A;--accent-txt:#A3274A}
+.qc-f-server{--accent:#5A6B8C;--accent-txt:#3B4A6B}
+html[data-theme="nuit"] .qc-f-server{--accent-txt:#B8C6E6}
+.ss-liste{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:6px;line-height:1.55}
+.ss-archi{margin:0;padding-left:1.4em;display:flex;flex-direction:column;gap:8px}
+.ss-archi li{display:flex;flex-direction:column;line-height:1.5}
+.ss-pas{margin:0;color:var(--txt2)}
+.ss-usages{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:10px}
+.ss-usages li{display:flex;flex-direction:column;align-items:flex-start;gap:4px;padding-bottom:10px;border-bottom:1px solid var(--ligne)}
+.ss-usages li span{line-height:1.5}
+.ss-phrase{padding:14px 16px;border-radius:16px;background:var(--marine);color:#fff;display:flex;flex-direction:column;align-items:flex-start;gap:8px}
+.ss-phrase .fiche-lbl{color:#F6D5B5;margin:0}
+.ss-phrase p{margin:0;font-weight:700;line-height:1.5}
+.ss-lien{padding:12px 14px;border-radius:14px;background:rgba(90,107,140,.1);border:1px solid rgba(90,107,140,.4)}
+.ss-lien h4{color:var(--txt2)}
+.serverside{gap:14px}
+.qc-affiche .ss-liste,.qc-affiche .ss-archi,.qc-affiche .ss-usages{font-size:clamp(1.05rem,1.4vw,1.2rem)}
 html[data-theme="nuit"] .qc-f-moi{--accent-txt:#FF9DB6}
 html[data-theme="nuit"] .qc-f-ia{--accent-txt:#6FE0CB}
 html[data-theme="nuit"] .qc-famille,html[data-theme="nuit"] .qc-f-tracking{--accent-txt:#9CC2FF}
@@ -609,8 +625,8 @@ html[data-theme="nuit"] .qc-info:hover{color:#9CC2FF;border-color:#9CC2FF}
 .qc-fiche-quand{margin:0;color:var(--txt2)}
 .qc-fiche-etapes{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:8px;line-height:1.5}
 /* Vue « Par famille » (portrait) */
-.qc-fam-onglets{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;padding:4px;border-radius:14px;background:var(--fond2);border:1px solid var(--ligne);margin-bottom:10px}
-.qc-fam-onglets button{min-height:44px;border:0;border-radius:10px;background:transparent;color:var(--txt);font:inherit;font-size:.95rem;font-weight:800;cursor:pointer}
+.qc-fam-onglets{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:4px;padding:4px;border-radius:14px;background:var(--fond2);border:1px solid var(--ligne);margin-bottom:10px}
+.qc-fam-onglets button{min-height:44px;padding:0 2px;border:0;border-radius:10px;background:transparent;color:var(--txt);font:inherit;font-size:.82rem;font-weight:800;cursor:pointer;line-height:1.15}
 .qc-fam-onglets button[aria-pressed="true"]{background:var(--bleu);color:#fff}
 .qc-liste-b{display:flex;flex-direction:column;gap:8px}
 .qc-b{display:flex;flex-direction:column;align-items:stretch;gap:4px;width:100%;padding:10px 14px;text-align:left;border-radius:14px;border:1px solid var(--ligne);background:var(--carte);color:var(--txt);font:inherit;cursor:pointer}
@@ -634,7 +650,7 @@ html[data-theme="nuit"] .qc-info:hover{color:#9CC2FF;border-color:#9CC2FF}
 .qc-sugg-flottant>p{background:var(--carte);padding:10px 14px;border-radius:12px;margin:0;box-shadow:var(--ombre)}
 .qc-envoye-flottant{position:absolute;top:62px;right:16px;z-index:6;background:var(--carte);padding:6px 12px;border-radius:10px;box-shadow:var(--ombre);pointer-events:none}
 .qc-envoye-flottant:empty{display:none}
-.qc-pay-grille{flex:1;display:grid;grid-template-columns:96px minmax(0,1fr);grid-template-rows:repeat(4,minmax(52px,1fr));align-items:stretch;gap:8px 10px}
+.qc-pay-grille{flex:1;display:grid;grid-template-columns:96px minmax(0,1fr);grid-template-rows:repeat(5,minmax(46px,1fr));gap:6px 10px!important;align-items:stretch;gap:8px 10px}
 .qc-pay-fam{align-self:center;font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--accent-txt)}
 .qc-pay-ligne{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
 .qc-pay-case{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:54px;border-radius:12px;border:1px solid var(--ligne);border-bottom:4px solid var(--accent);background:var(--carte);color:var(--txt);font:inherit;cursor:pointer}
@@ -1126,7 +1142,7 @@ const PLAN_EXEMPLE = [
    Chaque étape : [titre court, "mot-clé|mot-clé", "phrase de développement"].
    annonce : facultative (sinon construite à partir des titres).
    ===================================================================== */
-const VERSION_APP = "17 nov. 2026, n°16"; /* à changer à chaque mise en ligne, visible dans Réglages et Quel cas */
+const VERSION_APP = "17 nov. 2026, n°17"; /* à changer à chaque mise en ligne, visible dans Réglages et Quel cas */
 const FAMILLES_METHODES = [
   { id:"tracking", nom:"Tracking", ic:"etiquette" },
   { id:"cro", nom:"CRO et média", ic:"cible" },
@@ -1205,6 +1221,18 @@ const METHODES = [
     ],
     piege:"Laisser chaque équipe nommer ses événements à sa façon.",
     conclusion:"Site et application se lisent dans un seul tableau de bord, avec les mêmes définitions." },
+
+  { id:"T7", famille:"tracking", titre:"Mettre en place le server-side",
+    etapes:[
+      ["Cadrer", "destinations|décisions à éclairer|gain attendu", "Je cadre : quelles destinations, quelles décisions éclairer, quel gain attendu."],
+      ["Auditer", "événements existants|consentement|volumes", "J'audite les événements existants, le consentement et les volumes."],
+      ["Concevoir", "point d'entrée first-party|conteneur serveur|filtrage|event_id", "Je conçois le point d'entrée first-party, le conteneur serveur, les règles de filtrage, les identifiants et l'event_id."],
+      ["Piloter", "une destination|un événement|demande confirmée", "Je lance un pilote : une destination, un événement, par exemple la demande confirmée."],
+      ["Comparer", "navigateur contre serveur|CRM ou back-office|période donnée", "Je compare les volumes navigateur et serveur, puis avec le CRM ou le back-office, sur une période donnée."],
+      ["Basculer et suivre", "bascule progressive|alertes sur les volumes", "Je bascule progressivement, puis je suis les volumes avec des alertes."]
+    ],
+    piege:"Croire que le server-side dispense du consentement.",
+    conclusion:"Le server-side ne remplace ni le consentement ni la qualité du plan de marquage : il sécurise l'envoi des données et réduit les pertes." },
 
   /* ---------- CRO et média ---------- */
   { id:"C1", famille:"cro", titre:"Désaccord entre marketing et technique",
@@ -1390,7 +1418,7 @@ const METHODES = [
 /* Libellés courts, pour reconnaître un cas d'un coup d'œil (boutons de la Saisie, historique) */
 const LIBELLES_COURTS = {
   T1:"Projet de tracking", T2:"Demande d'essai, devis", T3:"Écart outil et CRM", T4:"Chute après mise en prod",
-  T5:"Doublon de comptage", T6:"Appli et site",
+  T5:"Doublon de comptage", T6:"Appli et site", T7:"Mise en place server-side",
   C1:"Désaccord marketing et tech", C2:"Test A/B formulaire", C3:"Test non concluant (0,12)", C4:"Test significatif (0,04)",
   C5:"Segment faible (tablette)", C6:"Formuler une hypothèse", C7:"Baisse de conversion",
   K1:"Résultat garanti", K2:"Baisse du chiffre d'affaires", K3:"Recommander une action", K4:"Parler à un dirigeant",
@@ -1399,7 +1427,7 @@ const LIBELLES_COURTS = {
 };
 /* Un mot repère par cas, pour les grilles compactes (vue paysage) */
 const MOTS_REPERES = {
-  T1:"Projet", T2:"Essai", T3:"Écart CRM", T4:"Chute", T5:"Doublon", T6:"Appli",
+  T1:"Projet", T2:"Essai", T3:"Écart CRM", T4:"Chute", T7:"Server", T5:"Doublon", T6:"Appli",
   C1:"Désaccord", C2:"Test A/B", C3:"p 0,12", C4:"p 0,04", C5:"Tablette", C6:"Hypothèse", C7:"Conversion",
   K1:"Garanti", K2:"CA", K3:"Reco", K4:"Dirigeant", K5:"Site OK", K6:"Conseil",
   A1:"Recette", A2:"Baisse", A3:"Cookies", A4:"KPI"
@@ -2958,7 +2986,7 @@ function listeQuestions(qs){
 }
 function rModule(id){
   const m = MODULES.find(x => x.id === id); if(!m){ go("modules"); return; }
-  const spec = { cas:rCas, vocabulaire:rVocab, atelier:rAtelier, flashcards:rFlash, poche:rPoche, projets:rProjets, lexique:rLexique, presentation:rPresentation }[id];
+  const spec = { cas:rCas, vocabulaire:rVocab, atelier:rAtelier, flashcards:rFlash, poche:rPoche, projets:rProjets, lexique:rLexique, presentation:rPresentation, serverside:rServerSide }[id];
   if(spec){ spec(); return; }
   const qs = QB.filter(q => q.module === id);
   let extra = "";
@@ -3597,10 +3625,14 @@ function rSaisiePaysageQC(){
 /* Deux présentations des boutons, au choix, mémorisées sur l'appareil :
    « detail » : grands boutons avec le nom du cas et ses mots-clés ; « codes » : grille compacte T1 à K6. */
 function vueBoutonsQC(){ return store.get("quelcasVue", "famille") === "codes" ? "codes" : "famille"; }
-function famillesQC(){ return FAMILLES_METHODES.filter(f => f.id !== "ia").concat([{ id:"moi", nom:"Moi", ic:"personne" }]); }
-function itemsFamilleQC(id){ return id === "moi" ? MOI_ITEMS : METHODES.filter(m => m.famille === id); }
+function famillesQC(){ return FAMILLES_METHODES.filter(f => f.id !== "ia").concat([{ id:"moi", nom:"Moi", ic:"personne" }, { id:"server", nom:"Server-side", ic:"globe" }]); }
+function itemsFamilleQC(id){
+  if(id === "moi") return MOI_ITEMS;
+  if(id === "server") return SS_ITEMS.slice(0, 5).concat([METHODES.find(m => m.id === "T7")], SS_ITEMS.slice(5)).filter(Boolean);
+  return METHODES.filter(m => m.famille === id);
+}
 function familleQC(){ const f = store.get("quelcasFamille", "tracking"); return famillesQC().some(x => x.id === f) ? f : "tracking"; }
-const NOMS_ONGLETS_QC = { tracking:"Tracking", cro:"CRO, média", consulting:"Consulting", ia:"IA", moi:"Moi" };
+const NOMS_ONGLETS_QC = { tracking:"Tracking", cro:"CRO, média", consulting:"Consulting", ia:"IA", moi:"Moi", server:"Server" };
 function motsClesCas(code){
   const t = TRIGGERS.find(x => x.code === code); if(!t) return [];
   const vus = new Set(); return (langueMeth() === "en" ? (TRIGGERS_EN[code] || []) : (t.motsFR || t.mots)).filter(w => { const k = norm(w); if(vus.has(k) || [...vus].some(v => v.includes(k) || k.includes(v))) return false; vus.add(k); return true; }).slice(0, 4);
@@ -3637,17 +3669,17 @@ async function envoyerDepuisSaisie(code){
 }
 function renderAffichageQC(){
   const z = $("#qc-vue"); if(!z) return;
-  const moiItem = MOI_ITEMS.find(x => x.id === QC.affiche);
+  const moiItem = MOI_ITEMS.concat(SS_ITEMS).find(x => x.id === QC.affiche);
   const m = METHODES.find(x => x.id === QC.affiche), h = histoQC();
   const histo = h.length ? '<div class="qc-histo"><h3 class="qc-sous">Derniers cas</h3><div class="flex">'+h.map(x => '<button class="chip" data-action="afficherCodeQC" data-arg="'+esc(x.code)+'" aria-pressed="'+(x.code === QC.affiche)+'">'+esc(libelleCas(x.code))+'</button>').join("")+'</div></div>' : "";
   if(moiItem){
     z.innerHTML = '<div class="qc-affiche" id="qc-affiche"><div class="qc-aff-main">'+
-      '<div class="ligne-titre"><span class="etiquette"><span class="anneau"></span>Moi · '+moiItem.id+'</span>'+
+      '<div class="ligne-titre"><span class="etiquette"><span class="anneau"></span>'+(moiItem.famille === "server" ? "Server-side" : "Moi")+' · '+moiItem.id+'</span>'+
         '<div class="flex qc-aff-actions"><button class="btn btn-petit" data-action="ouvrirPalette">'+ic("cible")+'Chercher <kbd>Ctrl K</kbd></button>'+
         '<button class="btn btn-petit" data-action="pleinEcranQC">'+ic("grille")+'Plein écran <kbd>F</kbd></button>'+
         '<button class="btn btn-petit" data-action="aideClavier" aria-label="Raccourcis clavier"><kbd>?</kbd></button></div></div>'+
       '<h2 class="qc-titre">'+esc(moiItem.titre)+'</h2>'+moiItem.html()+
-      '</div><aside class="qc-panneau" id="qc-panneau" aria-label="Rappels">'+(moiItem.id === "M3" ? htmlRecit() : htmlChiffres())+'</aside></div>'+histo;
+      '</div><aside class="qc-panneau" id="qc-panneau" aria-label="Rappels">'+(moiItem.aside ? moiItem.aside() : moiItem.id === "M3" ? htmlRecit() : htmlChiffres())+'</aside></div>'+histo;
     return;
   }
   if(!m){
@@ -3669,7 +3701,7 @@ function renderAffichageQC(){
     '<ol class="qc-etapes">'+m.etapes.map((e, i) => '<li data-i="'+i+'" data-action="selEtapeQC" class="'+(QC.etapeSel === i ? "selection " : "")+(notes[String(i)] ? "a-note" : "")+'"><span class="etape-num">'+(i+1)+'</span><span class="qc-et-corps"><span class="qc-et-ligne"><button class="qc-et-titre" data-action="selEtapeQC" aria-pressed="'+(QC.etapeSel === i)+'">'+esc(e[0])+'</button><span class="qc-note-marque" title="Cette étape a une note" aria-label="Note">'+ic("crayon")+'</span>'+
       '<button class="qc-info qc-info-inline" data-action="defEtapeQC" aria-expanded="false" aria-label="Définition de l\'étape '+(i+1)+' : '+esc(e[0])+'">i</button></span>'+
       '<span class="qc-mc">'+esc(String(e[1]||"").split("|").join(" · "))+'</span><span class="qc-def">'+esc(e[2]||"")+'</span></span></li>').join("")+'</ol>'+
-    blocPiegesFiche(m)+
+    blocPiegesFiche(m)+blocServerSideCas(m)+
     '<div class="fb-bloc ton-vert"><h4>'+ic("drapeau")+tr("conclusion")+'</h4><p>« '+esc(m.conclusion||"")+' »</p></div>'+
     '<div id="qc-questions" class="qc-questions"></div>'+blocMotsFiche(m)+
   '</div><aside class="qc-panneau" id="qc-panneau" aria-label="Notes et questions probables"></aside></div>'+histo;
@@ -3677,7 +3709,7 @@ function renderAffichageQC(){
   brancherEntrainementQC();
 }
 /* Bouton « i » : définition d'un cas sans l'envoyer */
-function boutonInfoQC(m){ if(m.famille === "moi") return ""; return '<button class="qc-info" data-action="infoCasQC" data-arg="'+m.id+'" aria-label="Définition : '+esc(m.court)+'">i</button>'; }
+function boutonInfoQC(m){ if(m.famille === "moi" || m.famille === "server") return ""; return '<button class="qc-info" data-action="infoCasQC" data-arg="'+m.id+'" aria-label="Définition : '+esc(m.court)+'">i</button>'; }
 function ficheCasQC(code){
   const m = METHODES.find(x => x.id === code); if(!m) return;
   const f = FAMILLES_METHODES.find(x => x.id === m.famille) || { nom:"" };
@@ -3689,7 +3721,7 @@ function ficheCasQC(code){
     '<p class="qc-fiche-quand"><b>'+tr("declenchent")+' :</b> '+esc(motsClesCas(m.id).join(", "))+'.</p>'+
     '<div class="annonce-meth"><p>« '+esc(annonceMethode(m))+' »</p></div>'+
     '<ol class="qc-fiche-etapes">'+m.etapes.map(e => '<li><b>'+esc(e[0])+'</b> : '+esc(e[2]||"")+'</li>').join("")+'</ol>'+
-    blocPiegesFiche(m)+
+    blocPiegesFiche(m)+blocServerSideCas(m)+
     blocReponseType(m, false)+
     '<div class="flex actions-meth"><button class="btn btn-bleu" data-action="envoyerDepuisFicheQC" data-arg="'+m.id+'">'+ic("envoyer")+'Envoyer ce cas</button><button class="btn" data-action="fermerFeuille">Fermer</button></div>'+
   '</div>');
@@ -3740,6 +3772,12 @@ Object.assign(ACTIONS, {
    QUESTIONS_PROBABLES : [question que le manager peut poser, piste de réponse en une ligne]
    ===================================================================== */
 const QUESTIONS_PROBABLES = {
+  T7:[["Quelle différence avec le tracking classique ?","Navigateur contre serveur, contrôle, fiabilité, first-party."],
+      ["Pourquoi ça améliore la donnée ?","Cookies, bloqueurs, redistribution, dédoublonnage."],
+      ["Quels risques RGPD ?","Consentement, données transférées, hébergement, sous-traitants, DPO."],
+      ["Quel coût ?","Hébergement, volume, maintenance, expertise."],
+      ["Comment tu vérifies ?","Pilote, comparaison des volumes par jour, CRM."],
+      ["Tu l'as déjà fait ?","[à valider : expérience réelle ou proposition]. Ne jamais l'affirmer sans le vérifier."]],
   A1:[["Pourquoi un agent pour la recette ?","Pour rejouer vite beaucoup de scénarios et comparer au back-office."],
       ["Qui décide de la correction ?","L'humain : l'agent classe et ouvre des tickets, je valide."],
       ["Comment l'agent sait-il ce qui est attendu ?","Grâce aux scénarios : parcours et événements attendus."],
@@ -3872,7 +3910,7 @@ function htmlQuestionsQC(m){
   return '<section class="qc-pan-bloc"><h3>'+tr("questions")+'</h3>'+
     '<ul class="qc-pan-q">'+qs.map(x => '<li><span class="qc-pan-q-txt">« '+esc(x.q)+' »'+
         (x.src === "ia" ? ' <span class="qc-tag">IA</span>' : x.src === "perso" ? ' <span class="qc-tag">perso</span>' : "")+'</span>'+
-        (x.p ? '<span class="qc-pan-piste">'+esc(x.p)+'</span>' : "")+
+        (x.p ? '<span class="qc-pan-piste">'+marquer(x.p)+'</span>' : "")+
         (x.src === "perso" ? '<button class="btn-lien" data-action="supprQuestionQC" data-arg="'+x.i+'">Supprimer</button>' : "")+'</li>').join("")+'</ul>'+
     '<details class="qc-pan-ajout"><summary>Ajouter une question</summary>'+
       '<label class="champ">Question<input id="qc-q-new" placeholder="La question qu\'on pourrait te poser"></label>'+
@@ -3944,6 +3982,15 @@ Object.assign(ACTIONS, {
    METHODES_EN : mêmes codes que METHODES ; étapes [titre, "mot-clé|mot-clé", phrase].
    ===================================================================== */
 const METHODES_EN = {
+  T7:{ titre:"Setting up server-side tracking", court:"Server-side setup", repere:"Server",
+    etapes:[["Scope","destinations|decisions|expected gain","I scope it: which destinations, which decisions, what gain."],
+      ["Audit","current events|consent|volumes","I check the current events, consent and volumes."],
+      ["Design","first-party endpoint|server container|filters|event_id","I design the first-party endpoint, the server container, the filter rules, the IDs and the event_id."],
+      ["Pilot","one destination|one event|confirmed request","I start a pilot: one destination, one event, like the confirmed request."],
+      ["Compare","browser vs server|CRM or back office|set period","I compare browser and server volumes, then with the CRM or back office, over a set period."],
+      ["Switch and monitor","step-by-step switch|volume alerts","I switch step by step, then monitor volumes with alerts."]],
+    piege:"Thinking server-side means you don't need consent.",
+    conclusion:"Server-side doesn't replace consent or a good tracking plan. It makes data sending safer and reduces data loss." },
   A1:{ titre:"Agent-assisted tracking QA", court:"Agent-led QA", repere:"QA",
     annonce:"I'd do it in five steps: scope the journeys, define the scenarios, let the agent replay them, validate the gaps, check after the fix.",
     etapes:[["Scope journeys","journeys to test|priorities","I choose the journeys to test, the critical ones first."],
@@ -4145,6 +4192,12 @@ const METHODES_EN = {
 };
 
 const QUESTIONS_EN = {
+  T7:[["What's the difference with classic tracking?","Browser vs server, control, reliability, first-party."],
+      ["Why does it improve the data?","Cookies, ad blockers, one event sent to many tools, deduplication."],
+      ["What are the GDPR risks?","Consent, data sent, hosting, subcontractors, DPO."],
+      ["How much does it cost?","Hosting, volume, maintenance, skills."],
+      ["How do you check it works?","A pilot, then daily volume checks against the CRM."],
+      ["Have you done it before?","[à valider : real experience or proposal]. Never claim it without checking."]],
   A1:[["Why use an agent for QA?","It replays many scenarios fast and compares with the back office."],
       ["Who decides the fix?","A person. The agent sorts and opens tickets, I validate."],
       ["How does the agent know what to expect?","From the scenarios: journey and expected events."],
@@ -4241,6 +4294,7 @@ const QUESTIONS_EN = {
 
 /* Mots déclencheurs anglais (ajoutés à la recherche de la Saisie, quelle que soit la langue) */
 const TRIGGERS_EN = {
+  T7:["server-side setup","set up server-side","server side tracking"],
   A1:["agent qa","agent testing","replay scenarios"], A2:["agent diagnosis","ranked hypotheses"],
   A3:["cookie","crawl","consent list"], A4:["kpi","commentary","weekly report","email"],
   T1:["tracking project","implement tracking","set up tracking","steps"], T2:["test drive","quote","lead form","booking"],
@@ -4442,6 +4496,8 @@ Object.assign(ACTIONS, {
    Aucun chiffre ajouté : seuls ceux déjà présents dans les méthodes. [à compléter] = à remplir par toi.
    ===================================================================== */
 const REPONSES_TYPES = {
+  T7:{ fr:"Je procède en six étapes. Je cadre d'abord les destinations, les décisions à éclairer et le gain attendu, puis j'audite les événements existants, le consentement et les volumes. Je conçois le point d'entrée first-party, le conteneur serveur, les règles de filtrage et l'event_id. Je lance un pilote sur une destination et un événement, par exemple la demande confirmée, et je compare les volumes navigateur, serveur et CRM sur une période donnée. Ensuite, je bascule progressivement avec des alertes sur les volumes. Pour conclure : le server-side ne remplace ni le consentement ni la qualité du plan de marquage, il sécurise l'envoi des données et réduit les pertes.",
+       en:"I'd do it in six steps. First, I scope the destinations, the decisions and the expected gain, and I check the current events, consent and volumes. Then I design the first-party endpoint, the server container, the filters and the event_id. I start a pilot with one destination and one event, like the confirmed request, and I compare browser, server and CRM volumes. Then I switch step by step, with volume alerts. Server-side doesn't replace consent: it makes data sending safer." },
   A1:{ fr:"Je procède en cinq étapes. Je cadre d'abord les parcours à tester, puis je définis les scénarios : le parcours et les événements attendus. L'agent rejoue ces scénarios et compare les volumes au back-office. Il classe les écarts, bloquants ou mineurs, et ouvre un ticket par écart ; je valide les écarts bloquants et je décide de la correction. Après la correction, je fais rejouer les scénarios pour contrôler. Pour conclure : l'agent accélère la recette, mais la décision reste humaine.",
        en:"I'd do it in five steps. First, I choose the journeys to test and define the scenarios. Then the agent replays them and compares volumes with the back office. It sorts the gaps and opens one ticket per gap, and I decide the fix for the blocking ones. After the fix, the agent replays the scenarios to check." },
   A2:{ fr:"Je cadre d'abord la baisse : périmètre, période et définition. Je confirme la source de référence. L'agent décompose la baisse, commandes et panier moyen, puis canal, appareil et page, et il classe les hypothèses selon la preuve et la probabilité. Je choisis l'hypothèse à vérifier et l'action à lancer, puis je suis son effet. Une baisse des commandes ne prouve pas un problème de tracking. Pour conclure : l'agent trie les pistes, le consultant décide de l'action.",
@@ -4524,7 +4580,7 @@ const ECRANS_PALETTE = [
   ["Progression","progression","progression stats score"], ["Modules","modules","modules"],
   ["Méthodes","methodes","methodes cas etapes"], ["Quel cas : Affichage","quelcas/affichage","quel cas affichage ordinateur"],
   ["Quel cas : Saisie","quelcas/saisie","quel cas saisie telephone"], ["Lexique anglais","module/lexique","lexique vocabulaire anglais english"],
-  ["Flashcards","module/flashcards","flashcards cartes revision"], ["Présentation","presentation","presentation pitch projets"], ["Réglages","reglages","reglages parametres cle gemini topic"]
+  ["Flashcards","module/flashcards","flashcards cartes revision"], ["Présentation","presentation","presentation pitch projets moi"], ["Server-side","module/serverside","server-side serveur sgtm"], ["Réglages","reglages","reglages parametres cle gemini topic"]
 ];
 const KB = { combo:null, comboT:null, palSel:0, palRes:[] };
 
@@ -4548,10 +4604,10 @@ function afficherCasLocal(code){
 function resultatsPalette(q){
   const n = norm(q).trim(), res = [], vus = new Set();
   const ajoutCas = m => { if(m && !vus.has(m.id)){ vus.add(m.id); res.push({ type:"cas", id:m.id, titre:m.court, sous:m.titre }); } };
-  if(!n){ histoQC().forEach(x => ajoutCas(trouverItem(x.code))); MOI_ITEMS.forEach(ajoutCas); METHODES.forEach(ajoutCas); }
+  if(!n){ histoQC().forEach(x => ajoutCas(trouverItem(x.code))); MOI_ITEMS.forEach(ajoutCas); SS_ITEMS.forEach(ajoutCas); METHODES.forEach(ajoutCas); }
   else {
-    METHODES.concat(MOI_ITEMS).filter(m => norm(m.id) === n.replace(/\s+/g, "")).forEach(ajoutCas);
-    METHODES.concat(MOI_ITEMS).filter(m => norm(m.titre + " " + m.court).includes(n)).forEach(ajoutCas);
+    METHODES.concat(MOI_ITEMS, SS_ITEMS).filter(m => norm(m.id) === n.replace(/\s+/g, "")).forEach(ajoutCas);
+    METHODES.concat(MOI_ITEMS, SS_ITEMS).filter(m => norm(m.titre + " " + m.court).includes(n)).forEach(ajoutCas);
     chercherCas(q).forEach(ajoutCas);
   }
   const cas = res.slice(0, n ? 8 : 6);
@@ -4689,7 +4745,7 @@ document.addEventListener("keydown", e => {
     } else flashTouche(code, "Ce code n'existe pas");
     return;
   }
-  if(["T","C","A","M"].includes(lettre) || (lettre === "K" && !e.shiftKey)){
+  if(["T","C","A","M","S"].includes(lettre) || (lettre === "K" && !e.shiftKey)){
     KB.combo = lettre; clearTimeout(KB.comboT); KB.comboT = setTimeout(() => { KB.combo = null; }, 1600);
     flashTouche(lettre + " _", "Tape le chiffre"); return;
   }
@@ -4864,6 +4920,10 @@ function blocCoach(r, i, cible){
    FICHES[code] = { qFr, qEn, mots:[[anglais, français]], vig:[français], vigEn:[anglais] }
    ===================================================================== */
 const FICHES = {
+  T7:{ qFr:"Comment mettrais-tu en place le tracking server-side ?", qEn:"How would you set up server-side tracking?",
+    mots:[["server-side tracking","tracking côté serveur"],["first-party","sur le domaine de l'entreprise"],["server container","conteneur serveur"],["event_id","identifiant d'événement"],["deduplication","dédoublonnage"],["Consent Mode","mode de consentement de Google"]],
+    vig:["Le server-side ne supprime pas les bots : ils se filtrent en amont.","Un conteneur mal configuré perd des données sans alerte."],
+    vigEn:["Server-side doesn't remove bots: filter them before.","A badly set container loses data with no alert."] },
   A1:{ qFr:"Comment utiliserais-tu un agent IA pour la recette du tracking ?", qEn:"How would you use an AI agent for tracking QA?",
     mots:[["AI agent","agent IA"],["scenario","scénario"],["blocking issue","problème bloquant"],["ticket","ticket"],["back office","back-office"]] },
   A2:{ qFr:"Comment un agent IA peut-il aider à expliquer une baisse ?", qEn:"How can an AI agent help explain a drop?",
@@ -5076,7 +5136,7 @@ function moi(){ const o = donneesPresentation().moi || {}; return Object.assign(
 function projetsPresentation(){ const o = donneesPresentation().projets || {}; return PROJETS.map(p => Object.assign({}, p, o[p.id] || {})); }
 const MOTS_PAR_MINUTE = 150;
 function dureeLecture(texte){ const n = mots(texte || "").length; return { mots:n, sec:Math.max(1, Math.round(n / MOTS_PAR_MINUTE * 60)) }; }
-function marquer(t){ return esc(t == null || t === "" ? AC : t).replace(/\[à compléter\]|\[à valider\]/g, x => '<span class="a-completer">'+x+'</span>'); }
+function marquer(t){ return esc(t == null || t === "" ? AC : t).replace(/\[à (?:compléter|valider)[^\]]*\]/g, x => '<span class="a-completer">'+x+'</span>'); }
 function lireFr(texte){
   try{
     speechSynthesis.cancel();
@@ -5214,7 +5274,7 @@ const MOI_ITEMS = [
   { id:"M4", famille:"moi", titre:"Pourquoi fifty-five", court:"Pourquoi fifty-five", repere:"Pourquoi 55", etapes:[], html:htmlPourquoi },
   { id:"M5", famille:"moi", titre:"Projets IA agentique", court:"Projets IA", repere:"Projets", etapes:[], html:htmlIAAgentique }
 ];
-function trouverItem(code){ return METHODES.find(m => m.id === code) || MOI_ITEMS.find(m => m.id === code) || null; }
+function trouverItem(code){ return METHODES.find(m => m.id === code) || MOI_ITEMS.find(m => m.id === code) || (typeof SS_ITEMS !== "undefined" ? SS_ITEMS.find(m => m.id === code) : null) || null; }
 TRIGGERS.push(
   { code:"M1", mots:["presente-toi","presentez-vous","parle-moi de toi","parlez-moi de vous","qui es-tu","tell me about yourself","introduce yourself"], motsFR:["présente-toi","parle-moi de toi","qui es-tu"] },
   { code:"M2", mots:["ton parcours","votre parcours","formation","etudes","your background","your career"], motsFR:["ton parcours","formation","études"] },
@@ -5222,6 +5282,138 @@ TRIGGERS.push(
   { code:"M4", mots:["pourquoi fifty-five","pourquoi 55","pourquoi chez nous","why fifty-five","why 55"], motsFR:["pourquoi fifty-five","pourquoi chez nous"] },
   { code:"M5", mots:["projets ia","tes projets","vos projets","your projects","ai projects"], motsFR:["projets IA","tes projets"] }
 );
+
+/* =====================================================================
+   Server-side : onglet « Server-side » de Quel cas (S1 à S6, plus la méthode T7),
+   page complète dans Modules, et encarts « Et en server-side » sur les cas reliés.
+   Contenu à modifier dans SS ci-dessous.
+   ===================================================================== */
+const SS = {
+  definition:"Le server-side déplace l'envoi des données du navigateur de l'utilisateur vers un serveur que l'entreprise contrôle, qui redistribue ensuite les données aux outils d'analyse, de publicité et au CRM.",
+  pourquoi:[
+    "Le navigateur est fragile : bloqueurs, cookies à durée de vie courte (ITP sur Safari), cookies tiers supprimés. Les données se perdent.",
+    "Les données sont mieux contrôlées : on filtre, on hache, on retire les champs sensibles avant tout envoi.",
+    "Une seule source : un événement est envoyé une fois, puis redistribué à plusieurs destinations.",
+    "Les conversions critiques sont plus fiables quand elles partent du back-end (commande, validation de demande) plutôt que de la page.",
+    "Lien avec les écarts : une part de l'écart outil/CRM vient des bloqueurs. Le server-side réduit cette cause, pas celle du refus de consentement."
+  ],
+  architecture:[
+    ["Collecte", "Site ou application, puis dataLayer, puis une balise qui envoie vers un point d'entrée du domaine de l'entreprise (first-party)."],
+    ["Conteneur serveur", "Il reçoit, filtre, enrichit, puis redistribue."],
+    ["Destinations", "GA4, Adobe Analytics, Google Ads, API de conversions de Meta, CRM."],
+    ["Hébergement", "Cloud de l'entreprise, idéalement dans une région de l'Union européenne."]
+  ],
+  rgpd:[
+    "Ne rien transférer sans consentement : le conteneur vérifie le signal avant chaque envoi.",
+    "Consent Mode v2 : envoyer des signaux de consentement aux plateformes, sans données identifiantes en cas de refus.",
+    "Minimisation : pas d'e-mail, de téléphone ni de nom en clair. Hachage quand un identifiant est nécessaire.",
+    "Hébergeur et sous-traitants documentés avec le DPO, registre des traitements mis à jour."
+  ],
+  piegeRgpd:"Croire que le server-side dispense du consentement. Ce n'est pas le cas.",
+  pertinent:[
+    "Perte importante de données côté navigateur (bloqueurs, Safari, cookies courts).",
+    "Plusieurs destinations publicitaires à alimenter avec les mêmes conversions.",
+    "Besoin de conversions fiables, venant du CRM ou du back-end."
+  ],
+  pasPertinent:"Site petit, peu de destinations, équipe sans capacité de maintenance, ou si une simple correction côté site suffit.",
+  limites:[
+    "Le server-side ne supprime pas les bots : ils doivent être filtrés en amont.",
+    "Coût cloud à surveiller, proportionnel au volume de requêtes.",
+    "Maintenance : un conteneur mal configuré perd des données sans alerte.",
+    "Latence possible, à mesurer.",
+    "Dépendance à une équipe technique pour l'exploitation."
+  ],
+  usages:[
+    { titre:"Demande d'essai ou de devis", texte:"Déclencher l'événement depuis le back-end à la validation, et non depuis la page.", cas:"T2" },
+    { titre:"Écart outil/CRM", texte:"Comparer les conversions envoyées par le serveur avec le CRM, jour par jour.", cas:"T3" },
+    { titre:"Doublons", texte:"Un seul envoi serveur, avec un identifiant d'événement, évite le double comptage pixel et serveur.", cas:"T5" },
+    { titre:"Publicité", texte:"Déduplication entre pixel web et API de conversions grâce à un event_id partagé.", cas:null },
+    { titre:"Parcours multi-appareils", texte:"Identifiant de session first-party plus stable.", cas:"T6" }
+  ],
+  dedup:[
+    "Le navigateur et le serveur envoient le même event_id.",
+    "La plateforme ne garde qu'un seul événement.",
+    "Sans cela, la publicité surestime les conversions."
+  ],
+  questions:[
+    ["Quelle différence avec le tracking classique ?", "Navigateur contre serveur, contrôle, fiabilité, first-party."],
+    ["Pourquoi ça améliore la donnée ?", "Cookies, bloqueurs, redistribution, dédoublonnage."],
+    ["Quels risques RGPD ?", "Consentement, données transférées, hébergement, sous-traitants, DPO."],
+    ["Quel coût ?", "Hébergement, volume, maintenance, expertise."],
+    ["Comment tu vérifies ?", "Pilote, comparaison des volumes par jour, CRM."],
+    ["Tu l'as déjà fait ?", "[à valider : expérience réelle ou proposition]. Ne jamais l'affirmer sans le vérifier."]
+  ],
+  phrase:"Le server-side ne remplace ni le consentement ni la qualité du plan de marquage. Il sécurise l'envoi des données et réduit les pertes."
+};
+/* Encarts « Et en server-side » sur les cas reliés de Quel cas */
+const SS_LIENS = {
+  T2:"Déclencher l'événement depuis le back-end à la validation de la demande, et non depuis la page.",
+  T3:"Comparer les conversions envoyées par le serveur avec le CRM, jour par jour. Le server-side réduit la part due aux bloqueurs, pas celle du refus de consentement.",
+  T5:"Un seul envoi serveur, avec un identifiant d'événement (event_id), évite le double comptage pixel et serveur.",
+  T6:"Un identifiant de session first-party plus stable aide à suivre les parcours multi-appareils.",
+  T4:"Le server-side ne supprime pas les bots : ils doivent être filtrés en amont."
+};
+
+const ssListe = a => '<ul class="ss-liste">'+a.map(x => '<li>'+marquer(x)+'</li>').join("")+'</ul>';
+function ssBloc(titre, corps, cle){ return '<section class="moi-bloc ss-bloc"><div class="moi-tete"><h3>'+esc(titre)+'</h3>'+(cle ? '<button class="btn btn-petit" data-action="lireSS" data-arg="'+cle+'">'+ic("lecture")+'Lire</button>' : "")+'</div>'+corps+'</section>'; }
+function htmlSSDefinition(){ return ssBloc("Définition", '<p class="moi-recit ss-def">'+esc(SS.definition)+'</p>', "definition") + ssBloc("Pourquoi on le fait", ssListe(SS.pourquoi), "pourquoi"); }
+function htmlSSArchitecture(){
+  return ssBloc("Architecture", '<ol class="ss-archi">'+SS.architecture.map(x => '<li><b>'+esc(x[0])+'</b><span>'+esc(x[1])+'</span></li>').join("")+'</ol>', "architecture");
+}
+function htmlSSRgpd(){ return ssBloc("Consentement et RGPD", ssListe(SS.rgpd)+'<div class="fb-bloc ton-orange"><h4>'+ic("eclair")+'Piège</h4><p>'+esc(SS.piegeRgpd)+'</p></div>', "rgpd"); }
+function htmlSSQuand(){
+  return ssBloc("Quand c'est pertinent", ssListe(SS.pertinent)+'<p class="ss-pas"><b>Pas pertinent si :</b> '+esc(SS.pasPertinent)+'</p>', "quand") + ssBloc("Limites et risques", ssListe(SS.limites), "limites");
+}
+function htmlSSUsages(){
+  return ssBloc("Cas d'usage", '<ul class="ss-usages">'+SS.usages.map(u => '<li><b>'+esc(u.titre)+'</b><span>'+esc(u.texte)+'</span>'+
+      (u.cas ? '<button class="chip" data-action="voirCasQC" data-arg="'+u.cas+'">'+esc(u.cas+" · "+libelleCas(u.cas))+'</button>' : "")+'</li>').join("")+'</ul>', "usages")+
+    ssBloc("Déduplication", ssListe(SS.dedup), "dedup");
+}
+function htmlSSQuestions(){
+  return ssBloc("Questions probables", '<ul class="qc-pan-q">'+SS.questions.map(q => '<li><span class="qc-pan-q-txt">« '+esc(q[0])+' »</span><span class="qc-pan-piste">'+marquer(q[1])+'</span></li>').join("")+'</ul>') + htmlSSPhrase();
+}
+function htmlSSPhrase(){ return '<div class="ss-phrase"><span class="fiche-lbl">Phrase clé</span><p>« '+esc(SS.phrase)+' »</p><button class="btn btn-petit" data-action="lireSS" data-arg="phrase">'+ic("lecture")+'Lire</button></div>'; }
+function htmlSSAside(){ return htmlSSPhrase() + '<section class="moi-bloc"><h3>Définition</h3><p>'+esc(SS.definition)+'</p></section>'; }
+
+const SS_ITEMS = [
+  { id:"S1", famille:"server", titre:"Server-side : définition et raisons", court:"Définition et pourquoi", repere:"Définition", etapes:[], html:htmlSSDefinition, aside:() => htmlSSPhrase() },
+  { id:"S2", famille:"server", titre:"Architecture server-side", court:"Architecture", repere:"Archi", etapes:[], html:htmlSSArchitecture, aside:htmlSSAside },
+  { id:"S3", famille:"server", titre:"Server-side : consentement et RGPD", court:"Consentement et RGPD", repere:"RGPD", etapes:[], html:htmlSSRgpd, aside:htmlSSAside },
+  { id:"S4", famille:"server", titre:"Server-side : quand et limites", court:"Quand et limites", repere:"Quand", etapes:[], html:htmlSSQuand, aside:htmlSSAside },
+  { id:"S5", famille:"server", titre:"Server-side : cas d'usage et déduplication", court:"Cas d'usage, dédup", repere:"Usages", etapes:[], html:htmlSSUsages, aside:htmlSSAside },
+  { id:"S6", famille:"server", titre:"Server-side : questions probables", court:"Questions et phrase clé", repere:"Questions", etapes:[], html:htmlSSQuestions, aside:() => '<section class="moi-bloc"><h3>Définition</h3><p>'+esc(SS.definition)+'</p></section>' }
+];
+TRIGGERS.push(
+  { code:"S1", mots:["server-side","server side","cote serveur","tracking serveur","serveur"], motsFR:["server-side","côté serveur"] },
+  { code:"S2", mots:["architecture","conteneur serveur","sgtm","first-party","first party"], motsFR:["architecture","conteneur serveur","first-party"] },
+  { code:"S3", mots:["consent mode","consentement server","rgpd server","hachage"], motsFR:["Consent Mode","hachage"] },
+  { code:"S4", mots:["quand utiliser le server","limites du server","cout du server","latence"], motsFR:["limites","coût","latence"] },
+  { code:"S5", mots:["deduplication","dedoublonnage","event_id","api de conversions","capi","pixel"], motsFR:["déduplication","event_id","pixel"] },
+  { code:"S6", mots:["difference avec le tracking classique","tu l'as deja fait"], motsFR:["différence avec le classique"] },
+  { code:"T7", mots:["mettre en place le server","mise en place du server","migrer en server","passer en server"], motsFR:["mise en place du server-side"] }
+);
+function blocServerSideCas(m){
+  const t = SS_LIENS[m.id]; if(!t) return "";
+  return '<div class="fb-bloc ss-lien"><h4>'+ic("globe")+'Et en server-side</h4><p>'+esc(t)+'</p><button class="btn btn-petit" data-action="voirCasQC" data-arg="S5">Voir les cas d\'usage server-side</button></div>';
+}
+function rServerSide(){
+  E().innerHTML = entete("Server-side", "modules")+'<div class="contenu serverside">'+
+    htmlSSPhrase()+htmlSSDefinition()+htmlSSArchitecture()+htmlSSRgpd()+htmlSSQuand()+htmlSSUsages()+
+    ssBloc("Méthode de mise en place", '<p class="muet">La méthode complète est un cas de Quel cas : T7, avec plan, réponse type et questions probables.</p><div class="flex"><button class="btn btn-bleu" data-action="ouvrirMethode" data-arg="T7">'+ic("etapes")+'Ouvrir la méthode T7</button><button class="btn" data-action="voirCasQC" data-arg="T7">Afficher dans Quel cas</button></div>')+
+    ssBloc("Questions probables", '<ul class="qc-pan-q">'+SS.questions.map(q => '<li><span class="qc-pan-q-txt">« '+esc(q[0])+' »</span><span class="qc-pan-piste">'+marquer(q[1])+'</span></li>').join("")+'</ul>')+
+  '</div>';
+}
+MODULES.splice(1, 0, { id:"serverside", nom:"Server-side", ic:"globe", desc:"Définition, RGPD, méthode", special:true });
+
+Object.assign(ACTIONS, {
+  lireSS(el){
+    const k = el.dataset.arg;
+    const t = { definition:SS.definition, pourquoi:SS.pourquoi.join(" "), architecture:SS.architecture.map(x => x[0] + " : " + x[1]).join(" "), rgpd:SS.rgpd.join(" ") + " " + SS.piegeRgpd,
+      quand:SS.pertinent.join(" ") + " Pas pertinent si : " + SS.pasPertinent, limites:SS.limites.join(" "), usages:SS.usages.map(u => u.titre + " : " + u.texte).join(" "), dedup:SS.dedup.join(" "), phrase:SS.phrase }[k] || SS.phrase;
+    lireFr(t);
+  },
+  voirCasQC(el){ fermerModale(); afficherCasLocal(el.dataset.arg); }
+});
 
 /* ---------- Méthodes : liste des cas d'usage et feuille stepper ---------- */
 function methodesFaites(){ const o = store.get("methodes", {}); return (o && typeof o === "object") ? o : {}; }
@@ -5260,7 +5452,7 @@ function feuilleMethode(id, revision){
       '<button class="btn btn-petit" data-action="copierAnnonce" data-arg="'+m.id+'">'+ic("copier")+tr("copierAnnonce")+'</button>'+'<button class="btn btn-petit" data-action="ecouterAnnonce" data-arg="'+m.id+'">'+ic("lecture")+tr("ecouter")+'</button>'+'</div>'+
     (revision ? '<p class="muet petit">Mode révision : récite les mots-clés de chaque étape, puis touche-la pour vérifier.</p>' : '<p class="muet petit">Touche une étape pour lire sa phrase de développement.</p>')+
     '<ol class="stepper">'+etapes+'</ol>'+
-    blocPiegesFiche(m)+
+    blocPiegesFiche(m)+blocServerSideCas(m)+
     '<div class="fb-bloc ton-vert"><h4>'+ic("drapeau")+tr("conclusion")+'</h4><p>« '+esc(m.conclusion||"")+' »</p></div>'+
     blocReponseType(m, false)+blocMotsFiche(m)+
     '<div class="flex actions-meth"><button class="btn" data-action="revisionMethode" aria-pressed="'+(!!revision)+'">'+ic("oeil")+(revision ? "Quitter le mode révision" : "Mode révision")+'</button>'+
