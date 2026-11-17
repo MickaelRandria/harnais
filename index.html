@@ -367,6 +367,38 @@ label.champ{display:flex;flex-direction:column;gap:6px;font-weight:600}
   .fil{padding-left:64px;padding-right:64px}
   .sess-bas{padding-left:64px;padding-right:64px}
 }
+/* ---------- Présentation ---------- */
+@media (max-width:1023px){ .nav button[data-go="presentation"]{display:none} }
+.pitch{display:flex;flex-direction:column;gap:12px}
+.pitch h2,.projets-pres h2{display:flex;align-items:center;gap:10px}
+.pitch-total{font-weight:800;padding:6px 12px;border-radius:999px;background:rgba(76,217,100,.16);color:var(--vert-txt);white-space:nowrap}
+.pitch-total.trop-long{background:rgba(242,162,92,.2);color:var(--orange-txt)}
+.pitch-bloc{display:flex;flex-direction:column;gap:6px;padding:12px 14px;border-radius:14px;background:var(--fond2);border:1px solid var(--ligne)}
+.pitch-tete{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.pitch-duree{color:var(--txt2);font-size:.9rem;margin-right:auto}
+.pitch-texte{margin:0;line-height:1.65}
+.pitch-edit{width:100%;box-sizing:border-box;border-radius:12px;border:1px solid var(--ligne);background:var(--champ);color:var(--txt);font:inherit;line-height:1.5;padding:10px 12px}
+.projets-pres{display:flex;flex-direction:column;gap:12px}
+.filtres-pres{gap:8px}
+.grille-pres{display:grid;grid-template-columns:1fr;gap:12px}
+.carte-projet{display:flex;flex-direction:column;gap:10px}
+.carte-projet h3{font-size:1.1rem}
+.tags-pres{gap:6px}
+.tag-pres{font-size:.8rem;font-weight:700;padding:3px 10px;border-radius:999px;background:var(--fond2);border:1px solid var(--ligne)}
+.tag-ia{background:rgba(20,163,139,.14);border-color:rgba(20,163,139,.5);color:#0B6E5E}
+html[data-theme="nuit"] .tag-ia{color:#6FE0CB}
+.statut-ia{flex:none;font-size:.78rem;font-weight:800;padding:4px 10px;border-radius:999px;border:1px solid var(--ligne)}
+.st-deploye{background:rgba(76,217,100,.18);color:var(--vert-txt);border-color:rgba(76,217,100,.5)}
+.st-prototype{background:rgba(31,111,224,.12);color:#1659B8;border-color:rgba(31,111,224,.4)}
+html[data-theme="nuit"] .st-prototype{color:#9CC2FF}
+.st-propose{background:rgba(242,162,92,.18);color:var(--orange-txt);border-color:rgba(242,162,92,.5)}
+.dl-pres{margin:0;display:flex;flex-direction:column;gap:6px}
+.dl-pres div{display:grid;grid-template-columns:110px minmax(0,1fr);gap:8px}
+.dl-pres dt{font-weight:700;color:var(--txt2);font-size:.9rem}
+.dl-pres dd{margin:0;line-height:1.5}
+.a-completer{color:var(--orange-txt);font-weight:700}
+@media (max-width:420px){ .dl-pres div{grid-template-columns:1fr;gap:0} }
+@media (min-width:1024px){ .grille-pres{grid-template-columns:repeat(2,minmax(0,1fr))} }
 /* ---------- Méthodes ---------- */
 .nav button{width:60px}
 .regles-or{display:flex;flex-direction:column;gap:10px}
@@ -519,6 +551,8 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-width:1.6e
 .qc-famille{display:flex;flex-direction:column;gap:8px}
 .qc-f-cro{--accent:var(--orange);--accent-txt:var(--orange-txt)}
 .qc-f-consulting{--accent:#8B6CE0;--accent-txt:#5B3FB8}
+.qc-f-ia{--accent:#14A38B;--accent-txt:#0B6E5E}
+html[data-theme="nuit"] .qc-f-ia{--accent-txt:#6FE0CB}
 html[data-theme="nuit"] .qc-famille,html[data-theme="nuit"] .qc-f-tracking{--accent-txt:#9CC2FF}
 html[data-theme="nuit"] .qc-f-consulting{--accent-txt:#C7B5FF}
 /* Bouton « i » (définition) */
@@ -544,7 +578,7 @@ html[data-theme="nuit"] .qc-info:hover{color:#9CC2FF;border-color:#9CC2FF}
 .qc-fiche-quand{margin:0;color:var(--txt2)}
 .qc-fiche-etapes{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:8px;line-height:1.5}
 /* Vue « Par famille » (portrait) */
-.qc-fam-onglets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:4px;border-radius:14px;background:var(--fond2);border:1px solid var(--ligne);margin-bottom:10px}
+.qc-fam-onglets{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:4px;padding:4px;border-radius:14px;background:var(--fond2);border:1px solid var(--ligne);margin-bottom:10px}
 .qc-fam-onglets button{min-height:44px;border:0;border-radius:10px;background:transparent;color:var(--txt);font:inherit;font-size:.95rem;font-weight:800;cursor:pointer}
 .qc-fam-onglets button[aria-pressed="true"]{background:var(--bleu);color:#fff}
 .qc-liste-b{display:flex;flex-direction:column;gap:8px}
@@ -569,10 +603,10 @@ html[data-theme="nuit"] .qc-info:hover{color:#9CC2FF;border-color:#9CC2FF}
 .qc-sugg-flottant>p{background:var(--carte);padding:10px 14px;border-radius:12px;margin:0;box-shadow:var(--ombre)}
 .qc-envoye-flottant{position:absolute;top:62px;right:16px;z-index:6;background:var(--carte);padding:6px 12px;border-radius:10px;box-shadow:var(--ombre);pointer-events:none}
 .qc-envoye-flottant:empty{display:none}
-.qc-pay-grille{flex:1;display:grid;grid-template-columns:96px minmax(0,1fr);grid-template-rows:repeat(3,minmax(64px,1fr));align-items:stretch;gap:8px 10px}
+.qc-pay-grille{flex:1;display:grid;grid-template-columns:96px minmax(0,1fr);grid-template-rows:repeat(4,minmax(52px,1fr));align-items:stretch;gap:8px 10px}
 .qc-pay-fam{align-self:center;font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--accent-txt)}
 .qc-pay-ligne{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
-.qc-pay-case{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:64px;border-radius:12px;border:1px solid var(--ligne);border-bottom:4px solid var(--accent);background:var(--carte);color:var(--txt);font:inherit;cursor:pointer}
+.qc-pay-case{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:54px;border-radius:12px;border:1px solid var(--ligne);border-bottom:4px solid var(--accent);background:var(--carte);color:var(--txt);font:inherit;cursor:pointer}
 .qc-pay-case:active{background:var(--bleu);color:#fff}
 .qc-pay-code{font-size:1.25rem;font-weight:800;color:var(--accent-txt)}
 .qc-pay-mot{font-size:.8rem;font-weight:700;line-height:1.2;text-align:center}
@@ -670,6 +704,7 @@ html[data-theme="nuit"] .qc-info:hover{color:#9CC2FF;border-color:#9CC2FF}
     <button data-go="progression" aria-label="Progression"></button>
     <button data-go="modules" aria-label="Modules"></button>
     <button data-go="methodes" aria-label="Méthodes"></button>
+    <button data-go="presentation" aria-label="Présentation"></button>
   </nav>
 </div>
 <div id="modale" class="modale cache" role="dialog" aria-modal="true"><div class="boite" id="modale-boite"></div></div>
@@ -1060,11 +1095,12 @@ const PLAN_EXEMPLE = [
    Chaque étape : [titre court, "mot-clé|mot-clé", "phrase de développement"].
    annonce : facultative (sinon construite à partir des titres).
    ===================================================================== */
-const VERSION_APP = "17 nov. 2026, n°14"; /* à changer à chaque mise en ligne, visible dans Réglages et Quel cas */
+const VERSION_APP = "17 nov. 2026, n°15"; /* à changer à chaque mise en ligne, visible dans Réglages et Quel cas */
 const FAMILLES_METHODES = [
   { id:"tracking", nom:"Tracking", ic:"etiquette" },
   { id:"cro", nom:"CRO et média", ic:"cible" },
-  { id:"consulting", nom:"Consulting et restitution", ic:"mallette" }
+  { id:"consulting", nom:"Consulting et restitution", ic:"mallette" },
+  { id:"ia", nom:"IA agentique", ic:"eclair" }
 ];
 const REGLES_OR = ["Annoncer le plan.", "Étapes logiques.", "Conclusion systématique.", "Trois points maximum."];
 const METHODES = [
@@ -1273,7 +1309,52 @@ const METHODES = [
       ["Aucune critique", "pas de critique de l'employeur actuel", "Je ne critique pas mon employeur actuel : je vais vers quelque chose."]
     ],
     piege:"Expliquer son départ par ce qu'on fuit plutôt que par ce qu'on recherche.",
-    conclusion:"Je veux appliquer ma méthode à plusieurs clients, dans un cabinet qui fait exactement ce métier." }
+    conclusion:"Je veux appliquer ma méthode à plusieurs clients, dans un cabinet qui fait exactement ce métier." },
+
+  /* ---------- IA agentique ---------- */
+  { id:"A1", famille:"ia", titre:"Recette de tracking assistée par un agent",
+    annonce:"Je procède en cinq étapes : cadrer les parcours, définir les scénarios, faire rejouer par l'agent, valider les écarts, contrôler après correction.",
+    etapes:[
+      ["Cadrer les parcours", "parcours à tester|priorités", "Je cadre les parcours à tester, en commençant par les plus critiques."],
+      ["Définir les scénarios", "parcours|événements attendus", "Je définis les scénarios : le parcours et les événements attendus à chaque étape."],
+      ["Rejeu par l'agent", "rejouer les scénarios|comparer au back-office", "L'agent rejoue les scénarios et compare les volumes au back-office."],
+      ["Valider les écarts", "bloquant ou mineur|un ticket par écart|décision humaine", "L'agent classe les écarts, bloquants ou mineurs, et ouvre un ticket par écart ; je valide les écarts bloquants et je décide de la correction."],
+      ["Contrôler après correction", "nouveau rejeu|contrôle", "Après la correction, je fais rejouer les scénarios pour contrôler."]
+    ],
+    piege:"Laisser l'agent décider seul de la correction.",
+    conclusion:"L'agent accélère la recette, mais la décision reste humaine." },
+  { id:"A2", famille:"ia", titre:"Diagnostic de baisse assisté par un agent",
+    etapes:[
+      ["Cadrer la baisse", "périmètre|période|définition", "Je cadre la baisse : périmètre, période et définition de l'indicateur."],
+      ["Source de référence", "source confirmée", "Je confirme la source de référence."],
+      ["Décomposition par l'agent", "commandes × panier moyen|canal|appareil|page", "L'agent décompose : commandes multipliées par le panier moyen, puis par canal, appareil et page."],
+      ["Hypothèses classées", "preuve|probabilité", "L'agent classe les hypothèses selon la preuve disponible et leur probabilité."],
+      ["Décision humaine", "hypothèse à vérifier|action", "Je choisis l'hypothèse à vérifier et l'action à lancer."],
+      ["Suivi", "effet de l'action", "Je suis l'effet de l'action."]
+    ],
+    piege:"Conclure à un problème de tracking parce que les commandes baissent.",
+    conclusion:"L'agent trie les pistes, le consultant décide de l'action." },
+  { id:"A3", famille:"ia", titre:"Veille et classification des cookies (référentiel Luciol)",
+    etapes:[
+      ["Crawl hebdomadaire", "crawl du site|chaque semaine", "Chaque semaine, un crawl liste les cookies déposés par le site."],
+      ["Comparaison au référentiel", "référentiel Luciol", "Je compare le résultat au référentiel Luciol."],
+      ["Nouveaux cookies", "cookies inconnus", "Je repère les nouveaux cookies."],
+      ["Proposition de classification", "finalité|catégorie", "L'agent propose une classification par finalité."],
+      ["Validation du DPO", "validation juridique", "Le DPO valide la classification."],
+      ["Mise à jour", "référentiel à jour", "Je mets à jour le référentiel."]
+    ],
+    piege:"Publier une classification sans validation juridique.",
+    conclusion:"Automatiser la veille, valider la conformité." },
+  { id:"A4", famille:"ia", titre:"Commentaire automatique des KPI (reporting)",
+    etapes:[
+      ["Collecte", "KPI de la semaine", "Je collecte les KPI de la semaine."],
+      ["Comparaison", "semaine précédente|objectif", "Je compare à la semaine précédente et à l'objectif."],
+      ["Anomalies", "au-delà d'un seuil", "Je détecte les anomalies au-delà d'un seuil."],
+      ["Rédaction", "modèle de langage|commentaire", "Un modèle de langage rédige le commentaire."],
+      ["Relecture", "relecture humaine|avant envoi", "Je relis avant l'envoi."]
+    ],
+    piege:"Envoyer un commentaire généré sans relecture.",
+    conclusion:"Le modèle rédige, l'analyste valide." }
 ];
 /* Libellés courts, pour reconnaître un cas d'un coup d'œil (boutons de la Saisie, historique) */
 const LIBELLES_COURTS = {
@@ -1282,13 +1363,15 @@ const LIBELLES_COURTS = {
   C1:"Désaccord marketing et tech", C2:"Test A/B formulaire", C3:"Test non concluant (0,12)", C4:"Test significatif (0,04)",
   C5:"Segment faible (tablette)", C6:"Formuler une hypothèse", C7:"Baisse de conversion",
   K1:"Résultat garanti", K2:"Baisse du chiffre d'affaires", K3:"Recommander une action", K4:"Parler à un dirigeant",
-  K5:"« Le site marche bien »", K6:"Pourquoi le conseil"
+  K5:"« Le site marche bien »", K6:"Pourquoi le conseil",
+  A1:"Recette par agent", A2:"Diagnostic par agent", A3:"Veille cookies (Luciol)", A4:"Commentaire des KPI"
 };
 /* Un mot repère par cas, pour les grilles compactes (vue paysage) */
 const MOTS_REPERES = {
   T1:"Projet", T2:"Essai", T3:"Écart CRM", T4:"Chute", T5:"Doublon", T6:"Appli",
   C1:"Désaccord", C2:"Test A/B", C3:"p 0,12", C4:"p 0,04", C5:"Tablette", C6:"Hypothèse", C7:"Conversion",
-  K1:"Garanti", K2:"CA", K3:"Reco", K4:"Dirigeant", K5:"Site OK", K6:"Conseil"
+  K1:"Garanti", K2:"CA", K3:"Reco", K4:"Dirigeant", K5:"Site OK", K6:"Conseil",
+  A1:"Recette", A2:"Baisse", A3:"Cookies", A4:"KPI"
 };
 METHODES.forEach(m => { m.court = LIBELLES_COURTS[m.id] || m.titre; m.repere = MOTS_REPERES[m.id] || m.id; });
 function libelleCas(code){ const m = METHODES.find(x => x.id === code); return m ? m.court : code; }
@@ -2086,9 +2169,9 @@ function route(){
   const saisieQC = nom === "quelcas" && (arg === "saisie" || (!arg && window.innerWidth <= 900));
   const pleinEcran = nom === "session" || saisieQC;
   const nav = $("#nav"); nav.classList.toggle("cache", pleinEcran); $("#app").classList.toggle("plein", pleinEcran);
-  const onglet = { accueil:"accueil", reglages:"accueil", entrainer:"entrainer", debrief:"entrainer", progression:"progression", modules:"modules", module:"modules", methodes:"methodes", quelcas:"methodes" }[nom] || "accueil";
+  const onglet = { accueil:"accueil", reglages:"accueil", entrainer:"entrainer", debrief:"entrainer", progression:"progression", modules:"modules", module:"modules", methodes:"methodes", quelcas:"methodes", presentation:"presentation" }[nom] || "accueil";
   $$("#nav button").forEach(b => { if(b.dataset.go === onglet) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current"); });
-  const R = { accueil:rAccueil, entrainer:rEntrainer, progression:rProgression, modules:rModules, module:rModule, reglages:rReglages, session:rSession, debrief:rDebrief, methodes:rMethodes, quelcas:rQuelCas }[nom] || rAccueil;
+  const R = { accueil:rAccueil, entrainer:rEntrainer, progression:rProgression, modules:rModules, module:rModule, reglages:rReglages, session:rSession, debrief:rDebrief, methodes:rMethodes, quelcas:rQuelCas, presentation:rPresentation }[nom] || rAccueil;
   R(arg ? decodeURIComponent(arg) : undefined);
   window.scrollTo(0,0);
 }
@@ -2122,7 +2205,8 @@ function rAccueil(){
     ["ouvrirAnglais","globe","Anglais","15 questions, niveau C1"],
     ["ouvrirVocab","texte","Vocabulaire","5 minutes, idéal dans le bus"],
     ["ouvrirAtelier","etiquette","Atelier plan de marquage","Recommandé sur PC"],
-    ["ouvrirQuelCas","etapes","Quel cas ?","Téléphone et ordinateur reliés"]
+    ["ouvrirQuelCas","etapes","Quel cas ?","Téléphone et ordinateur reliés"],
+    ["ouvrirPresentation","personne","Présentation","Pitch 90 s et projets"]
   ].map(t => '<button class="tuile-act" role="listitem" data-action="'+t[0]+'">'+ic(t[1])+'<span><strong>'+t[2]+'</strong><span>'+t[3]+'</span></span></button>').join("");
   E().innerHTML =
   '<section class="hero">'+(nuit ? paysageNuit() : paysageJour())+
@@ -2843,7 +2927,7 @@ function listeQuestions(qs){
 }
 function rModule(id){
   const m = MODULES.find(x => x.id === id); if(!m){ go("modules"); return; }
-  const spec = { cas:rCas, vocabulaire:rVocab, atelier:rAtelier, flashcards:rFlash, poche:rPoche, projets:rProjets, lexique:rLexique }[id];
+  const spec = { cas:rCas, vocabulaire:rVocab, atelier:rAtelier, flashcards:rFlash, poche:rPoche, projets:rProjets, lexique:rLexique, presentation:rPresentation }[id];
   if(spec){ spec(); return; }
   const qs = QB.filter(q => q.module === id);
   let extra = "";
@@ -3262,7 +3346,7 @@ $("#modale").addEventListener("click", e => { if(e.target.id === "modale" && MOD
 
 /* ---------- Démarrage ---------- */
 function init(){
-  const ICN = { accueil:"maison", entrainer:"lune", progression:"cercle", modules:"grille", methodes:"etapes" };
+  const ICN = { accueil:"maison", entrainer:"lune", progression:"cercle", modules:"grille", methodes:"etapes", presentation:"personne" };
   $$("#nav button").forEach(b => b.innerHTML = ic(ICN[b.dataset.go])+'<span class="lib">'+esc(b.getAttribute("aria-label"))+'</span><span class="point"></span>');
   appliquerTheme(); setInterval(appliquerTheme, 60000);
   const enc = store.get("encours", null);
@@ -3296,6 +3380,10 @@ const TRIGGERS = [
   { code:"K3", mots:["recommandation","recommander","que recommandes-tu"] },
   { code:"K4", mots:["dirigeant","comité","direction","codir","comex"] },
   { code:"K5", mots:["le site marche bien","marche bien","à quoi sert le tracking"] },
+  { code:"A1", mots:["recette automatisee","recette par agent","rejouer les scenarios"] },
+  { code:"A2", mots:["diagnostic par agent","hypotheses classees"] },
+  { code:"A3", mots:["cookie","cookies","referentiel","crawl","luciol"] },
+  { code:"A4", mots:["kpi","commentaire","e-mail","email","reporting"] },
   { code:"K6", mots:["pourquoi le conseil","conseil","pourquoi nous","pourquoi fifty-five"] }
 ];
 function chercherCas(texte){
@@ -3306,7 +3394,15 @@ function chercherCas(texte){
     let s = 0;
     t.mots.forEach(w => { const k = norm(w); if(k && n.includes(k)) s += 1 + k.length / 10; });
     return { code:t.code, s };
-  }).filter(x => x.s > 0).sort((a,b) => b.s - a.s);
+  }).filter(x => x.s > 0);
+  /* Combinaisons : « recette » + « agent » → A1, « baisse » + « agent » → A2 ; « IA », « agent » seuls → A1 à A4 */
+  const mots = new Set(n.split(/[^a-z0-9]+/).filter(Boolean)), a = w => mots.has(w) || mots.has(w + "s");
+  const ia = ["ia","ai","agent","agentique","agentic"].some(a);
+  const bonus = (code, v) => { const x = scores.find(y => y.code === code); if(x) x.s += v; else scores.push({ code, s:v }); };
+  if(a("agent") && a("recette")) bonus("A1", 20);
+  if(a("agent") && (a("baisse") || a("drop"))) bonus("A2", 20);
+  if(ia) ["A1","A2","A3","A4"].forEach((c, i) => bonus(c, 8 - i * 0.1));
+  scores.sort((x,y) => y.s - x.s);
   return scores.slice(0, 4).map(x => METHODES.find(m => m.id === x.code)).filter(Boolean);
 }
 
@@ -3471,7 +3567,7 @@ function rSaisiePaysageQC(){
    « detail » : grands boutons avec le nom du cas et ses mots-clés ; « codes » : grille compacte T1 à K6. */
 function vueBoutonsQC(){ return store.get("quelcasVue", "famille") === "codes" ? "codes" : "famille"; }
 function familleQC(){ const f = store.get("quelcasFamille", "tracking"); return FAMILLES_METHODES.some(x => x.id === f) ? f : "tracking"; }
-const NOMS_ONGLETS_QC = { tracking:"Tracking", cro:"CRO, média", consulting:"Consulting" };
+const NOMS_ONGLETS_QC = { tracking:"Tracking", cro:"CRO, média", consulting:"Consulting", ia:"IA" };
 function motsClesCas(code){
   const t = TRIGGERS.find(x => x.code === code); if(!t) return [];
   const vus = new Set(); return (langueMeth() === "en" ? (TRIGGERS_EN[code] || []) : (t.motsFR || t.mots)).filter(w => { const k = norm(w); if(vus.has(k) || [...vus].some(v => v.includes(k) || k.includes(v))) return false; vus.add(k); return true; }).slice(0, 4);
@@ -3600,6 +3696,22 @@ Object.assign(ACTIONS, {
    QUESTIONS_PROBABLES : [question que le manager peut poser, piste de réponse en une ligne]
    ===================================================================== */
 const QUESTIONS_PROBABLES = {
+  A1:[["Pourquoi un agent pour la recette ?","Pour rejouer vite beaucoup de scénarios et comparer au back-office."],
+      ["Qui décide de la correction ?","L'humain : l'agent classe et ouvre des tickets, je valide."],
+      ["Comment l'agent sait-il ce qui est attendu ?","Grâce aux scénarios : parcours et événements attendus."],
+      ["Et après la correction ?","On fait rejouer les scénarios pour contrôler."]],
+  A2:[["Que fait l'agent exactement ?","Il décompose la baisse et classe les hypothèses selon la preuve."],
+      ["Pourquoi ne pas le laisser conclure ?","Une hypothèse probable n'est pas une cause prouvée : je vérifie et je décide."],
+      ["Et si les commandes baissent ?","Ça ne prouve pas un problème de tracking : je vérifie la source."],
+      ["Comment mesures-tu l'effet ?","Je suis l'indicateur après l'action."]],
+  A3:[["Pourquoi un crawl chaque semaine ?","Les cookies changent avec les mises en production et les partenaires."],
+      ["Qui valide la classification ?","Le DPO : c'est une validation juridique."],
+      ["Que fait l'agent ?","Il compare au référentiel et propose une finalité pour chaque nouveau cookie."],
+      ["Quel risque ?","Publier une classification non validée."]],
+  A4:[["Pourquoi un modèle de langage ?","Pour rédiger vite un premier commentaire des KPI."],
+      ["Comment éviter les erreurs ?","Des seuils pour les anomalies, et une relecture humaine avant l'envoi."],
+      ["Que compares-tu ?","La semaine précédente et l'objectif."],
+      ["Qui est responsable du message ?","L'analyste, qui relit et valide."]],
   T1:[["Comment priorises-tu les événements à suivre ?","Par la décision métier qu'ils éclairent : d'abord les KPI prioritaires, le reste ensuite."],
       ["Qui valide le plan de marquage ?","Le marketing pour l'usage, la technique pour la faisabilité : double validation."],
       ["Comment sais-tu que le tracking est fiable après la mise en production ?","Volumes jour par jour, comparaison au back-office, alertes."],
@@ -3788,6 +3900,41 @@ Object.assign(ACTIONS, {
    METHODES_EN : mêmes codes que METHODES ; étapes [titre, "mot-clé|mot-clé", phrase].
    ===================================================================== */
 const METHODES_EN = {
+  A1:{ titre:"Agent-assisted tracking QA", court:"Agent-led QA", repere:"QA",
+    annonce:"I'd do it in five steps: scope the journeys, define the scenarios, let the agent replay them, validate the gaps, check after the fix.",
+    etapes:[["Scope journeys","journeys to test|priorities","I choose the journeys to test, the critical ones first."],
+      ["Scenarios","journey|expected events","I define the scenarios: the journey and the events we expect."],
+      ["Agent replay","replay scenarios|compare with back office","The agent replays the scenarios and compares volumes with the back office."],
+      ["Validate gaps","blocking or minor|one ticket per gap|human decision","The agent sorts gaps into blocking or minor and opens one ticket per gap. I validate the blocking ones and decide the fix."],
+      ["Check after fix","replay again","After the fix, the agent replays the scenarios again."]],
+    piege:"Letting the agent decide the fix alone.",
+    conclusion:"The agent makes testing faster, but people make the decision." },
+  A2:{ titre:"Agent-assisted drop diagnosis", court:"Agent-led diagnosis", repere:"Drop",
+    etapes:[["Scope the drop","scope|period|definition","I set the scope, the period and the definition."],
+      ["Reference source","confirmed source","I confirm the reference source."],
+      ["Agent breakdown","orders × AOV|channel|device|page","The agent splits it: orders times average order value, then channel, device and page."],
+      ["Ranked hypotheses","evidence|likelihood","The agent ranks the hypotheses by evidence and likelihood."],
+      ["Human decision","hypothesis to check|action","I choose which hypothesis to check and what to do."],
+      ["Follow-up","effect of the action","I follow the effect of the action."]],
+    piege:"Saying it's a tracking issue just because orders are down.",
+    conclusion:"The agent sorts the leads. The consultant decides the action." },
+  A3:{ titre:"Cookie monitoring and classification (Luciol)", court:"Cookie watch (Luciol)", repere:"Cookies",
+    etapes:[["Weekly crawl","site crawl|every week","Every week, a crawl lists the cookies on the site."],
+      ["Compare","Luciol reference list","I compare the result with the Luciol reference list."],
+      ["New cookies","unknown cookies","I spot the new cookies."],
+      ["Suggested category","purpose|category","The agent suggests a category for each cookie, based on its purpose."],
+      ["DPO sign-off","legal check","The DPO validates the classification."],
+      ["Update","updated list","I update the reference list."]],
+    piege:"Publishing a classification without a legal check.",
+    conclusion:"Automate the monitoring, validate the compliance." },
+  A4:{ titre:"Automatic KPI commentary (reporting)", court:"KPI commentary", repere:"KPI",
+    etapes:[["Collect","weekly KPIs","I collect the weekly KPIs."],
+      ["Compare","last week|target","I compare with last week and with the target."],
+      ["Anomalies","above a threshold","I flag anomalies above a threshold."],
+      ["Draft","language model|commentary","A language model writes the commentary."],
+      ["Review","human review|before sending","I review it before sending."]],
+    piege:"Sending a generated commentary without review.",
+    conclusion:"The model writes. The analyst validates." },
   T1:{ titre:"Running a tracking project", court:"Tracking project", repere:"Project",
     annonce:"I'd do it in seven steps: scope, audit, tracking plan, build, testing, go-live check, monitoring.",
     etapes:[["Scope","business need|KPIs|decision","I start with the business need. What decision will the data support? Which KPIs?"],
@@ -3954,6 +4101,22 @@ const METHODES_EN = {
 };
 
 const QUESTIONS_EN = {
+  A1:[["Why use an agent for QA?","It replays many scenarios fast and compares with the back office."],
+      ["Who decides the fix?","A person. The agent sorts and opens tickets, I validate."],
+      ["How does the agent know what to expect?","From the scenarios: journey and expected events."],
+      ["And after the fix?","The agent replays the scenarios to check."]],
+  A2:[["What does the agent do?","It splits the drop and ranks hypotheses by evidence."],
+      ["Why not let it conclude?","A likely cause is not a proven one. I check and decide."],
+      ["What if orders are down?","That doesn't prove a tracking issue. I check the source."],
+      ["How do you measure the effect?","I follow the KPI after the action."]],
+  A3:[["Why a weekly crawl?","Cookies change with releases and partners."],
+      ["Who validates the classification?","The DPO. It's a legal check."],
+      ["What does the agent do?","It compares with the reference list and suggests a purpose for each new cookie."],
+      ["What's the risk?","Publishing a classification that isn't validated."]],
+  A4:[["Why a language model?","To write a first KPI commentary fast."],
+      ["How do you avoid mistakes?","Thresholds for anomalies, and a human review before sending."],
+      ["What do you compare?","Last week and the target."],
+      ["Who owns the message?","The analyst, who reviews and validates."]],
   T1:[["How do you choose what to track?","Start from the decision. Priority KPIs first."],
       ["Who signs off the tracking plan?","Marketing for the use. The tech team for the build."],
       ["How do you know the tracking works after launch?","Daily volumes, back office check, alerts. Explain the gaps."],
@@ -4034,6 +4197,8 @@ const QUESTIONS_EN = {
 
 /* Mots déclencheurs anglais (ajoutés à la recherche de la Saisie, quelle que soit la langue) */
 const TRIGGERS_EN = {
+  A1:["agent qa","agent testing","replay scenarios"], A2:["agent diagnosis","ranked hypotheses"],
+  A3:["cookie","crawl","consent list"], A4:["kpi","commentary","weekly report","email"],
   T1:["tracking project","implement tracking","set up tracking","steps"], T2:["test drive","quote","lead form","booking"],
   T3:["gap","discrepancy","crm","doesn't match","not matching"], T4:["release","go-live","drop after","redesign"],
   T5:["duplicate","twice","double counting","doubled"], T6:["mobile app","the app","website and app","native app"],
@@ -4048,7 +4213,7 @@ const TRIGGERS_EN = {
 TRIGGERS.forEach(t => { t.motsFR = t.mots.slice(); t.mots = t.mots.concat(TRIGGERS_EN[t.code] || []); });
 
 /* ---------- Bascule de langue ---------- */
-const FAMILLES_EN = { tracking:"Tracking", cro:"CRO and media", consulting:"Consulting and reporting" };
+const FAMILLES_EN = { tracking:"Tracking", cro:"CRO and media", consulting:"Consulting and reporting", ia:"Agentic AI" };
 const REGLES_EN = ["Signpost your plan.", "Logical steps.", "Always wrap up.", "Three points max."];
 const NOMBRES_EN = ["zero","one","two","three","four","five","six","seven","eight","nine","ten"];
 const METHODES_FR = METHODES.map(m => ({ titre:m.titre, court:m.court, etapes:m.etapes, piege:m.piege, conclusion:m.conclusion, annonce:m.annonce, repere:m.repere }));
@@ -4233,6 +4398,14 @@ Object.assign(ACTIONS, {
    Aucun chiffre ajouté : seuls ceux déjà présents dans les méthodes. [à compléter] = à remplir par toi.
    ===================================================================== */
 const REPONSES_TYPES = {
+  A1:{ fr:"Je procède en cinq étapes. Je cadre d'abord les parcours à tester, puis je définis les scénarios : le parcours et les événements attendus. L'agent rejoue ces scénarios et compare les volumes au back-office. Il classe les écarts, bloquants ou mineurs, et ouvre un ticket par écart ; je valide les écarts bloquants et je décide de la correction. Après la correction, je fais rejouer les scénarios pour contrôler. Pour conclure : l'agent accélère la recette, mais la décision reste humaine.",
+       en:"I'd do it in five steps. First, I choose the journeys to test and define the scenarios. Then the agent replays them and compares volumes with the back office. It sorts the gaps and opens one ticket per gap, and I decide the fix for the blocking ones. After the fix, the agent replays the scenarios to check." },
+  A2:{ fr:"Je cadre d'abord la baisse : périmètre, période et définition. Je confirme la source de référence. L'agent décompose la baisse, commandes et panier moyen, puis canal, appareil et page, et il classe les hypothèses selon la preuve et la probabilité. Je choisis l'hypothèse à vérifier et l'action à lancer, puis je suis son effet. Une baisse des commandes ne prouve pas un problème de tracking. Pour conclure : l'agent trie les pistes, le consultant décide de l'action.",
+       en:"First, I set the scope, the period and the definition. I confirm the reference source. The agent splits the drop by orders and average order value, then by channel, device and page, and it ranks the hypotheses by evidence. I choose what to check and what to do, then I follow the effect. Fewer orders don't prove a tracking issue." },
+  A3:{ fr:"Chaque semaine, un crawl liste les cookies déposés par le site. Je compare le résultat au référentiel Luciol et je repère les nouveaux cookies. L'agent propose une classification par finalité, que le DPO valide. Ensuite, je mets à jour le référentiel. Pour conclure : on automatise la veille, mais la conformité se valide.",
+       en:"Every week, a crawl lists the cookies on the site. I compare it with the Luciol reference list and spot the new cookies. The agent suggests a purpose for each one. The DPO validates the classification. Then I update the reference list." },
+  A4:{ fr:"Je collecte les KPI de la semaine et je les compare à la semaine précédente et à l'objectif. Je détecte les anomalies au-delà d'un seuil. Un modèle de langage rédige un premier commentaire. Je le relis avant l'envoi. Pour conclure : le modèle rédige, l'analyste valide.",
+       en:"I collect the weekly KPIs and compare them with last week and the target. I flag anomalies above a threshold. A language model writes a first commentary. I review it before sending. The model writes, the analyst validates." },
   T1:{ fr:"Je procède en sept étapes. Je cadre d'abord le besoin métier et les indicateurs, puis j'audite le suivi existant. Je prépare le plan de marquage et je le fais valider par le marketing et par l'équipe technique. L'équipe technique met en place le suivi, j'organise la recette et je fais corriger les problèmes bloquants. Je valide avant la mise en production. Après le lancement, je surveille les données et je les compare au back-office quand c'est pertinent, en expliquant les écarts inattendus : le consentement et des définitions différentes en expliquent une partie. Pour conclure : le suivi est fiable quand les écarts sont connus, stables et expliqués.",
        en:"I'd do it in seven steps. First, I scope the need and the KPIs, and I audit the current tracking. Then I write the tracking plan, and marketing and the tech team sign it off. The tech team builds it, and we test and fix the blocking issues before go-live. After launch, I monitor the data and explain any gap with the back office." },
   T2:{ fr:"Pour suivre une demande d'essai ou de devis, je procède en six étapes. D'abord le déclencheur : l'événement part à la validation réelle de la demande, pas au clic sur le bouton, sinon on compte les erreurs et les doubles clics. Ensuite, un nom normalisé, par exemple demande_essai_envoyee, selon la convention du plan de marquage. J'ajoute les paramètres utiles à l'analyse, comme le modèle ou l'étape, sans aucune donnée personnelle. L'événement ne part que si l'utilisateur a accepté le consentement. Côté destinations : GA4 pour l'analyse, le CRM pour le suivi commercial. Enfin, je compare les volumes jour par jour entre l'outil d'analyse et le CRM. Pour conclure : la mesure est fiable quand les volumes suivent ceux du CRM jour après jour.",
@@ -4307,7 +4480,7 @@ const ECRANS_PALETTE = [
   ["Progression","progression","progression stats score"], ["Modules","modules","modules"],
   ["Méthodes","methodes","methodes cas etapes"], ["Quel cas : Affichage","quelcas/affichage","quel cas affichage ordinateur"],
   ["Quel cas : Saisie","quelcas/saisie","quel cas saisie telephone"], ["Lexique anglais","module/lexique","lexique vocabulaire anglais english"],
-  ["Flashcards","module/flashcards","flashcards cartes revision"], ["Réglages","reglages","reglages parametres cle gemini topic"]
+  ["Flashcards","module/flashcards","flashcards cartes revision"], ["Présentation","presentation","presentation pitch projets"], ["Réglages","reglages","reglages parametres cle gemini topic"]
 ];
 const KB = { combo:null, comboT:null, palSel:0, palRes:[] };
 
@@ -4647,6 +4820,14 @@ function blocCoach(r, i, cible){
    FICHES[code] = { qFr, qEn, mots:[[anglais, français]], vig:[français], vigEn:[anglais] }
    ===================================================================== */
 const FICHES = {
+  A1:{ qFr:"Comment utiliserais-tu un agent IA pour la recette du tracking ?", qEn:"How would you use an AI agent for tracking QA?",
+    mots:[["AI agent","agent IA"],["scenario","scénario"],["blocking issue","problème bloquant"],["ticket","ticket"],["back office","back-office"]] },
+  A2:{ qFr:"Comment un agent IA peut-il aider à expliquer une baisse ?", qEn:"How can an AI agent help explain a drop?",
+    mots:[["hypothesis","hypothèse"],["evidence","preuve"],["average order value (AOV)","panier moyen"],["breakdown","décomposition"]] },
+  A3:{ qFr:"Comment automatiser la veille des cookies d'un site ?", qEn:"How would you automate cookie monitoring on a website?",
+    mots:[["crawl","exploration du site"],["cookie purpose","finalité du cookie"],["DPO","délégué à la protection des données"],["reference list","référentiel"],["compliance","conformité"]] },
+  A4:{ qFr:"Comment automatiser le commentaire d'un reporting hebdomadaire ?", qEn:"How would you automate the commentary of a weekly report?",
+    mots:[["KPI","indicateur clé"],["anomaly","anomalie"],["threshold","seuil"],["language model","modèle de langage"],["review","relecture"]] },
   T1:{ qFr:"Comment piloterais-tu le projet de tracking d'un nouveau site ?", qEn:"How would you run a tracking project for a new website?",
     mots:[["tracking plan","plan de marquage"],["KPI","indicateur clé"],["QA, testing","recette"],["go-live","mise en production"],["back office","back-office"],["consent","consentement"]],
     vig:["Dire le rôle du marketing (l'usage) et celui de l'équipe technique (la faisabilité, la mise en place).","Comparer avec le back-office quand c'est pertinent.","Chercher et expliquer les écarts inattendus."],
@@ -4771,6 +4952,159 @@ Object.assign(ACTIONS, {
     VOIX.demarrer(lang); majMicroQC();
   },
   ecouterCorrectionQC(){ const r = QC.correction; if(r && r.texte){ VOIX.taire(); VOIX.parler(r.texte, langueMeth() === "en" ? "en" : "fr"); } }
+});
+
+/* =====================================================================
+   Écran « Présentation » : pitch de 90 secondes et cartes projets.
+   PROJETS : modifier ici les projets par défaut. Les modifications faites dans l'app
+   sont enregistrées dans localStorage, clé harnais.v1.presentation.
+   Règle : aucun chiffre inventé. Un résultat inconnu reste « [à compléter] ».
+   ===================================================================== */
+const TAGS_PROJETS = ["IA agentique", "IA générative", "Tracking", "CRO", "Consulting", "Reporting", "Analyse"];
+const TAGS_IA = ["IA agentique", "IA générative"];
+const STATUTS_IA = ["Déployé", "Prototype", "Proposé"];
+const AC = "[à compléter]";
+const PROJETS = [
+  { id:"barometre", titre:"Baromètre Data (M2)", tag:["IA agentique"], statut_ia:"Proposé",
+    contexte:"Projet de M2 Data Marketing et IA.", probleme:"Repérer des écarts de contenu sans tout vérifier à la main.",
+    action:"Des agents qui détectent des écarts de contenu.", resultat:AC, apprentissage:AC },
+  { id:"recette", titre:"Recette de tracking (Reelevant, Mediarithmics)", tag:["Tracking"], statut_ia:"Proposé",
+    contexte:"Cultura : tunnel d'achat, balises gérées dans TagCommander.", probleme:"Des données fausses ou incomplètes envoyées aux outils partenaires.",
+    action:"Recette du tunnel et correction des données via TagCommander (JavaScript ES5 ; problème de timing avec le site résolu avec sessionStorage).", resultat:AC, apprentissage:AC },
+  { id:"luciol", titre:"Référentiel cookies Luciol", tag:["Tracking", "IA agentique"], statut_ia:"Proposé",
+    contexte:"Cultura : conformité RGPD des cookies.", probleme:"Savoir quels cookies sont déposés et à quelle finalité ils servent.",
+    action:"Référentiel tenu avec le DPO. Proposition : un agent qui surveille et classe les nouveaux cookies, avec validation juridique (cas A3).", resultat:AC, apprentissage:AC },
+  { id:"eperf", titre:"ePerf Mail", tag:["Reporting", "IA agentique"], statut_ia:"Proposé",
+    contexte:"Reporting de la performance e-commerce.", probleme:"Des e-mails de performance à préparer à la main.",
+    action:"Automatisation des e-mails de performance e-commerce. Proposition : un commentaire des KPI rédigé par un modèle, relu avant l'envoi (cas A4).", resultat:AC, apprentissage:AC },
+  { id:"cookiescan", titre:"Cookie Scan", tag:["Tracking", "IA agentique"], statut_ia:"Proposé",
+    contexte:"RGPD : audit des cookies.", probleme:"Savoir quels cookies un site dépose réellement.",
+    action:"Audit des cookies d'un site.", resultat:AC, apprentissage:AC },
+  { id:"beastly", titre:"Beastly", tag:["IA générative"], statut_ia:"Proposé",
+    contexte:AC, probleme:"Évaluer des influenceurs de façon comparable.",
+    action:"Scoring d'influenceurs avec Apify et un modèle de langage.", resultat:AC, apprentissage:AC },
+  { id:"harnais", titre:"Harnais", tag:["IA générative"], statut_ia:"Déployé",
+    contexte:"Préparation d'entretiens de Digital Analytics Consultant.", probleme:"S'entraîner à l'oral avec un retour précis, en français et en anglais.",
+    action:"Application construite avec Claude Code et l'API Gemini : simulation vocale, méthodes, mode Quel cas, correction par un coach.", resultat:AC, apprentissage:AC },
+  { id:"radio", titre:"Cultura Radio Analyzer", tag:["Analyse"], statut_ia:"Proposé",
+    contexte:"Mesurer les corrélations entre campagnes radio, trafic web et trafic en magasin.", probleme:"Pression des parties prenantes sur le résultat.",
+    action:"Conception et développement d'une application React de suivi.", resultat:AC,
+    apprentissage:"Garder l'intégrité des données face à la pression, et chercher un autre angle d'analyse plutôt que changer le résultat." },
+  { id:"frenchdays", titre:"Impact des French Days", tag:["CRO"], statut_ia:"Proposé",
+    contexte:AC, probleme:AC, action:AC, resultat:AC, apprentissage:AC },
+  { id:"powerbi", titre:"Migration Looker Studio vers Power BI", tag:["Reporting"], statut_ia:"Proposé",
+    contexte:AC, probleme:AC, action:"Migration des rapports de Looker Studio vers Power BI.", resultat:AC, apprentissage:AC },
+  { id:"funnel", titre:"Funnel Live", tag:["Analyse"], statut_ia:"Proposé",
+    contexte:AC, probleme:AC, action:"Entonnoir e-commerce construit à partir du dataset public GA4 dans BigQuery.", resultat:AC, apprentissage:AC }
+];
+const PITCH_DEFAUT = [
+  { id:"qui", titre:"Qui je suis", cible:15,
+    texte:"Je m'appelle {prenom}. Je suis web analyst, avec environ trois ans d'expérience côté annonceur : d'abord à La Poste en web analyse et CRO, puis chez Cultura en alternance. J'utilise au quotidien Adobe Analytics, TagCommander, Looker Studio et Google Apps Script. Je viens de terminer un M2 Data Marketing et IA." },
+  { id:"projets", titre:"Trois projets", cible:60,
+    texte:"Trois projets montrent ce que je fais. D'abord, chez Cultura, la recette du tracking du tunnel d'achat dans TagCommander, pour les outils partenaires Reelevant et Mediarithmics : en JavaScript, j'ai réglé un problème de timing du site avec le sessionStorage, et j'ai fait corriger les données avant qu'elles ne faussent les analyses. Ensuite, le référentiel cookies Luciol, tenu avec le DPO : chaque cookie a une finalité claire, ce qui sécurise la conformité RGPD. Je propose aussi d'automatiser cette veille avec un agent, la validation restant juridique. Enfin, côté IA, pendant mon M2, le Baromètre Data : des agents qui détectent des écarts de contenu. Et pour préparer cet entretien, j'ai construit Harnais, une application d'entraînement, avec Claude Code et l'API Gemini. Ce que je retiens : l'IA accélère l'analyse, mais la décision reste humaine." },
+  { id:"pourquoi", titre:"Pourquoi fifty-five", cible:15,
+    texte:"Je veux rejoindre fifty-five parce que vous réunissez ce qui me motive : le tracking, l'expérimentation et le conseil, pour plusieurs marques, dont l'automobile et la mobilité. J'ai envie d'y apporter cette rigueur, et une utilisation de l'IA avec méthode." }
+];
+
+MODULES.unshift({ id:"presentation", nom:"Présentation", ic:"personne", desc:"Pitch 90 s, projets", special:true });
+function donneesPresentation(){ const o = store.get("presentation", {}); return (o && typeof o === "object") ? o : {}; }
+function majPresentation(p){ store.set("presentation", Object.assign(donneesPresentation(), p)); }
+function pitchBlocs(){
+  const o = donneesPresentation().pitch || {}, prenom = (profil().prenom || "[ton prénom]").trim();
+  return PITCH_DEFAUT.map(b => Object.assign({}, b, { texte:(o[b.id] != null ? o[b.id] : b.texte).replace(/\{prenom\}/g, prenom) }));
+}
+function projetsPresentation(){
+  const o = donneesPresentation().projets || {};
+  return PROJETS.map(p => Object.assign({}, p, o[p.id] || {}));
+}
+const MOTS_PAR_MINUTE = 150;
+function dureePitch(texte){ const n = mots(texte).length; return { mots:n, sec: Math.round(n / MOTS_PAR_MINUTE * 60) }; }
+function marquerACompleter(t){ return esc(t || AC).replace(/\[à compléter\]/g, '<span class="a-completer">[à compléter]</span>'); }
+function phraseProjet(p){
+  const v = x => String(x || AC).trim().replace(/[.\s]+$/, "");
+  return "Projet « " + p.titre + " ». Contexte : " + v(p.contexte) + ". Problème : " + v(p.probleme) + ". Ce que j'ai fait : " + v(p.action) + ". Résultat : " + v(p.resultat) + ". Ce que j'en retiens : " + v(p.apprentissage) + ".";
+}
+function lireFr(texte){
+  try{
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(texte); u.lang = "fr-FR"; u.rate = 1;
+    const v = (VOIX.voixListe || []).find(x => x.lang === "fr-FR") || (VOIX.voixListe || []).find(x => (x.lang || "").startsWith("fr")); if(v) u.voice = v;
+    speechSynthesis.speak(u);
+  }catch(e){ toast("Lecture à voix haute indisponible sur ce navigateur."); }
+}
+
+function rPresentation(){
+  const d = donneesPresentation(), edition = !!d.editionPitch, blocs = pitchBlocs();
+  const total = blocs.reduce((a, b) => a + dureePitch(b.texte).sec, 0), totalMots = blocs.reduce((a, b) => a + dureePitch(b.texte).mots, 0);
+  const filtre = d.filtre || "Tous";
+  const ps = projetsPresentation().filter(p => filtre === "Tous" || (p.tag || []).includes(filtre));
+  E().innerHTML = entete("Présentation", "modules")+'<div class="contenu presentation">'+
+    '<section class="carte pitch"><div class="ligne-titre"><h2>'+ic("chrono")+'Pitch de 90 secondes</h2>'+
+      '<span class="pitch-total '+(total > 100 ? "trop-long" : "")+'">≈ '+fmtMin(total)+' · '+totalMots+' mots</span></div>'+
+      '<p class="muet petit">Estimation à '+MOTS_PAR_MINUTE+' mots par minute. Lis un bloc après l\'autre, à voix haute.</p>'+
+      blocs.map(b => { const du = dureePitch(b.texte);
+        return '<div class="pitch-bloc"><div class="pitch-tete"><b>'+esc(b.titre)+'</b><span class="pitch-duree">≈ '+du.sec+' s (cible '+b.cible+' s)</span>'+
+          '<button class="btn btn-petit" data-action="lireBlocPitch" data-arg="'+b.id+'">'+ic("lecture")+'Lire</button></div>'+
+          (edition ? '<label class="sr" for="pitch-'+b.id+'">'+esc(b.titre)+'</label><textarea id="pitch-'+b.id+'" class="pitch-edit" rows="5">'+esc(b.texte)+'</textarea>'
+                   : '<p class="pitch-texte">'+marquerACompleter(b.texte)+'</p>')+'</div>'; }).join("")+
+      '<div class="flex">'+(edition
+        ? '<button class="btn btn-bleu" data-action="enregistrerPitch">'+ic("coche")+'Enregistrer</button><button class="btn" data-action="annulerPitch">Annuler</button><button class="btn" data-action="pitchDefaut">Revenir au texte de départ</button>'
+        : '<button class="btn btn-bleu" data-action="lirePitch">'+ic("lecture")+'Lire le pitch</button><button class="btn" data-action="arreterLecture">Arrêter</button><button class="btn" data-action="modifierPitch">'+ic("crayon")+'Modifier</button>')+'</div></section>'+
+    '<section class="projets-pres"><h2>Projets</h2>'+
+      '<div class="flex filtres-pres" role="group" aria-label="Filtrer par tag">'+TAGS_PROJETS.concat(["Tous"]).map(t => '<button class="chip" data-action="filtreProjets" data-arg="'+esc(t)+'" aria-pressed="'+(t === filtre)+'">'+esc(t)+' <span class="muet">'+(t === "Tous" ? PROJETS.length : projetsPresentation().filter(p => (p.tag || []).includes(t)).length)+'</span></button>').join("")+'</div>'+
+      (ps.length ? '<div class="grille-pres">'+ps.map(carteProjet).join("")+'</div>' : '<p class="muet">Aucun projet avec ce tag pour l\'instant.</p>')+
+    '</section></div>';
+}
+function carteProjet(p){
+  const ia = (p.tag || []).some(t => TAGS_IA.includes(t));
+  const champ = (lib, v) => '<div><dt>'+lib+'</dt><dd>'+marquerACompleter(v)+'</dd></div>';
+  return '<article class="carte carte-projet">'+
+    '<div class="ligne-titre"><h3>'+esc(p.titre)+'</h3>'+(ia ? '<span class="statut-ia st-'+norm(p.statut_ia || "Proposé").replace(/[^a-z]/g, "")+'">'+esc(p.statut_ia || "Proposé")+'</span>' : "")+'</div>'+
+    '<div class="flex tags-pres">'+(p.tag || []).map(t => '<span class="tag-pres'+(TAGS_IA.includes(t) ? " tag-ia" : "")+'">'+esc(t)+'</span>').join("")+'</div>'+
+    '<dl class="dl-pres">'+champ("Contexte", p.contexte)+champ("Problème", p.probleme)+champ("Action", p.action)+champ("Résultat", p.resultat)+champ("Apprentissage", p.apprentissage)+'</dl>'+
+    '<div class="flex"><button class="btn btn-petit" data-action="copierProjet" data-arg="'+p.id+'">'+ic("copier")+'Copier</button>'+
+    '<button class="btn btn-petit" data-action="modifierProjet" data-arg="'+p.id+'">'+ic("crayon")+'Modifier</button></div></article>';
+}
+function editerProjetPres(id){
+  const p = projetsPresentation().find(x => x.id === id); if(!p) return;
+  const champ = (k, lib, long) => '<label class="champ">'+lib+(long ? '<textarea id="pp-'+k+'" rows="3">'+esc(p[k] || "")+'</textarea>' : '<input id="pp-'+k+'" value="'+esc(p[k] || "")+'">')+'</label>';
+  ouvrirModale('<div class="groupe"><h2>'+esc(p.titre)+'</h2>'+
+    champ("titre", "Titre")+
+    '<label class="champ">Tags (séparés par des virgules)<input id="pp-tag" value="'+esc((p.tag || []).join(", "))+'"><small>Tags possibles : '+esc(TAGS_PROJETS.join(", "))+'</small></label>'+
+    '<label class="champ">Statut IA<select id="pp-statut">'+STATUTS_IA.map(s => '<option'+(s === (p.statut_ia || "Proposé") ? " selected" : "")+'>'+s+'</option>').join("")+'</select></label>'+
+    champ("contexte", "Contexte", true)+champ("probleme", "Problème", true)+champ("action", "Action", true)+
+    champ("resultat", "Résultat (chiffre réel uniquement, sinon laisse [à compléter])", true)+champ("apprentissage", "Apprentissage", true)+
+    '<div class="flex"><button class="btn btn-bleu" data-action="enregistrerProjet" data-arg="'+id+'">Enregistrer</button><button class="btn" data-action="fermerFeuille">Annuler</button>'+
+    '<button class="btn" data-action="projetDefaut" data-arg="'+id+'">Revenir aux valeurs de départ</button></div></div>');
+}
+
+Object.assign(ACTIONS, {
+  ouvrirPresentation(){ go("presentation"); },
+  lirePitch(){ lireFr(pitchBlocs().map(b => b.texte).join(" ")); },
+  lireBlocPitch(el){ const b = pitchBlocs().find(x => x.id === el.dataset.arg); if(b) lireFr(b.texte); },
+  arreterLecture(){ try{ speechSynthesis.cancel(); }catch(e){} },
+  modifierPitch(){ majPresentation({ editionPitch:true }); rPresentation(); },
+  annulerPitch(){ majPresentation({ editionPitch:false }); rPresentation(); },
+  enregistrerPitch(){
+    const o = {}; PITCH_DEFAUT.forEach(b => { const t = $("#pitch-" + b.id); if(t) o[b.id] = t.value.trim(); });
+    majPresentation({ pitch:o, editionPitch:false }); rPresentation(); toast("Pitch enregistré.");
+  },
+  async pitchDefaut(){ if(await confirmer("Revenir au texte de départ du pitch ?", "Revenir")){ majPresentation({ pitch:{}, editionPitch:false }); rPresentation(); } },
+  filtreProjets(el){ majPresentation({ filtre:el.dataset.arg }); rPresentation(); },
+  copierProjet(el){ const p = projetsPresentation().find(x => x.id === el.dataset.arg); if(p) copier(phraseProjet(p)); },
+  modifierProjet(el){ editerProjetPres(el.dataset.arg); },
+  enregistrerProjet(el){
+    const id = el.dataset.arg, d = donneesPresentation(), o = d.projets || {}, v = k => ($("#pp-" + k).value || "").trim();
+    o[id] = { titre:v("titre") || PROJETS.find(p => p.id === id).titre,
+      tag:v("tag").split(",").map(x => x.trim()).filter(Boolean),
+      statut_ia:$("#pp-statut").value, contexte:v("contexte") || AC, probleme:v("probleme") || AC, action:v("action") || AC,
+      resultat:v("resultat") || AC, apprentissage:v("apprentissage") || AC };
+    majPresentation({ projets:o }); fermerModale(); rPresentation(); toast("Projet enregistré.");
+  },
+  async projetDefaut(el){
+    const id = el.dataset.arg; fermerModale();
+    if(await confirmer("Revenir aux valeurs de départ de ce projet ?", "Revenir")){ const d = donneesPresentation(), o = d.projets || {}; delete o[id]; majPresentation({ projets:o }); rPresentation(); }
+  }
 });
 
 /* ---------- Méthodes : liste des cas d'usage et feuille stepper ---------- */
