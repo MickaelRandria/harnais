@@ -361,6 +361,51 @@ label.champ{display:flex;flex-direction:column;gap:6px;font-weight:600}
   .fil{padding-left:64px;padding-right:64px}
   .sess-bas{padding-left:64px;padding-right:64px}
 }
+/* ---------- Méthodes ---------- */
+.nav button{width:60px}
+.regles-or{display:flex;flex-direction:column;gap:10px}
+.regles{margin:0;padding:0;list-style:none;display:grid;grid-template-columns:1fr 1fr;gap:8px 12px;counter-reset:r}
+.regles li{counter-increment:r;display:flex;gap:8px;align-items:baseline;font-weight:700}
+.regles li::before{content:counter(r);flex:none;display:inline-grid;place-items:center;width:24px;height:24px;border-radius:50%;background:var(--bleu);color:#fff;font-size:.8rem}
+.famille-meth{display:flex;flex-direction:column;gap:12px}
+.famille-meth h2{display:flex;align-items:center;gap:10px;font-size:1.2rem}
+.famille-meth h2 .ic{color:var(--bleu)}
+html[data-theme="nuit"] .famille-meth h2 .ic{color:#9CC2FF}
+.grille-meth{display:grid;grid-template-columns:1fr;gap:10px}
+.carte-meth{display:flex;flex-direction:column;align-items:flex-start;gap:6px;text-align:left;padding:16px;border-radius:16px;background:var(--carte);border:1px solid var(--ligne);color:var(--txt);cursor:pointer;box-shadow:var(--ombre);min-height:88px;font:inherit}
+.carte-meth.revisee{border-color:rgba(76,217,100,.6)}
+.meth-haut{display:flex;width:100%;justify-content:space-between;align-items:center}
+.meth-id{font-size:.8rem;font-weight:800;letter-spacing:.06em;color:var(--orange-txt)}
+.meth-ok{display:inline-grid;place-items:center;width:28px;height:28px;border-radius:50%;background:rgba(76,217,100,.18);color:var(--vert-txt)}
+.meth-ok .ic{width:18px;height:18px}
+.meth-titre{font-weight:700;font-size:1.05rem;line-height:1.35}
+.meth-info{color:var(--txt2);font-size:.9rem}
+.feuille-meth{display:flex;flex-direction:column;gap:14px}
+.feuille-meth h2{font-size:1.35rem;outline:none}
+.annonce-meth{display:flex;flex-direction:column;align-items:flex-start;gap:10px;padding:14px 16px;border-radius:14px;background:rgba(31,111,224,.09);border:1px solid rgba(31,111,224,.35)}
+.annonce-meth p{margin:0;font-weight:600;line-height:1.55}
+.stepper{list-style:none;margin:0;padding:0;display:flex;flex-direction:column}
+.etape{position:relative}
+.etape:not(:last-child)::after{content:"";position:absolute;left:21px;top:48px;bottom:-4px;width:2px;background:var(--ligne)}
+.etape-btn{all:unset;box-sizing:border-box;display:flex;gap:14px;width:100%;padding:8px 4px 14px;cursor:pointer;border-radius:12px}
+.etape-btn:focus-visible{outline:3px solid #FFB547}
+.etape-num{flex:none;display:grid;place-items:center;width:36px;height:36px;margin-left:3px;border-radius:50%;background:var(--bleu);color:#fff;font-weight:800;position:relative;z-index:1}
+.etape-corps{display:flex;flex-direction:column;gap:8px;min-width:0;padding-top:6px}
+.etape-titre{font-weight:700;font-size:1.05rem}
+.etape-dev{display:none;line-height:1.6;color:var(--txt2)}
+.etape.ouvert .etape-dev{display:block}
+.etape-cache{display:none;font-size:.9rem;color:var(--txt2);font-style:italic}
+.revision .etape-mc,.revision .etape-dev{display:none}
+.revision .etape:not(.revele) .etape-cache{display:block}
+.revision .etape.revele .etape-mc{display:flex}
+.revision .etape.revele .etape-dev{display:block}
+.revision .etape.revele .etape-num{background:var(--vert);color:#0E1A3D}
+.actions-meth .btn{flex:1 1 200px}
+@media (min-width:1024px){
+  .grille-meth{grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:16px}
+  .regles{grid-template-columns:repeat(4,auto);justify-content:start;gap:8px 28px}
+  .nav button{width:100%}
+}
 @media print{.nav,.decor{display:none}#app{box-shadow:none;margin:0}}
 </style>
 </head>
@@ -382,6 +427,7 @@ label.champ{display:flex;flex-direction:column;gap:6px;font-weight:600}
     <button data-go="entrainer" aria-label="Entraîner"></button>
     <button data-go="progression" aria-label="Progression"></button>
     <button data-go="modules" aria-label="Modules"></button>
+    <button data-go="methodes" aria-label="Méthodes"></button>
   </nav>
 </div>
 <div id="modale" class="modale cache" role="dialog" aria-modal="true"><div class="boite" id="modale-boite"></div></div>
@@ -765,6 +811,232 @@ const PLAN_EXEMPLE = [
   { nom:"configurator_complete", page:"Configurateur", declencheur:"Clic sur Voir ma configuration, si consentement mesure d'audience", params:"model_name:string, engine:string, trim:string, price:number", dest:"Adobe Analytics", consent:"oui", statut:"existant" },
   { nom:"Contact_Concession", page:"Fiche concession", declencheur:"Soumission du formulaire de contact", params:"dealer_id:string, email:string", dest:"GA4", consent:"oui", statut:"à modifier" }
 ];
+
+/* =====================================================================
+   MÉTHODES : données des cas d'usage (écran « Méthodes »)
+   Pour mettre à jour : modifier l'objet METHODES ci-dessous.
+   Chaque étape : [titre court, "mot-clé|mot-clé", "phrase de développement"].
+   annonce : facultative (sinon construite à partir des titres).
+   ===================================================================== */
+const FAMILLES_METHODES = [
+  { id:"tracking", nom:"Tracking", ic:"etiquette" },
+  { id:"cro", nom:"CRO et média", ic:"cible" },
+  { id:"consulting", nom:"Consulting et restitution", ic:"mallette" }
+];
+const REGLES_OR = ["Annoncer le plan.", "Étapes logiques.", "Conclusion systématique.", "Trois points maximum."];
+const METHODES = [
+  /* ---------- Tracking ---------- */
+  { id:"T1", famille:"tracking", titre:"Piloter un projet de tracking",
+    annonce:"Je procède en six étapes : cadrer, auditer, concevoir, valider, déployer, suivre.",
+    etapes:[
+      ["Cadrer", "besoin métier|objectif|KPI prioritaires", "Je pars du besoin métier : quelle décision la donnée doit éclairer, et quels KPI comptent en priorité."],
+      ["Auditer", "existant|outils|écarts connus", "Je fais l'état des lieux : ce qui est déjà mesuré, avec quels outils, et les écarts déjà connus."],
+      ["Concevoir", "plan de marquage|événements|variables|paramètres|consentement RGPD", "Je rédige le plan de marquage : événements, variables, paramètres, et les règles de consentement RGPD."],
+      ["Valider", "double validation|marketing|technique", "Je fais valider le plan deux fois : par le marketing pour l'usage, par la technique pour la faisabilité."],
+      ["Déployer", "recette fonctionnelle|écarts bloquants|mise en production", "Je recette, je fais corriger les écarts bloquants, puis seulement on met en production."],
+      ["Suivre", "volumes par jour|cohérence back-office|alertes", "Je suis les volumes jour par jour, je les compare au back-office et je pose des alertes."]
+    ],
+    piege:"Définir les événements avant le besoin métier, ou déployer sans recette.",
+    conclusion:"Le tracking est validé quand les volumes collent au back-office." },
+  { id:"T2", famille:"tracking", titre:"Suivre une demande (essai, devis)",
+    etapes:[
+      ["Déclencheur", "validation réelle|pas le clic", "Je déclenche l'événement à la validation réelle de la demande, pas au clic sur le bouton."],
+      ["Nom normalisé", "demande_essai_envoyee|convention", "Je lui donne un nom normalisé, par exemple demande_essai_envoyee, selon la convention du plan."],
+      ["Paramètres", "paramètres utiles|aucune donnée personnelle", "J'ajoute les paramètres utiles à l'analyse, sans aucune donnée personnelle."],
+      ["Consentement", "envoi si accepté|CMP", "L'événement ne part que si l'utilisateur a accepté le consentement."],
+      ["Destinations", "GA4 pour l'analyse|CRM pour le commercial", "J'envoie la donnée vers GA4 pour l'analyse et vers le CRM pour le suivi commercial."],
+      ["Comparaison", "volumes jour par jour|GA4 et CRM", "Je compare les volumes jour par jour entre l'outil d'analyse et le CRM."]
+    ],
+    piege:"Compter les demandes au clic, donc les erreurs et les doublons.",
+    conclusion:"La mesure est fiable quand les volumes suivent ceux du CRM jour après jour." },
+  { id:"T3", famille:"tracking", titre:"Écart entre l'outil d'analyse et le CRM",
+    etapes:[
+      ["Référence", "CRM|source de vérité", "Je prends le CRM comme référence pour mesurer l'écart."],
+      ["Stabilité", "écart stable|pas forcément juste", "Je regarde si l'écart est stable, en gardant en tête qu'un écart stable n'est pas forcément juste."],
+      ["Découpage", "navigateur|appareil|OS|source", "Je découpe l'écart par navigateur, appareil, système et source de trafic."],
+      ["Cassure", "date précise|bug de collecte|priorité", "Une cassure nette à une date précise, c'est un bug de collecte : je le traite en priorité."],
+      ["Causes structurelles", "refus de consentement|bloqueurs", "Je chiffre ensuite la part structurelle : refus de consentement et bloqueurs de publicité."],
+      ["Test de bout en bout", "quelques demandes|du formulaire au CRM", "Je suis quelques demandes de bout en bout, du formulaire jusqu'au CRM."],
+      ["Seuil et suivi", "seuil acceptable|suivi dans le temps", "Je fixe un seuil d'écart acceptable et je le suis dans le temps."]
+    ],
+    piege:"Répondre « c'est normal » sans chiffre ni méthode.",
+    conclusion:"L'écart restant est expliqué, chiffré et surveillé avec un seuil." },
+  { id:"T4", famille:"tracking", titre:"Chute après mise en production",
+    etapes:[
+      ["Changements déployés", "liste des changements|date de mise en production", "Je liste d'abord tout ce qui a changé dans la mise en production."],
+      ["Avant et après", "navigateur|appareil|OS", "Je compare avant et après par navigateur, appareil et système pour localiser la chute."],
+      ["Marquage", "TagCommander|confirmation", "Dans TagCommander, je vérifie que la balise de confirmation part toujours."],
+      ["Parcours", "Contentsquare|zones d'abandon", "Avec Contentsquare, je regarde où les utilisateurs abandonnent dans le nouveau parcours."],
+      ["Bots", "gonflent le trafic|ne baissent pas les conversions", "J'écarte les bots : ils gonflent le trafic, ils ne font pas baisser les conversions."],
+      ["Correction", "correctif|retour au niveau d'avant", "Je fais corriger, puis je vérifie que les conversions reviennent au niveau d'avant."]
+    ],
+    piege:"Commencer par les bots, ou ne pas dire la priorité.",
+    conclusion:"La chute est close quand les conversions retrouvent leur niveau d'avant la mise en production." },
+  { id:"T5", famille:"tracking", titre:"Doublon de comptabilisation (volume double du CRM)",
+    etapes:[
+      ["Hypothèse", "déclenché deux fois", "Mon hypothèse de départ : l'événement est déclenché deux fois."],
+      ["Référence CRM", "CRM comme référence", "Je prends le CRM comme référence pour mesurer le surplus."],
+      ["Seuil", "écart au-delà de 10 %|problème de comptage", "Au-delà de 10 % d'écart, je considère que c'est un problème de comptage."],
+      ["Déclenchements", "TagCommander|règles de déclenchement", "Je vérifie dans TagCommander combien de règles déclenchent l'événement."],
+      ["Page de confirmation", "un seul déclenchement|rechargement", "Je m'assure que la page de confirmation ne déclenche l'événement qu'une seule fois."],
+      ["Correction", "correctif|recette", "Je fais corriger et je recette avant la remise en production."],
+      ["Contrôle", "volume sur une semaine", "Je contrôle le volume sur une semaine complète après correction."]
+    ],
+    piege:"Corriger sans avoir prouvé où se produit le double déclenchement.",
+    conclusion:"Le doublon est réglé quand le volume rejoint celui du CRM sur une semaine complète." },
+  { id:"T6", famille:"tracking", titre:"Mesure d'une application et d'un site",
+    etapes:[
+      ["Plan commun", "mêmes noms|mêmes paramètres", "Je pars d'un plan de marquage commun : mêmes noms d'événements, mêmes paramètres."],
+      ["Table de correspondance", "web et application|tableau de bord", "Je tiens une table de correspondance entre web et application pour le tableau de bord."],
+      ["Événements propres", "notifications|navigation native|objectifs équivalents", "Les événements propres à l'application, comme les notifications ou la navigation native, sont comparés à des objectifs équivalents."],
+      ["Validation", "équipes web|équipes application", "Je fais valider le plan par les équipes web et application."],
+      ["Cohérence", "test de cohérence des chiffres", "Je teste la cohérence des chiffres entre les deux supports avant de publier."]
+    ],
+    piege:"Laisser chaque équipe nommer ses événements à sa façon.",
+    conclusion:"Site et application se lisent dans un seul tableau de bord, avec les mêmes définitions." },
+
+  /* ---------- CRO et média ---------- */
+  { id:"C1", famille:"cro", titre:"Désaccord entre marketing et technique",
+    etapes:[
+      ["Besoin marketing", "quelle décision|usage de la donnée", "Je demande au marketing quelle décision la donnée doit permettre."],
+      ["Contrainte technique", "difficulté|effort", "Je demande à la technique quelle est la difficulté et l'effort réel."],
+      ["Comparer", "demande initiale|alternatives|utilité|coût", "Je compare la demande initiale et les alternatives, en utilité et en coût."],
+      ["Décider ensemble", "arbitrage commun", "On décide ensemble, sur la base de cette comparaison."],
+      ["Consigner", "solution retenue|trace écrite", "Je consigne la solution retenue pour que personne ne rouvre le sujet."]
+    ],
+    piege:"Prendre parti pour une équipe avant d'avoir compris les deux besoins.",
+    conclusion:"La solution retenue est écrite et acceptée par le marketing comme par la technique." },
+  { id:"C2", famille:"cro", titre:"Test A/B sur un formulaire",
+    etapes:[
+      ["Diagnostic", "points d'abandon", "Je pars du diagnostic : à quels champs les utilisateurs abandonnent."],
+      ["Hypothèse", "formulaire plus court|plus de demandes confirmées", "Mon hypothèse : un formulaire plus court donnera plus de demandes confirmées."],
+      ["Versions", "actuelle contre nouvelle|répartition aléatoire", "Je compare la version actuelle et la nouvelle, avec une répartition aléatoire."],
+      ["Avant lancement", "taille d'échantillon|seuil", "Avant de lancer, je fixe la taille d'échantillon et le seuil de décision."],
+      ["KPI principal", "taux de demandes confirmées", "Mon KPI principal : le taux de demandes confirmées."],
+      ["Garde-fou", "qualité des demandes", "Je surveille un garde-fou : la qualité des demandes reçues."],
+      ["Décision", "résultat concluant|qualité préservée", "Je déploie seulement si le résultat est concluant et la qualité préservée."]
+    ],
+    piege:"Lancer le test sans avoir fixé l'échantillon et le seuil à l'avance.",
+    conclusion:"On déploie la version gagnante seulement si le gain est démontré et la qualité préservée." },
+  { id:"C3", famille:"cro", titre:"Test non concluant (p-value de 0,12)",
+    etapes:[
+      ["Seuil prévu", "0,05|non concluant", "Le seuil prévu était 0,05 : avec 0,12, le test n'est pas concluant."],
+      ["Lecture", "hausse encourageante|non démontrée", "La hausse est encourageante, mais elle n'est pas démontrée."],
+      ["Test en cours", "poursuivre le plan initial", "Si le test est en cours, je poursuis le plan initial sans m'arrêter en route."],
+      ["Test terminé", "présenter l'incertitude|nouveau test si utile", "S'il est terminé, je présente l'incertitude et je propose un nouveau test si c'est utile."],
+      ["Définition", "versions aussi performantes|écart surprenant", "La p-value répond à une question : si les versions étaient aussi performantes, l'écart observé serait-il surprenant ?"]
+    ],
+    piege:"Parler de « 88 % de chances de gagner ».",
+    conclusion:"Le résultat n'est pas démontré : on ne déploie pas sur cette seule base." },
+  { id:"C4", famille:"cro", titre:"Test significatif (p-value de 0,04)",
+    etapes:[
+      ["Pas tout de suite", "ne pas déployer immédiatement", "Je ne déploie pas tout de suite, même si 0,04 passe sous le seuil."],
+      ["Échantillon", "taille prévue atteinte", "Je vérifie que l'échantillon prévu est bien atteint."],
+      ["Garde-fous", "annulations|rendez-vous non honorés", "Je contrôle les garde-fous, comme les annulations ou les rendez-vous non honorés."],
+      ["Intervalle de confiance", "fourchette du gain", "Je regarde l'intervalle de confiance du gain, pas seulement la p-value."],
+      ["Déploiement", "si le gain tient", "Je déploie si le gain tient sur ces contrôles."],
+      ["Suivi", "effet après mise en production", "Je suis l'effet réel après la mise en production."]
+    ],
+    piege:"Déployer dès que la p-value passe sous 0,05, sans vérifier l'échantillon ni les garde-fous.",
+    conclusion:"Le gain est confirmé quand il tient après la mise en production." },
+  { id:"C5", famille:"cro", titre:"Segment qui sous-performe (tablette, par exemple)",
+    etapes:[
+      ["Observer", "taux plus faible|résolution", "J'observe un taux plus faible sur une résolution, par exemple la tablette."],
+      ["Volume et mix", "volume suffisant|mix de trafic", "Je vérifie que le volume est suffisant et que le mix de trafic est comparable."],
+      ["Par source", "résolution égale|comparer par source", "Je compare par source de trafic, à résolution égale."],
+      ["Attribution", "UTM pour les campagnes|référents et recherche", "J'utilise les UTM pour les campagnes, les référents et la recherche pour le reste."],
+      ["Agir", "retard persistant|c'est la page", "Si le retard persiste à source égale, c'est la page : on agit dessus."]
+    ],
+    piege:"Accuser la page alors que l'écart vient du mix de trafic.",
+    conclusion:"Si l'écart persiste à source égale, c'est la page qu'il faut retravailler." },
+  { id:"C6", famille:"cro", titre:"Formuler une hypothèse de test",
+    etapes:[
+      ["Observation", "observation chiffrée", "Je pars d'une observation chiffrée, tirée des données."],
+      ["Changement", "si je change...", "Si je change un élément précis de la page..."],
+      ["Mesure", "alors... augmente ou baisse", "...alors une mesure précise va augmenter ou baisser..."],
+      ["Raison", "car...", "...car j'ai une raison fondée sur le comportement observé."],
+      ["Une métrique", "une seule métrique principale", "Je garde une seule métrique principale pour décider."]
+    ],
+    piege:"« Le bouton sera plus joli, donc les gens cliqueront plus ».",
+    conclusion:"Une bonne hypothèse tient en une phrase : si je change X, alors Y bouge, car Z." },
+  { id:"C7", famille:"cro", titre:"Baisse de conversion (3 % à 2,5 %)",
+    etapes:[
+      ["Chiffrer", "0,5 point|environ 17 % en relatif", "Je chiffre d'abord : 0,5 point sur 3 %, c'est environ 17 % en relatif."],
+      ["Tracking", "TagCommander|tracking cassé", "Première cause à vérifier : un tracking cassé, dans TagCommander."],
+      ["Saisonnalité", "même période l'an passé", "Deuxième cause : la saisonnalité, en comparant à la même période l'an passé."],
+      ["Bots", "pics de trafic inhabituels", "Troisième cause : des bots, visibles par des pics de trafic inhabituels."],
+      ["Prioriser", "chiffrer|prioriser", "Je chiffre chaque piste et je priorise les actions."]
+    ],
+    piege:"Annoncer une baisse de 0,5 % au lieu de 0,5 point, ou conclure sans vérifier le tracking.",
+    conclusion:"Je présente la cause confirmée, son poids chiffré, et l'action prioritaire." },
+
+  /* ---------- Consulting et restitution ---------- */
+  { id:"K1", famille:"consulting", titre:"Client qui veut un résultat garanti",
+    etapes:[
+      ["Méthode plutôt que garantie", "refuser la garantie|proposer une méthode", "Je ne garantis pas un résultat, je propose une méthode."],
+      ["Cadrer le chiffre", "+1 point = +33 % sur 3 %", "Je cadre le chiffre : passer de 3 % à 4 %, c'est +33 % en relatif."],
+      ["Démarche en étapes", "audit|tests prioritaires|mise en production", "Je propose une démarche en étapes : audit, tests prioritaires, mise en production."],
+      ["Jalons", "point à un mois|objectif réaliste à trois mois", "On fait un point d'étape à un mois et on vise un objectif réaliste à trois mois."],
+      ["Levier commercial", "promotion|mesuré à part", "Un levier commercial comme une promotion est mesuré à part."]
+    ],
+    piege:"Dire au client qu'il se trompe, ou répondre « c'est compliqué » sans plan.",
+    conclusion:"Pas de garantie, mais un plan, des jalons et un objectif réaliste." },
+  { id:"K2", famille:"consulting", titre:"Expliquer une baisse de chiffre d'affaires",
+    etapes:[
+      ["Cadrer", "périmètre|période|définition du chiffre", "Je cadre : quel périmètre, quelle période, quelle définition du chiffre d'affaires."],
+      ["Source de référence", "confirmer la source", "Je confirme la source de référence."],
+      ["Décomposer", "commandes × valeur moyenne", "Je décompose : nombre de commandes multiplié par la valeur moyenne."],
+      ["Annulations et retours", "annulations|retours", "Je vérifie les annulations et les retours."],
+      ["Levier touché", "trafic|conversion|canaux|appareils|saisonnalité", "Je creuse le levier touché : trafic, conversion, canaux, appareils ou saisonnalité."]
+    ],
+    piege:"Conclure à un problème de tracking parce que les commandes baissent.",
+    conclusion:"J'identifie le levier qui explique la baisse, puis l'action qui le corrige." },
+  { id:"K3", famille:"consulting", titre:"Recommander une action",
+    etapes:[
+      ["Synthèse", "une phrase", "Je commence par la synthèse, en une phrase."],
+      ["Plan d'action", "3 actions maximum|priorisées", "Je propose un plan de trois actions au maximum, priorisées."],
+      ["Hypothèses et limites", "hypothèses|limites", "Je donne les hypothèses et les limites de l'analyse."],
+      ["Ce qu'on ne fait pas", "hors périmètre", "Je dis aussi ce qu'on ne fait pas, et pourquoi."],
+      ["Prochain point", "décision attendue|prochaine étape", "Je termine par le prochain point et la décision attendue."]
+    ],
+    piege:"Donner dix pistes sans priorité.",
+    conclusion:"Une décision attendue, trois actions au plus, et une date pour le prochain point." },
+  { id:"K4", famille:"consulting", titre:"Présenter une situation à un dirigeant",
+    etapes:[
+      ["Ce qu'on sait", "constat confirmé|périmètre", "Ce qu'on sait : le constat confirmé et son périmètre."],
+      ["Ce qu'on ne sait pas", "cause à identifier", "Ce qu'on ne sait pas encore : la cause à identifier."],
+      ["Ce qu'on fait", "analyses prioritaires", "Ce qu'on fait : les analyses prioritaires en cours."],
+      ["Quand on revient", "délai convenu", "Quand on revient vers lui : un délai convenu."],
+      ["Décision attendue", "décision", "La décision qu'on attend de lui, s'il y en a une."]
+    ],
+    piege:"Noyer le dirigeant dans le détail technique, ou annoncer une cause non confirmée.",
+    conclusion:"Le dirigeant sait ce qui est sûr, ce qui est en cours, et quand il aura la suite." },
+  { id:"K5", famille:"consulting", titre:"Expliquer le tracking à un client qui trouve que « le site marche bien »",
+    etapes:[
+      ["Définir", "remonter les données de vente", "Le tracking, c'est ce qui remonte les données de vente vers vos outils de pilotage."],
+      ["Rassurer", "le site fonctionne|chiffres incomplets", "Le site fonctionne, mais les chiffres qu'il remonte peuvent être incomplets."],
+      ["Exemple concret", "une vente sur dix|budget piloté sur des faux chiffres", "Si une vente sur dix n'est pas comptée, votre budget est piloté sur des chiffres faux."],
+      ["Proposition", "audit en deux semaines|recette avant mise en production", "Je propose un audit en deux semaines, puis une recette avant chaque mise en production."],
+      ["Bénéfice", "données fiables", "Le bénéfice : piloter sur des données fiables."]
+    ],
+    piege:"Parler jargon technique au lieu de partir de l'enjeu business du client.",
+    conclusion:"Des données fiables pour décider où mettre le budget." },
+  { id:"K6", famille:"consulting", titre:"Pourquoi le conseil ?",
+    etapes:[
+      ["Raison positive", "plusieurs marques|plusieurs secteurs", "Le conseil me permet de voir plusieurs marques et plusieurs secteurs."],
+      ["Lien avec le parcours", "faits|parcours", "C'est la suite logique de mon parcours, avec des faits concrets."],
+      ["Raison propre au cabinet", "conseil|tracking|expérimentation|automobile et mobilité", "Le cabinet réunit ce qui m'intéresse : conseil, tracking, expérimentation, automobile et mobilité."],
+      ["Aucune critique", "pas de critique de l'employeur actuel", "Je ne critique pas mon employeur actuel : je vais vers quelque chose."]
+    ],
+    piege:"Expliquer son départ par ce qu'on fuit plutôt que par ce qu'on recherche.",
+    conclusion:"Je veux appliquer ma méthode à plusieurs clients, dans un cabinet qui fait exactement ce métier." }
+];
+const NOMBRES_FR = ["zéro","une","deux","trois","quatre","cinq","six","sept","huit","neuf","dix"];
+function annonceMethode(m){
+  if(m.annonce) return m.annonce;
+  const t = m.etapes.map(e => /^[A-Z][a-zàâçéèêëîïôûùüÿ]/.test(e[0]) ? e[0].charAt(0).toLowerCase()+e[0].slice(1) : e[0]);
+  return "Je procède en "+(NOMBRES_FR[t.length] || t.length)+" étapes : "+t.slice(0,-1).join(", ")+(t.length > 1 ? ", puis " : "")+t[t.length-1]+".";
+}
 /* ================= MOTEUR ================= */
 const PFX = "harnais.v1.";
 const URLP = new URLSearchParams(location.search);
@@ -1407,6 +1679,7 @@ function defiDuJour(){
 /* ================= INTERFACE ================= */
 const ICONES = {
   maison:'<path d="M4 11l8-7 8 7"/><path d="M6 10v10h12V10"/>',
+  etapes:'<path d="M10 6h10M10 12h10M10 18h10"/><circle cx="5" cy="6" r="1.6"/><circle cx="5" cy="12" r="1.6"/><circle cx="5" cy="18" r="1.6"/>',
   lune:'<path d="M20 14.5A8 8 0 1 1 9.5 4a6.5 6.5 0 0 0 10.5 10.5z"/>',
   cercle:'<circle cx="12" cy="12" r="8"/>',
   grille:'<rect x="4" y="4" width="7" height="7" rx="2"/><rect x="13" y="4" width="7" height="7" rx="2"/><rect x="4" y="13" width="7" height="7" rx="2"/><rect x="13" y="13" width="7" height="7" rx="2"/>',
@@ -1541,9 +1814,9 @@ function route(){
   if(nom !== "session" && S && !S.fini && !S.pause){ pauser(); sauverEncours(); }
   if(nom !== "session") arreterTick();
   const nav = $("#nav"); nav.classList.toggle("cache", nom === "session"); $("#app").classList.toggle("plein", nom === "session");
-  const onglet = { accueil:"accueil", reglages:"accueil", entrainer:"entrainer", debrief:"entrainer", progression:"progression", modules:"modules", module:"modules" }[nom] || "accueil";
+  const onglet = { accueil:"accueil", reglages:"accueil", entrainer:"entrainer", debrief:"entrainer", progression:"progression", modules:"modules", module:"modules", methodes:"methodes" }[nom] || "accueil";
   $$("#nav button").forEach(b => { if(b.dataset.go === onglet) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current"); });
-  const R = { accueil:rAccueil, entrainer:rEntrainer, progression:rProgression, modules:rModules, module:rModule, reglages:rReglages, session:rSession, debrief:rDebrief }[nom] || rAccueil;
+  const R = { accueil:rAccueil, entrainer:rEntrainer, progression:rProgression, modules:rModules, module:rModule, reglages:rReglages, session:rSession, debrief:rDebrief, methodes:rMethodes }[nom] || rAccueil;
   R(arg ? decodeURIComponent(arg) : undefined);
   window.scrollTo(0,0);
 }
@@ -2712,7 +2985,7 @@ $("#modale").addEventListener("click", e => { if(e.target.id === "modale" && MOD
 
 /* ---------- Démarrage ---------- */
 function init(){
-  const ICN = { accueil:"maison", entrainer:"lune", progression:"cercle", modules:"grille" };
+  const ICN = { accueil:"maison", entrainer:"lune", progression:"cercle", modules:"grille", methodes:"etapes" };
   $$("#nav button").forEach(b => b.innerHTML = ic(ICN[b.dataset.go])+'<span class="lib">'+esc(b.getAttribute("aria-label"))+'</span><span class="point"></span>');
   appliquerTheme(); setInterval(appliquerTheme, 60000);
   const enc = store.get("encours", null);
@@ -2722,6 +2995,69 @@ function init(){
   window.addEventListener("beforeunload", () => { if(S && !S.fini){ pauser(); sauverEncours(); } });
   document.addEventListener("visibilitychange", () => { if(document.hidden && S && !S.fini){ sauverEncours(); } });
 }
+
+/* ---------- Méthodes : liste des cas d'usage et feuille stepper ---------- */
+function methodesFaites(){ const o = store.get("methodes", {}); return (o && typeof o === "object") ? o : {}; }
+function rMethodes(){
+  const fait = methodesFaites(), nb = METHODES.filter(m => fait[m.id]).length;
+  E().innerHTML = '<div class="entete"><h1>Méthodes</h1></div><div class="contenu">'+
+    '<div class="carte regles-or"><span class="etiquette"><span class="anneau"></span>Règles d\'or</span>'+
+      '<ol class="regles">'+REGLES_OR.map(r => '<li>'+esc(r)+'</li>').join("")+'</ol></div>'+
+    '<p class="muet">Une méthode par cas, en étapes, pour restituer sans improviser. '+nb+' sur '+METHODES.length+' révisée'+(nb > 1 ? "s" : "")+'.</p>'+
+    FAMILLES_METHODES.map(f => '<section class="famille-meth"><h2>'+ic(f.ic)+esc(f.nom)+'</h2><div class="grille-meth">'+
+      METHODES.filter(m => m.famille === f.id).map(m => '<button class="carte-meth'+(fait[m.id] ? " revisee" : "")+'" data-action="ouvrirMethode" data-arg="'+m.id+'">'+
+        '<span class="meth-haut"><span class="meth-id">'+m.id+'</span>'+(fait[m.id] ? '<span class="meth-ok" role="img" aria-label="Révisée">'+ic("coche")+'</span>' : "")+'</span>'+
+        '<span class="meth-titre">'+esc(m.titre)+'</span><span class="meth-info">'+m.etapes.length+' étapes</span></button>').join("")+
+    '</div></section>').join("")+
+  '</div>';
+}
+function feuilleMethode(id, revision){
+  const m = METHODES.find(x => x.id === id); if(!m) return;
+  const f = FAMILLES_METHODES.find(x => x.id === m.famille) || { nom:"" }, fait = !!methodesFaites()[id];
+  const etapes = m.etapes.map((e, i) => {
+    const mc = String(e[1]||"").split("|").filter(Boolean).map(k => '<span class="puce">'+esc(k)+'</span>').join("");
+    return '<li class="etape"><button class="etape-btn" data-action="etapeMethode" aria-expanded="false">'+
+      '<span class="etape-num" aria-hidden="true">'+(i+1)+'</span><span class="etape-corps">'+
+      '<span class="etape-titre"><span class="sr">Étape '+(i+1)+' : </span>'+esc(e[0])+'</span>'+
+      '<span class="etape-cache">Touche pour révéler les mots-clés</span>'+
+      '<span class="puces etape-mc">'+mc+'</span>'+
+      '<span class="etape-dev">'+esc(e[2]||"")+'</span></span></button></li>';
+  }).join("");
+  ouvrirModale('<div class="feuille-meth'+(revision ? " revision" : "")+'" data-id="'+m.id+'">'+
+    '<div class="ligne-titre"><span class="etiquette"><span class="anneau"></span>'+esc(f.nom)+' · '+m.id+'</span>'+
+      '<button class="btn-icone" data-action="fermerFeuille" aria-label="Fermer">'+ic("retour")+'</button></div>'+
+    '<h2>'+esc(m.titre)+'</h2>'+
+    '<div class="annonce-meth"><p>« '+esc(annonceMethode(m))+' »</p>'+
+      '<button class="btn btn-petit" data-action="copierAnnonce" data-arg="'+m.id+'">'+ic("copier")+'Copier la phrase d\'annonce</button></div>'+
+    (revision ? '<p class="muet petit">Mode révision : récite les mots-clés de chaque étape, puis touche-la pour vérifier.</p>' : '<p class="muet petit">Touche une étape pour lire sa phrase de développement.</p>')+
+    '<ol class="stepper">'+etapes+'</ol>'+
+    '<div class="fb-bloc ton-orange"><h4>'+ic("eclair")+'Piège à éviter</h4><p>'+esc(m.piege||"")+'</p></div>'+
+    '<div class="fb-bloc ton-vert"><h4>'+ic("drapeau")+'Conclusion</h4><p>« '+esc(m.conclusion||"")+' »</p></div>'+
+    '<div class="flex actions-meth"><button class="btn" data-action="revisionMethode" aria-pressed="'+(!!revision)+'">'+ic("oeil")+(revision ? "Quitter le mode révision" : "Mode révision")+'</button>'+
+      '<button class="btn '+(fait ? "" : "btn-bleu")+'" data-action="marquerMethode" aria-pressed="'+fait+'">'+ic("coche")+(fait ? "Révisé, annuler" : "Marquer révisé")+'</button></div>'+
+  '</div>');
+  const h = $("#modale-boite h2"); if(h){ h.setAttribute("tabindex","-1"); h.focus(); }
+}
+Object.assign(ACTIONS, {
+  ouvrirMethode(el){ feuilleMethode(el.dataset.arg, false); },
+  fermerFeuille(){ fermerModale(); },
+  etapeMethode(el){
+    const li = el.closest(".etape"), rev = !!el.closest(".revision");
+    const cls = rev ? "revele" : "ouvert", on = !li.classList.contains(cls);
+    li.classList.toggle(cls, on); el.setAttribute("aria-expanded", String(on));
+  },
+  copierAnnonce(el){ const m = METHODES.find(x => x.id === el.dataset.arg); if(m) copier(annonceMethode(m)); },
+  revisionMethode(){ const f = $(".feuille-meth"); if(f) feuilleMethode(f.dataset.id, !f.classList.contains("revision")); },
+  marquerMethode(){
+    const f = $(".feuille-meth"); if(!f) return;
+    const id = f.dataset.id, o = methodesFaites();
+    if(o[id]) delete o[id]; else o[id] = new Date().toISOString();
+    store.set("methodes", o);
+    if(o[id]) toast("Méthode marquée révisée.");
+    feuilleMethode(id, f.classList.contains("revision"));
+    if(nomRoute() === "methodes") rMethodes();
+  }
+});
 init();
 </script>
 </body>
