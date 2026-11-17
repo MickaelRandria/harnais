@@ -436,6 +436,29 @@ html[data-theme="nuit"] .lex-ecoute{color:#9CC2FF}
 .rep-type[open]>summary h4::after{transform:rotate(-135deg)}
 .rep-type-txt{margin:0;line-height:1.75;font-size:1.02rem}
 .qc-affiche .rep-type-txt{font-size:clamp(1.1rem,1.6vw,1.3rem)}
+/* ---------- Clavier ---------- */
+kbd{display:inline-flex;align-items:center;justify-content:center;min-width:1.6em;padding:1px 6px;border-radius:6px;border:1px solid var(--ligne);border-bottom-width:3px;background:var(--carte);color:var(--txt);font:inherit;font-size:.78em;font-weight:800;line-height:1.5;vertical-align:middle}
+.btn-bleu kbd{background:rgba(255,255,255,.18);border-color:rgba(255,255,255,.45);color:#fff}
+@media (hover:none){ .btn kbd{display:none} .qc-aff-actions [data-action="aideClavier"]{display:none} }
+.qc-aff-actions{gap:8px;justify-content:flex-end}
+.qc-aff-main>.ligne-titre{flex-wrap:wrap;row-gap:10px}
+.qc-aff-main>.ligne-titre .etiquette{white-space:nowrap}
+.kbd-flash{position:fixed;right:24px;bottom:24px;z-index:300;display:flex;align-items:center;gap:10px;padding:10px 16px;border-radius:16px;background:#0E1A3D;color:#fff;box-shadow:0 12px 30px rgba(0,0,0,.3);font-weight:700;opacity:0;transform:translateY(12px) scale(.96);pointer-events:none;transition:opacity .18s,transform .18s}
+.kbd-flash.visible{opacity:1;transform:none}
+.kbd-flash kbd{font-size:1.1rem;min-width:2.2em;padding:4px 10px;background:#1F6FE0;color:#fff;border-color:#62A0FF;animation:appui .35s ease}
+@keyframes appui{0%{transform:translateY(-3px)}40%{transform:translateY(2px);border-bottom-width:1px}100%{transform:none}}
+.palette{display:flex;flex-direction:column;gap:12px}
+.pal-champ{width:100%;min-height:56px;box-sizing:border-box;border-radius:14px;border:2px solid var(--bleu);background:var(--champ);color:var(--txt);font:inherit;font-size:1.1rem;padding:0 16px}
+.pal-res{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:4px;max-height:52vh;overflow-y:auto}
+.pal-res button{display:flex;align-items:center;gap:12px;width:100%;min-height:52px;padding:8px 12px;border:0;border-radius:12px;background:transparent;color:var(--txt);font:inherit;text-align:left;cursor:pointer}
+.pal-res li[aria-selected="true"] button{background:rgba(31,111,224,.12);box-shadow:inset 3px 0 0 var(--bleu)}
+.pal-code{flex:none;display:grid;place-items:center;min-width:44px;height:32px;border-radius:8px;background:var(--fond2);font-weight:800;color:var(--bleu)}
+.pal-code .ic{width:18px;height:18px}
+.pal-txt{flex:1;min-width:0;display:flex;flex-direction:column}
+.pal-txt span{font-size:.85rem;color:var(--txt2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.pal-vide{padding:12px;color:var(--txt2)}
+.pal-aide{margin:0;color:var(--txt2);font-size:.85rem;display:flex;gap:6px;align-items:center;flex-wrap:wrap}
+.aide-clavier td:first-child{white-space:nowrap}
 /* ---------- Quel cas ? ---------- */
 .entete-meth{justify-content:space-between;padding-right:16px}
 .qc-onglets{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:4px;border-radius:14px;background:var(--fond2);border:1px solid var(--ligne)}
@@ -1001,7 +1024,7 @@ const PLAN_EXEMPLE = [
    Chaque étape : [titre court, "mot-clé|mot-clé", "phrase de développement"].
    annonce : facultative (sinon construite à partir des titres).
    ===================================================================== */
-const VERSION_APP = "17 nov. 2026, n°10"; /* à changer à chaque mise en ligne, visible dans Réglages et Quel cas */
+const VERSION_APP = "17 nov. 2026, n°11"; /* à changer à chaque mise en ligne, visible dans Réglages et Quel cas */
 const FAMILLES_METHODES = [
   { id:"tracking", nom:"Tracking", ic:"etiquette" },
   { id:"cro", nom:"CRO et média", ic:"cible" },
@@ -3458,7 +3481,10 @@ function renderAffichageQC(){
   const notes = notesCas(m.id);
   z.innerHTML = '<div class="qc-affiche" id="qc-affiche"><div class="qc-aff-main">'+
     '<div class="ligne-titre"><span class="etiquette"><span class="anneau"></span>'+esc(f.nom)+' · '+m.id+'</span>'+
-      '<button class="btn btn-petit" data-action="pleinEcranQC">'+ic("grille")+'Plein écran</button></div>'+
+      '<div class="flex qc-aff-actions"><button class="btn btn-petit btn-bleu" data-action="allerReponseType">'+ic("texte")+(langueMeth() === "en" ? "Model answer" : "Réponse type")+' <kbd>R</kbd></button>'+
+      '<button class="btn btn-petit" data-action="ouvrirPalette">'+ic("cible")+'Chercher <kbd>Ctrl K</kbd></button>'+
+      '<button class="btn btn-petit" data-action="pleinEcranQC">'+ic("grille")+'Plein écran <kbd>F</kbd></button>'+
+      '<button class="btn btn-petit" data-action="aideClavier" aria-label="Raccourcis clavier"><kbd>?</kbd></button></div></div>'+
     '<h2 class="qc-titre">'+esc(m.titre)+'</h2>'+
     '<div class="annonce-meth"><p>« '+esc(annonceMethode(m))+' »</p><button class="btn btn-petit" data-action="copierAnnonce" data-arg="'+m.id+'">'+ic("copier")+'Copier</button>'+'<button class="btn btn-petit" data-action="ecouterAnnonce" data-arg="'+m.id+'">'+ic("lecture")+tr("ecouter")+'</button>'+'</div>'+
     '<ol class="qc-etapes">'+m.etapes.map((e, i) => '<li data-i="'+i+'" data-action="selEtapeQC" class="'+(QC.etapeSel === i ? "selection " : "")+(notes[String(i)] ? "a-note" : "")+'"><span class="etape-num">'+(i+1)+'</span><span class="qc-et-corps"><span class="qc-et-ligne"><button class="qc-et-titre" data-action="selEtapeQC" aria-pressed="'+(QC.etapeSel === i)+'">'+esc(e[0])+'</button><span class="qc-note-marque" title="Cette étape a une note" aria-label="Note">'+ic("crayon")+'</span>'+
@@ -4212,6 +4238,224 @@ function libDureesGemini(){
 Object.assign(ACTIONS, {
   copierReponseType(el){ copier(reponseType(el.dataset.arg)); },
   ecouterReponseType(el){ VOIX.taire(); VOIX.parler(reponseType(el.dataset.arg), langueMeth() === "en" ? "en" : "fr"); }
+});
+
+/* =====================================================================
+   Pilotage au clavier (PC)
+   - Ctrl + K ou / : palette (cas et écrans)
+   - Lettre + chiffre (T3, C4, K1...) : affiche le cas
+   - Affichage : ↑ ↓ étapes, 1 à 9 étape directe, Espace définition, N note, R réponse type,
+     L écouter, ← → historique, E FR/EN, F plein écran, ? aide
+   Désactivé pendant une session d'entraînement (la barre espace y sert au micro).
+   ===================================================================== */
+const ECRANS_PALETTE = [
+  ["Accueil","accueil","accueil home"], ["Entraîner","entrainer","entrainer simulation round entretien"],
+  ["Progression","progression","progression stats score"], ["Modules","modules","modules"],
+  ["Méthodes","methodes","methodes cas etapes"], ["Quel cas : Affichage","quelcas/affichage","quel cas affichage ordinateur"],
+  ["Quel cas : Saisie","quelcas/saisie","quel cas saisie telephone"], ["Lexique anglais","module/lexique","lexique vocabulaire anglais english"],
+  ["Flashcards","module/flashcards","flashcards cartes revision"], ["Réglages","reglages","reglages parametres cle gemini topic"]
+];
+const KB = { combo:null, comboT:null, palSel:0, palRes:[] };
+
+function flashTouche(touche, texte){
+  let z = $("#kbd-flash");
+  if(!z){ z = document.createElement("div"); z.id = "kbd-flash"; z.className = "kbd-flash"; z.setAttribute("aria-hidden", "true"); document.body.appendChild(z); }
+  z.innerHTML = '<kbd>'+esc(touche)+'</kbd>'+(texte ? '<span>'+esc(texte)+'</span>' : "");
+  z.classList.remove("visible"); void z.offsetWidth; z.classList.add("visible");
+  clearTimeout(z._t); z._t = setTimeout(() => z.classList.remove("visible"), 1100);
+}
+function afficherCasLocal(code){
+  const m = METHODES.find(x => x.id === code); if(!m) return false;
+  const h = histoQC(); if(!h[0] || h[0].code !== code){ h.unshift({ code, date:new Date().toISOString() }); store.set("quelcasHisto", h.slice(0, 10)); }
+  QC.affiche = code;
+  if(nomRoute() === "quelcas" && QC.vue === "affichage") renderAffichageQC(); else go("quelcas/affichage");
+  window.scrollTo({ top:0, behavior:"smooth" });
+  return true;
+}
+
+/* ---------- Palette ---------- */
+function resultatsPalette(q){
+  const n = norm(q).trim(), res = [], vus = new Set();
+  const ajoutCas = m => { if(m && !vus.has(m.id)){ vus.add(m.id); res.push({ type:"cas", id:m.id, titre:m.court, sous:m.titre }); } };
+  if(!n){ histoQC().forEach(x => ajoutCas(METHODES.find(m => m.id === x.code))); METHODES.forEach(ajoutCas); }
+  else {
+    METHODES.filter(m => norm(m.id) === n.replace(/\s+/g, "")).forEach(ajoutCas);
+    METHODES.filter(m => norm(m.titre + " " + m.court).includes(n)).forEach(ajoutCas);
+    chercherCas(q).forEach(ajoutCas);
+  }
+  const cas = res.slice(0, n ? 8 : 6);
+  const ecrans = ECRANS_PALETTE.filter(e => !n || norm(e[0] + " " + e[2]).includes(n)).slice(0, n ? 4 : 3).map(e => ({ type:"ecran", id:e[1], titre:e[0], sous:"Écran" }));
+  return cas.concat(ecrans);
+}
+function ouvrirPalette(){
+  ouvrirModale('<div class="palette"><label class="sr" for="pal-q">Chercher un cas ou un écran</label>'+
+    '<input id="pal-q" class="pal-champ" placeholder="Un cas, un mot de la question, un code (T3) ou un écran..." autocomplete="off" spellcheck="false">'+
+    '<ul id="pal-res" class="pal-res" role="listbox" aria-label="Résultats"></ul>'+
+    '<p class="pal-aide"><kbd>↑</kbd><kbd>↓</kbd> choisir <kbd>Entrée</kbd> ouvrir <kbd>Échap</kbd> fermer</p></div>');
+  const q = $("#pal-q");
+  const maj = () => { KB.palRes = resultatsPalette(q.value); KB.palSel = 0; rendrePalette(); };
+  q.addEventListener("input", maj);
+  q.addEventListener("keydown", e => {
+    if(e.key === "ArrowDown"){ e.preventDefault(); KB.palSel = Math.min(KB.palRes.length - 1, KB.palSel + 1); rendrePalette(); }
+    else if(e.key === "ArrowUp"){ e.preventDefault(); KB.palSel = Math.max(0, KB.palSel - 1); rendrePalette(); }
+    else if(e.key === "Enter"){ e.preventDefault(); executerPalette(KB.palSel); }
+  });
+  maj(); setTimeout(() => q.focus(), 20);
+}
+function rendrePalette(){
+  const ul = $("#pal-res"); if(!ul) return;
+  ul.innerHTML = KB.palRes.length ? KB.palRes.map((r, i) => '<li role="option" aria-selected="'+(i === KB.palSel)+'"><button data-action="palChoix" data-arg="'+i+'">'+
+      '<span class="pal-code">'+(r.type === "cas" ? esc(r.id) : ic("grille"))+'</span><span class="pal-txt"><b>'+esc(r.titre)+'</b><span>'+esc(r.sous)+'</span></span>'+
+      (i === KB.palSel ? '<kbd>Entrée</kbd>' : "")+'</button></li>').join("")
+    : '<li class="pal-vide">Rien trouvé. Essaie un autre mot.</li>';
+  const sel = ul.querySelector('[aria-selected="true"]'); if(sel) sel.scrollIntoView({ block:"nearest" });
+}
+function executerPalette(i){
+  const r = KB.palRes[i]; if(!r) return;
+  fermerModale();
+  if(r.type === "cas"){ afficherCasLocal(r.id); flashTouche(r.id, r.titre); }
+  else go(r.id);
+}
+
+/* ---------- Aide ---------- */
+function ouvrirAideClavier(){
+  const l = (t, d) => '<tr><td>'+t+'</td><td>'+esc(d)+'</td></tr>';
+  ouvrirModale('<div class="aide-clavier"><div class="ligne-titre"><h2>Raccourcis clavier</h2><button class="btn-icone" data-action="fermerFeuille" aria-label="Fermer">'+ic("retour")+'</button></div>'+
+    '<table class="tab"><tbody>'+
+    l('<kbd>Ctrl</kbd> + <kbd>K</kbd> ou <kbd>/</kbd>', "Chercher un cas ou un écran, partout")+
+    l('<kbd>T</kbd> puis <kbd>3</kbd>', "Afficher un cas par son code (T, C ou K, puis le chiffre)")+
+    l('<kbd>↓</kbd> <kbd>↑</kbd>', "Étape suivante ou précédente (le panneau suit)")+
+    l('<kbd>1</kbd> à <kbd>9</kbd>', "Aller directement à une étape")+
+    l('<kbd>Espace</kbd>', "Déplier ou replier la définition de l'étape")+
+    l('<kbd>N</kbd>', "Écrire une note sur l'étape (Échap pour sortir)")+
+    l('<kbd>R</kbd>', "Descendre à la réponse type, de A à Z")+
+    l('<kbd>L</kbd>', "Écouter l'étape choisie, sinon la réponse type")+
+    l('<kbd>←</kbd> <kbd>→</kbd>', "Cas précédent ou suivant dans l'historique")+
+    l('<kbd>E</kbd>', "Basculer FR ou EN")+
+    l('<kbd>F</kbd>', "Plein écran")+
+    l('<kbd>?</kbd>', "Cette aide")+
+    '</tbody></table><p class="muet petit">Les raccourcis marchent sur l\'Affichage de Quel cas. La palette et les codes marchent aussi depuis Méthodes. Ils sont coupés pendant une session d\'entraînement.</p></div>');
+}
+
+/* ---------- Actions de l'Affichage ---------- */
+function casAffiche(){ return nomRoute() === "quelcas" && QC.vue === "affichage" ? METHODES.find(x => x.id === QC.affiche) : null; }
+/* Défilement fluide fiable : on fait défiler le conteneur réel (fenêtre, feuille ou plein écran) */
+function conteneurDefilant(el){
+  for(let p = el.parentElement; p && p !== document.body; p = p.parentElement){
+    const o = getComputedStyle(p).overflowY;
+    if((o === "auto" || o === "scroll") && p.scrollHeight > p.clientHeight + 2) return p;
+  }
+  return null;
+}
+function animerDefilement(cont, cible, fin){
+  const lire = () => cont ? cont.scrollTop : window.scrollY;
+  const ecrire = y => { if(cont) cont.scrollTop = y; else window.scrollTo(0, y); };
+  const max = cont ? cont.scrollHeight - cont.clientHeight : document.documentElement.scrollHeight - window.innerHeight;
+  const depart = lire(), arrivee = Math.max(0, Math.min(max, cible)), duree = 320, t0 = performance.now();
+  if(document.hidden || matchMedia("(prefers-reduced-motion: reduce)").matches || Math.abs(arrivee - depart) < 2){ ecrire(arrivee); if(fin) fin(); return; }
+  const pas = t => { const k = Math.min(1, (t - t0) / duree), e = 1 - Math.pow(1 - k, 3); ecrire(depart + (arrivee - depart) * e); if(k < 1) requestAnimationFrame(pas); else if(fin) fin(); };
+  requestAnimationFrame(pas);
+  setTimeout(() => { if(Math.abs(lire() - arrivee) > 2){ ecrire(arrivee); } }, duree + 250); /* filet de sécurité si les images sont suspendues */
+}
+function defilerVers(el, mode, fin){
+  const c = conteneurDefilant(el), marge = 16;
+  const r = el.getBoundingClientRect();
+  const haut = c ? c.getBoundingClientRect().top : 0, bas = c ? c.getBoundingClientRect().bottom : window.innerHeight;
+  const actuel = c ? c.scrollTop : window.scrollY;
+  if(mode === "nearest" && r.top >= haut + marge && r.bottom <= bas - marge){ if(fin) fin(); return; }
+  const cible = mode === "nearest" && r.bottom > bas ? actuel + (r.bottom - bas) + marge : actuel + (r.top - haut) - marge;
+  animerDefilement(c, cible, fin);
+}
+function choisirEtapeClavier(i){
+  const li = document.querySelector('.qc-etapes li[data-i="'+i+'"]'); if(!li) return false;
+  ACTIONS.selEtapeQC(li.querySelector(".qc-et-titre") || li);
+  defilerVers(li, "nearest");
+  return true;
+}
+function allerReponseType(){
+  const r = document.querySelector(".feuille-meth .rep-type") || document.querySelector(".qc-aff-main .rep-type");
+  if(!r) return false;
+  r.open = true;
+  defilerVers(r, "start", () => { const s = r.querySelector("summary"); if(s) try{ s.focus({ preventScroll:true }); }catch(e){} });
+  return true;
+}
+function naviguerHistorique(sens){
+  const codes = []; histoQC().forEach(x => { if(!codes.includes(x.code)) codes.push(x.code); });
+  const i = codes.indexOf(QC.affiche), j = i + (sens < 0 ? 1 : -1);
+  if(i < 0 || j < 0 || j >= codes.length) return false;
+  QC.affiche = codes[j]; renderAffichageQC(); return codes[j];
+}
+
+document.addEventListener("keydown", e => {
+  const route = nomRoute();
+  if(route === "session") return;
+  const modaleOuverte = !$("#modale").classList.contains("cache");
+  const k = e.key;
+  /* Palette : Ctrl + K partout, / hors champ de saisie */
+  if((e.ctrlKey || e.metaKey) && (k === "k" || k === "K")){ e.preventDefault(); if(!$(".palette")) ouvrirPalette(); return; }
+  if(e.ctrlKey || e.metaKey || e.altKey) return;
+  if(cibleTexte(e.target)){
+    if(k === "Escape" && e.target.id === "qc-note"){ e.target.blur(); flashTouche("Échap", "Note enregistrée"); }
+    return;
+  }
+  if(modaleOuverte){
+    if((k === "r" || k === "R") && $(".feuille-meth") && allerReponseType()){ e.preventDefault(); flashTouche("R", "Réponse type"); }
+    return;
+  }
+  if(k === "/"){ e.preventDefault(); ouvrirPalette(); return; }
+  if(k === "?"){ e.preventDefault(); ouvrirAideClavier(); return; }
+  if(route !== "quelcas" && route !== "methodes") return;
+  if(route === "quelcas" && QC.vue !== "affichage") return;
+  /* Codes : lettre puis chiffre */
+  const lettre = k.length === 1 ? k.toUpperCase() : "";
+  if(KB.combo && /^[1-9]$/.test(k)){
+    const code = KB.combo + k; KB.combo = null; clearTimeout(KB.comboT);
+    e.preventDefault();
+    if(METHODES.some(m => m.id === code)){
+      flashTouche(code, libelleCas(code));
+      if(route === "methodes") feuilleMethode(code, false); else afficherCasLocal(code);
+    } else flashTouche(code, "Ce code n'existe pas");
+    return;
+  }
+  if(["T","C"].includes(lettre) || (lettre === "K" && !e.shiftKey)){
+    KB.combo = lettre; clearTimeout(KB.comboT); KB.comboT = setTimeout(() => { KB.combo = null; }, 1600);
+    flashTouche(lettre + " _", "Tape le chiffre"); return;
+  }
+  if(route !== "quelcas") return;
+  const m = casAffiche(); if(!m) return;
+  const nb = m.etapes.length, sel = QC.etapeSel;
+  if(k === "ArrowDown"){ e.preventDefault(); choisirEtapeClavier(sel == null ? 0 : Math.min(nb - 1, sel + 1)); flashTouche("↓", tr("etapeSur") + " " + (QC.etapeSel + 1)); return; }
+  if(k === "ArrowUp"){ e.preventDefault(); choisirEtapeClavier(sel == null ? 0 : Math.max(0, sel - 1)); flashTouche("↑", tr("etapeSur") + " " + (QC.etapeSel + 1)); return; }
+  if(/^[1-9]$/.test(k)){ if(Number(k) <= nb){ e.preventDefault(); choisirEtapeClavier(Number(k) - 1); flashTouche(k, m.etapes[Number(k) - 1][0]); } return; }
+  if(k === " "){
+    e.preventDefault();
+    if(sel == null) choisirEtapeClavier(0);
+    const b = document.querySelector('.qc-etapes li[data-i="'+QC.etapeSel+'"] .qc-info-inline'); if(b){ ACTIONS.defEtapeQC(b); flashTouche("Espace", "Définition"); }
+    return;
+  }
+  if(lettre === "N"){ e.preventDefault(); if(sel == null) choisirEtapeClavier(0); const t = $("#qc-note"); if(t){ t.focus(); flashTouche("N", tr("notes")); } return; }
+  if(lettre === "R"){ e.preventDefault(); if(allerReponseType()) flashTouche("R", "Réponse type"); return; }
+  if(lettre === "L"){
+    e.preventDefault();
+    if(sel != null){ ACTIONS.ecouterEtapeQC(); flashTouche("L", tr("ecouter")); }
+    else { VOIX.taire(); VOIX.parler(reponseType(m.id), langueMeth() === "en" ? "en" : "fr"); flashTouche("L", "Réponse type"); }
+    return;
+  }
+  if(k === "ArrowLeft" || k === "ArrowRight"){
+    e.preventDefault();
+    const c = naviguerHistorique(k === "ArrowLeft" ? -1 : 1);
+    flashTouche(k === "ArrowLeft" ? "←" : "→", c ? libelleCas(c) : "Fin de l'historique");
+    return;
+  }
+  if(lettre === "E"){ e.preventDefault(); const autre = langueMeth() === "en" ? "fr" : "en"; ACTIONS.langueMethodes({ dataset:{ arg:autre } }); flashTouche("E", autre.toUpperCase()); return; }
+  if(lettre === "F"){ e.preventDefault(); ACTIONS.pleinEcranQC(); flashTouche("F", "Plein écran"); return; }
+});
+
+Object.assign(ACTIONS, {
+  palChoix(el){ executerPalette(Number(el.dataset.arg)); },
+  ouvrirPalette(){ ouvrirPalette(); },
+  aideClavier(){ ouvrirAideClavier(); },
+  allerReponseType(){ allerReponseType(); }
 });
 
 /* ---------- Méthodes : liste des cas d'usage et feuille stepper ---------- */
