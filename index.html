@@ -520,7 +520,41 @@ html[data-theme="nuit"] .qc-info:hover{color:#9CC2FF;border-color:#9CC2FF}
 .qc-code:active .qc-code-id{color:#fff}
 .qc-vide{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
 .qc-vide>.ic{width:40px;height:40px;color:var(--bleu)}
-.qc-affiche{display:flex;flex-direction:column;gap:18px;background:var(--fond)}
+.qc-affiche{display:grid;grid-template-columns:minmax(0,1fr);gap:24px;align-items:start;background:var(--fond)}
+.qc-aff-main{display:flex;flex-direction:column;gap:18px;min-width:0}
+.qc-etapes li{cursor:pointer;border-radius:14px;padding:6px 8px;margin:0 -8px;transition:background .15s}
+.qc-etapes li:hover{background:rgba(31,111,224,.06)}
+.qc-etapes li.selection{background:rgba(31,111,224,.12);box-shadow:inset 4px 0 0 var(--bleu)}
+.qc-et-titre{all:unset;box-sizing:border-box;font-weight:800;cursor:pointer;border-radius:8px}
+.qc-et-titre:focus-visible{outline:3px solid #FFB547}
+.qc-note-marque{display:none;color:var(--orange-txt)}
+.qc-note-marque .ic{width:20px;height:20px}
+.qc-etapes li.a-note .qc-note-marque{display:inline-flex}
+.qc-panneau{display:flex;flex-direction:column;gap:16px}
+.qc-pan-bloc{display:flex;flex-direction:column;gap:10px;padding:18px;border-radius:var(--r);background:var(--carte);border:1px solid var(--ligne);box-shadow:var(--ombre)}
+.qc-pan-bloc h3{font-size:1.2rem}
+.qc-pan-sur{font-size:.8rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--txt2)}
+.qc-pan-def{margin:0;font-size:1.05rem;line-height:1.55}
+.qc-pan-note textarea{min-height:120px;font-size:1rem;line-height:1.5}
+.qc-pan-vide{flex-direction:row;align-items:center;color:var(--txt2)}
+.qc-pan-vide .ic{flex:none;width:28px;height:28px;color:var(--bleu)}
+.qc-pan-vide p{margin:0}
+.qc-pan-q{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:12px}
+.qc-pan-q li{display:flex;flex-direction:column;gap:4px;padding-bottom:12px;border-bottom:1px solid var(--ligne)}
+.qc-pan-q li:last-child{border-bottom:0;padding-bottom:0}
+.qc-pan-q-txt{font-weight:700;line-height:1.4}
+.qc-pan-piste{color:var(--txt2);font-size:.95rem;line-height:1.45}
+.qc-tag{display:inline-block;font-size:.72rem;font-weight:800;padding:1px 7px;border-radius:999px;background:var(--fond2);border:1px solid var(--ligne);color:var(--txt2);vertical-align:middle}
+.btn-lien{align-self:flex-start;border:0;background:none;color:var(--rouge-txt);font:inherit;font-size:.85rem;font-weight:600;padding:4px 0;cursor:pointer;text-decoration:underline}
+.qc-pan-ajout summary{cursor:pointer;font-weight:700;color:var(--bleu);min-height:36px;display:flex;align-items:center}
+.qc-pan-ajout[open]{display:flex;flex-direction:column;gap:10px}
+.etape-note{display:block;margin-top:4px;padding:8px 12px;border-radius:10px;background:rgba(242,162,92,.14);border:1px solid rgba(242,162,92,.45);font-size:.95rem;line-height:1.5}
+.qc-affiche:fullscreen .qc-panneau{max-height:none}
+@media (min-width:1200px){
+  .qc-affiche{grid-template-columns:minmax(0,1fr) minmax(360px,440px)}
+  .qc-panneau{position:sticky;top:16px;max-height:calc(100vh - 32px);overflow-y:auto}
+  .contenu.qc.qc-large{max-width:1560px}
+}
 .qc-affiche:fullscreen{padding:40px 6vw;overflow-y:auto}
 .qc-titre{font-size:clamp(1.6rem,4vw,2.6rem);line-height:1.2}
 .qc-affiche .annonce-meth p{font-size:clamp(1.1rem,2vw,1.4rem)}
@@ -943,7 +977,7 @@ const PLAN_EXEMPLE = [
    Chaque étape : [titre court, "mot-clé|mot-clé", "phrase de développement"].
    annonce : facultative (sinon construite à partir des titres).
    ===================================================================== */
-const VERSION_APP = "17 nov. 2026, n°7"; /* à changer à chaque mise en ligne, visible dans Réglages et Quel cas */
+const VERSION_APP = "17 nov. 2026, n°8"; /* à changer à chaque mise en ligne, visible dans Réglages et Quel cas */
 const FAMILLES_METHODES = [
   { id:"tracking", nom:"Tracking", ic:"etiquette" },
   { id:"cro", nom:"CRO et média", ic:"cible" },
@@ -3293,7 +3327,7 @@ function rQuelCas(vue){
   if(vue === "saisie" && PAYSAGE_QC.matches){ rSaisiePaysageQC(); return; }
   const onglet = (v, lib) => '<button class="qc-onglet" data-go="quelcas/'+v+'" aria-pressed="'+(vue === v)+'">'+lib+'</button>';
   E().innerHTML = '<div class="entete"><button class="btn-icone" data-go="methodes" aria-label="Retour aux méthodes">'+ic("retour")+'</button><h1>Quel cas ?</h1></div>'+
-    '<div class="contenu qc">'+
+    '<div class="contenu qc'+(vue === "affichage" ? " qc-large" : "")+'">'+
     '<div class="qc-onglets" role="group" aria-label="Vue">'+onglet("saisie","Saisie")+onglet("affichage","Affichage")+'</div>'+
     '<div class="qc-etat" id="qc-etat" role="status"></div>'+
     blocTopicQC()+
@@ -3387,17 +3421,20 @@ function renderAffichageQC(){
     return;
   }
   const f = FAMILLES_METHODES.find(x => x.id === m.famille) || { nom:"" };
-  z.innerHTML = '<div class="qc-affiche" id="qc-affiche">'+
+  if(QC.etapeAffiche !== m.id){ QC.etapeSel = null; QC.etapeAffiche = m.id; }
+  const notes = notesCas(m.id);
+  z.innerHTML = '<div class="qc-affiche" id="qc-affiche"><div class="qc-aff-main">'+
     '<div class="ligne-titre"><span class="etiquette"><span class="anneau"></span>'+esc(f.nom)+' · '+m.id+'</span>'+
       '<button class="btn btn-petit" data-action="pleinEcranQC">'+ic("grille")+'Plein écran</button></div>'+
     '<h2 class="qc-titre">'+esc(m.titre)+'</h2>'+
     '<div class="annonce-meth"><p>« '+esc(annonceMethode(m))+' »</p><button class="btn btn-petit" data-action="copierAnnonce" data-arg="'+m.id+'">'+ic("copier")+'Copier</button></div>'+
-    '<ol class="qc-etapes">'+m.etapes.map((e, i) => '<li><span class="etape-num">'+(i+1)+'</span><span class="qc-et-corps"><span class="qc-et-ligne"><b>'+esc(e[0])+'</b>'+
+    '<ol class="qc-etapes">'+m.etapes.map((e, i) => '<li data-i="'+i+'" data-action="selEtapeQC" class="'+(QC.etapeSel === i ? "selection " : "")+(notes[String(i)] ? "a-note" : "")+'"><span class="etape-num">'+(i+1)+'</span><span class="qc-et-corps"><span class="qc-et-ligne"><button class="qc-et-titre" data-action="selEtapeQC" aria-pressed="'+(QC.etapeSel === i)+'">'+esc(e[0])+'</button><span class="qc-note-marque" title="Cette étape a une note" aria-label="Note">'+ic("crayon")+'</span>'+
       '<button class="qc-info qc-info-inline" data-action="defEtapeQC" aria-expanded="false" aria-label="Définition de l\'étape '+(i+1)+' : '+esc(e[0])+'">i</button></span>'+
       '<span class="qc-mc">'+esc(String(e[1]||"").split("|").join(" · "))+'</span><span class="qc-def">'+esc(e[2]||"")+'</span></span></li>').join("")+'</ol>'+
     '<div class="fb-bloc ton-orange"><h4>'+ic("eclair")+'Piège à éviter</h4><p>'+esc(m.piege||"")+'</p></div>'+
     '<div class="fb-bloc ton-vert"><h4>'+ic("drapeau")+'Conclusion</h4><p>« '+esc(m.conclusion||"")+' »</p></div>'+
-  '</div>'+histo;
+  '</div><aside class="qc-panneau" id="qc-panneau" aria-label="Notes et questions probables"></aside></div>'+histo;
+  renderPanneauQC();
 }
 /* Bouton « i » : définition d'un cas sans l'envoyer */
 function boutonInfoQC(m){ return '<button class="qc-info" data-action="infoCasQC" data-arg="'+m.id+'" aria-label="Définition : '+esc(m.court)+'">i</button>'; }
@@ -3453,6 +3490,184 @@ Object.assign(ACTIONS, {
   }
 });
 
+/* =====================================================================
+   Affichage (PC) : panneau latéral avec notes par étape et questions probables
+   - Notes : harnais.v1.notesMethodes = { "T3": { "0": "texte", ... } } (restent sur l'appareil)
+   - Questions ajoutées : harnais.v1.questionsPerso = { "T3": [ { q, p } ] }
+   - Questions générées par Gemini : harnais.v1.questionsIA = { "T3": [ { q, p } ] }
+   QUESTIONS_PROBABLES : [question que le manager peut poser, piste de réponse en une ligne]
+   ===================================================================== */
+const QUESTIONS_PROBABLES = {
+  T1:[["Comment priorises-tu les événements à suivre ?","Par la décision métier qu'ils éclairent : d'abord les KPI prioritaires, le reste ensuite."],
+      ["Qui valide le plan de marquage ?","Le marketing pour l'usage, la technique pour la faisabilité : double validation."],
+      ["Comment sais-tu que le tracking est fiable après la mise en production ?","Volumes jour par jour, comparaison au back-office, alertes."],
+      ["Un écart bloquant apparaît la veille de la mise en production. Que fais-tu ?","Pas de mise en production sans correction : je décale et je préviens tôt."]],
+  T2:[["Pourquoi ne pas déclencher au clic sur le bouton ?","Le clic compte les erreurs et les doubles clics : seule la validation réelle compte."],
+      ["Quels paramètres mettrais-tu ?","Ceux utiles à l'analyse (modèle, concession, étape), jamais de donnée personnelle."],
+      ["Et si l'utilisateur refuse le consentement ?","L'événement ne part pas vers l'outil d'analyse ; le CRM reste la référence du volume réel."],
+      ["Comment vérifies-tu que ça marche ?","Recette en préproduction, puis comparaison des volumes jour par jour avec le CRM."]],
+  T3:[["Quel écart est normal ?","Pas de chiffre universel : je fixe un seuil avec le client et je le suis dans le temps."],
+      ["Comment distingues-tu un bug d'un écart structurel ?","Cassure nette à une date = bug ; écart stable = consentement, bloqueurs."],
+      ["Quel découpage regardes-tu en premier ?","Navigateur et appareil, là où les problèmes de collecte se voient le plus vite."],
+      ["Comment expliques-tu cet écart au client ?","Le chiffre de l'écart, ses causes identifiées et le seuil de suivi."]],
+  T4:[["Par quoi commences-tu ?","La liste des changements déployés, puis l'avant et l'après par navigateur et appareil."],
+      ["Comment sais-tu si c'est le tracking ou le site ?","Balise de confirmation absente = tracking ; abandons dans le parcours = site."],
+      ["Pourquoi ne pas commencer par les bots ?","Les bots gonflent le trafic, ils ne font pas baisser les conversions."],
+      ["Qui préviens-tu, et quand ?","Le client et l'équipe technique dès que la cause est localisée, avec la priorité."]],
+  T5:[["Comment confirmes-tu le doublon ?","Comparaison au CRM : au-delà de 10 % d'écart, c'est un problème de comptage."],
+      ["Où cherches-tu la cause ?","Dans les règles de déclenchement de TagCommander et sur la page de confirmation."],
+      ["Que fais-tu des données déjà faussées ?","Je documente la période touchée et je corrige ou j'annote les rapports concernés."],
+      ["Comment éviter que ça revienne ?","Recette systématique et contrôle du volume sur une semaine après chaque mise en production."]],
+  T6:[["Pourquoi un plan de marquage commun ?","Pour comparer web et appli avec les mêmes définitions."],
+      ["Comment gères-tu un événement propre à l'appli ?","Je le relie à un objectif équivalent côté web, dans la table de correspondance."],
+      ["Avec qui valides-tu le plan ?","Les équipes web et appli ensemble, pour éviter deux nomenclatures."],
+      ["Et si les chiffres ne concordent pas ?","Test de cohérence avant publication, puis analyse de l'écart par plateforme."]],
+  C1:[["Et si personne ne veut céder ?","Je reviens à la décision que la donnée doit permettre et je compare utilité et coût."],
+      ["Tu prends parti pour qui ?","Pour personne : pour la solution qui sert la décision au meilleur coût."],
+      ["Comment évites-tu que le sujet revienne ?","Je consigne la solution retenue et la raison du choix."],
+      ["As-tu vécu une situation de ce type ?","Un exemple réel de ton parcours : situation, ton action, résultat."]],
+  C2:[["Combien de temps fais-tu tourner le test ?","Jusqu'à la taille d'échantillon calculée avant le lancement, pas jusqu'au premier bon résultat."],
+      ["Quel KPI principal ?","Le taux de demandes confirmées, avec la qualité des demandes en garde-fou."],
+      ["Plus de demandes, mais de moins bonne qualité ?","Pas de déploiement : le garde-fou passe avant."],
+      ["Comment choisis-tu ce que tu testes ?","À partir du diagnostic des points d'abandon."]],
+  C3:[["Donc la nouvelle version a 88 % de chances de gagner ?","Non : la p-value mesure à quel point l'écart serait surprenant si les versions étaient équivalentes."],
+      ["On arrête le test ?","En cours : on suit le plan initial. Terminé : on présente l'incertitude."],
+      ["Que dis-tu au client qui voulait un gagnant ?","Hausse encourageante mais non démontrée, et la suite proposée."],
+      ["Et si on prolongeait jusqu'à passer sous 0,05 ?","Non : prolonger jusqu'au bon résultat fausse la conclusion."]],
+  C4:[["Pourquoi ne pas déployer tout de suite ?","Je vérifie d'abord l'échantillon prévu et les garde-fous."],
+      ["Que regardes-tu en plus de la p-value ?","L'intervalle de confiance du gain, pour savoir s'il est utile en pratique."],
+      ["Quels garde-fous ?","Par exemple les annulations ou les rendez-vous non honorés."],
+      ["Et après le déploiement ?","Je suis l'effet réel, qui peut être plus faible que pendant le test."]],
+  C5:[["Comment sais-tu que c'est la page et pas le trafic ?","Je compare à source égale : si le retard persiste, c'est la page."],
+      ["Et si le volume tablette est faible ?","Je vérifie d'abord qu'il suffit pour conclure."],
+      ["Quelles sources regardes-tu ?","UTM pour les campagnes, référents et recherche pour le reste."],
+      ["Que proposes-tu ensuite ?","Une analyse du parcours sur tablette, puis un test ciblé."]],
+  C6:[["Donne-moi un exemple d'hypothèse.","Si je change [élément précis], alors [mesure] augmente, car [raison observée]."],
+      ["Pourquoi une seule métrique principale ?","Pour décider sans ambiguïté ; les autres sont des garde-fous."],
+      ["D'où vient ton observation ?","Des données : abandons, analyse de parcours, retours utilisateurs."],
+      ["Qu'est-ce qu'une mauvaise hypothèse ?","Une hypothèse sans observation ni raison, du type « ce sera plus joli »."]],
+  C7:[["C'est une baisse de 0,5 % ?","Non : 0,5 point, soit environ 17 % en relatif."],
+      ["Par quoi commences-tu ?","Le tracking : si la mesure est cassée, tout le reste est faux."],
+      ["Comment écartes-tu la saisonnalité ?","Comparaison à la même période l'an passé."],
+      ["Et ensuite ?","Je chiffre chaque cause et je priorise les actions."]],
+  K1:[["Pourquoi ne pas promettre le résultat ?","Il dépend de facteurs hors de notre contrôle : je garantis une méthode et des jalons."],
+      ["Le client insiste, il veut un chiffre.","Je cadre : +1 point sur 3 %, c'est +33 % en relatif, et je propose un objectif réaliste à trois mois."],
+      ["Que montres-tu au bout d'un mois ?","Un point d'étape : audit fait, premiers tests lancés, premiers enseignements."],
+      ["Et s'il lance une promotion en même temps ?","Je la mesure à part pour ne pas la confondre avec l'effet des optimisations."]],
+  K2:[["Par quoi commences-tu ?","Cadrer : périmètre, période, définition du chiffre."],
+      ["Comment décomposes-tu ?","Nombre de commandes multiplié par la valeur moyenne."],
+      ["Et si c'était le tracking ?","Je ne conclus pas au tracking juste parce que les commandes baissent : je vérifie la source de référence."],
+      ["Quels leviers regardes-tu ?","Trafic, conversion, canaux, appareils, saisonnalité."]],
+  K3:[["Pourquoi trois actions maximum ?","Pour une décision simple et une exécution réaliste."],
+      ["Comment priorises-tu ?","Impact attendu face à l'effort."],
+      ["Quelles sont les limites de ta recommandation ?","Je les dis : hypothèses, données manquantes, ce qu'on ne sait pas encore."],
+      ["Et ce que tu ne recommandes pas ?","Je le dis aussi, avec la raison."]],
+  K4:[["Et si vous ne trouvez pas la cause dans le délai annoncé ?","Je reviens quand même à la date prévue, avec un point d'étape et un nouveau délai."],
+      ["Il veut une réponse tout de suite.","Je donne ce qu'on sait et ce qu'on fait, sans annoncer une cause non confirmée."],
+      ["Quel niveau de détail ?","Le minimum utile à la décision ; le détail technique reste disponible."],
+      ["Quelle décision lui demandes-tu ?","Une seule, claire : valider une action, un budget ou un délai."]],
+  K5:[["Pourquoi payer un audit si tout fonctionne ?","Un site qui fonctionne peut remonter des chiffres incomplets, et le budget se pilote dessus."],
+      ["Comment le prouver ?","En comparant les ventes remontées aux ventes réelles du back-office."],
+      ["Combien de temps ça prend ?","Un audit en deux semaines, puis une recette avant chaque mise en production."],
+      ["Qu'est-ce que le client y gagne ?","Des décisions prises sur des données fiables."]],
+  K6:[["Pourquoi quitter le côté annonceur ?","Pour ce que tu recherches (plusieurs marques, plusieurs secteurs), sans critiquer ton employeur."],
+      ["Pourquoi notre cabinet ?","Conseil, tracking, expérimentation, automobile et mobilité : le lien avec ton parcours."],
+      ["Qu'est-ce qui te prépare au conseil ?","Des faits de ton parcours : projets, restitutions, travail avec les équipes."],
+      ["Où te vois-tu dans quelques années ?","Plus autonome sur des missions complètes, de l'audit à la recommandation."]]
+};
+
+function notesCas(code){ const o = store.get("notesMethodes", {}); return (o && o[code]) || {}; }
+function noteEtape(code, i){ return notesCas(code)[String(i)] || ""; }
+function majNoteEtape(code, i, texte){
+  const o = store.get("notesMethodes", {}) || {};
+  o[code] = o[code] || {};
+  if(texte.trim()) o[code][String(i)] = texte; else delete o[code][String(i)];
+  if(!Object.keys(o[code]).length) delete o[code];
+  store.set("notesMethodes", o);
+}
+function questionsCas(code){
+  const base = (QUESTIONS_PROBABLES[code] || []).map(x => ({ q:x[0], p:x[1], src:"base" }));
+  const perso = ((store.get("questionsPerso", {}) || {})[code] || []).map((x, i) => ({ q:x.q, p:x.p || "", src:"perso", i }));
+  const ia = ((store.get("questionsIA", {}) || {})[code] || []).map(x => ({ q:x.q, p:x.p || "", src:"ia" }));
+  return base.concat(ia, perso);
+}
+
+/* Panneau de droite : étape sélectionnée (définition + notes), puis questions probables */
+function renderPanneauQC(){
+  const p = $("#qc-panneau"); if(!p) return;
+  const m = METHODES.find(x => x.id === QC.affiche); if(!m){ p.innerHTML = ""; return; }
+  const i = QC.etapeSel, e = i != null ? m.etapes[i] : null;
+  const blocEtape = e
+    ? '<section class="qc-pan-bloc"><span class="qc-pan-sur">Étape '+(i+1)+' sur '+m.etapes.length+'</span><h3>'+esc(e[0])+'</h3>'+
+        '<p class="qc-pan-def">'+esc(e[2]||"")+'</p>'+
+        '<label class="champ qc-pan-note">Mes notes<textarea id="qc-note" data-code="'+m.id+'" data-i="'+i+'" rows="5" placeholder="Un exemple de ton parcours, un chiffre réel, une formule à placer...">'+esc(noteEtape(m.id, i))+'</textarea>'+
+        '<small id="qc-note-etat">Enregistré automatiquement sur cet ordinateur.</small></label></section>'
+    : '<section class="qc-pan-bloc qc-pan-vide">'+ic("crayon")+'<p><b>Clique sur une étape</b> pour voir sa définition et ajouter tes notes.</p></section>';
+  const qs = questionsCas(m.id);
+  const blocQ = '<section class="qc-pan-bloc"><h3>Questions probables</h3>'+
+    '<ul class="qc-pan-q">'+qs.map(x => '<li><span class="qc-pan-q-txt">« '+esc(x.q)+' »'+
+        (x.src === "ia" ? ' <span class="qc-tag">IA</span>' : x.src === "perso" ? ' <span class="qc-tag">perso</span>' : "")+'</span>'+
+        (x.p ? '<span class="qc-pan-piste">'+esc(x.p)+'</span>' : "")+
+        (x.src === "perso" ? '<button class="btn-lien" data-action="supprQuestionQC" data-arg="'+x.i+'">Supprimer</button>' : "")+'</li>').join("")+'</ul>'+
+    '<details class="qc-pan-ajout"><summary>Ajouter une question</summary>'+
+      '<label class="champ">Question<input id="qc-q-new" placeholder="La question qu\'on pourrait te poser"></label>'+
+      '<label class="champ">Piste de réponse (facultatif)<input id="qc-p-new" placeholder="Ce que tu répondrais, en une ligne"></label>'+
+      '<button class="btn btn-petit btn-bleu" data-action="ajoutQuestionQC">Ajouter</button></details>'+
+    (geminiActif() ? '<button class="btn btn-petit" data-action="questionsIAQC" id="qc-btn-ia">'+ic("eclair")+'D\'autres questions (IA)</button>' : '<p class="muet petit">Avec une clé Gemini active, un bouton propose d\'autres questions adaptées à ton parcours.</p>')+
+  '</section>';
+  p.innerHTML = blocEtape + blocQ;
+  const t = $("#qc-note");
+  if(t) t.addEventListener("input", () => {
+    majNoteEtape(t.dataset.code, Number(t.dataset.i), t.value);
+    const s = $("#qc-note-etat"); if(s) s.textContent = "Enregistré ✓";
+    const li = document.querySelector('.qc-etapes li[data-i="'+t.dataset.i+'"]'); if(li) li.classList.toggle("a-note", !!t.value.trim());
+  });
+}
+
+const PROMPT_QUESTIONS_CAS = `Tu prépares un candidat à un entretien pour un poste de Digital Analytics Consultant junior chez fifty-five (conseil en data et technologie pour le marketing). Le candidat restitue une méthode pour le cas « {TITRE} ». Étapes de sa méthode : {ETAPES}.
+Génère 4 questions de relance qu'un manager poserait à l'oral sur ce cas, différentes de celles-ci : {CONNUES}.
+Pour chacune, une piste de réponse en une ligne, appuyée sur la méthode. N'invente aucun chiffre, aucun outil, aucune mission absents du profil. Phrases courtes, tutoiement, aucun tiret long.
+Profil du candidat : {PROFIL}
+Réponds uniquement avec un objet JSON valide : { "questions": [ { "question": "...", "piste": "..." } ] }`;
+async function genererQuestionsCasIA(m){
+  const sys = remplir(PROMPT_QUESTIONS_CAS, { TITRE:m.titre, ETAPES:m.etapes.map(e => e[0]).join(", "), CONNUES:questionsCas(m.id).map(x => x.q).join(" | "), PROFIL:profilCandidat() });
+  const { obj } = await geminiJSON(sys, [{ role:"user", parts:[{ text:"Génère les questions." }] }], { temperature:0.8, delai:60000 });
+  const qs = (obj && Array.isArray(obj.questions) ? obj.questions : []).filter(x => x && typeof x.question === "string" && x.question.trim()).slice(0, 4)
+    .map(x => ({ q:sansTiret(x.question.trim()), p:sansTiret(String(x.piste || "").trim()) }));
+  if(!qs.length) throw new ErrGem("json", "Gemini n'a renvoyé aucune question exploitable.");
+  return qs;
+}
+
+Object.assign(ACTIONS, {
+  selEtapeQC(el){
+    const li = el.closest("li[data-i]"); if(!li) return;
+    QC.etapeSel = Number(li.dataset.i);
+    $$(".qc-etapes li").forEach(x => x.classList.toggle("selection", x === li));
+    $$(".qc-et-titre").forEach(b => b.setAttribute("aria-pressed", String(b.closest("li") === li)));
+    renderPanneauQC();
+  },
+  ajoutQuestionQC(){
+    const q = ($("#qc-q-new").value || "").trim(), p = ($("#qc-p-new").value || "").trim();
+    if(!q){ toast("Écris d'abord la question."); return; }
+    const o = store.get("questionsPerso", {}) || {}; (o[QC.affiche] = o[QC.affiche] || []).push({ q, p }); store.set("questionsPerso", o);
+    renderPanneauQC(); toast("Question ajoutée.");
+  },
+  supprQuestionQC(el){
+    const o = store.get("questionsPerso", {}) || {}; const l = o[QC.affiche] || []; l.splice(Number(el.dataset.arg), 1);
+    if(l.length) o[QC.affiche] = l; else delete o[QC.affiche]; store.set("questionsPerso", o); renderPanneauQC();
+  },
+  async questionsIAQC(el){
+    const m = METHODES.find(x => x.id === QC.affiche); if(!m) return;
+    el.disabled = true; el.textContent = "Gemini prépare 4 questions...";
+    try{
+      const qs = await genererQuestionsCasIA(m);
+      const o = store.get("questionsIA", {}) || {}; o[m.id] = (o[m.id] || []).concat(qs).slice(-12); store.set("questionsIA", o);
+      if(QC.affiche === m.id) renderPanneauQC();
+      toast(qs.length + " questions ajoutées par Gemini.");
+    }catch(e){ toast((e && e.message) || "Génération impossible."); if(document.body.contains(el)){ el.disabled = false; el.textContent = "D'autres questions (IA)"; } }
+  }
+});
+
 /* ---------- Méthodes : liste des cas d'usage et feuille stepper ---------- */
 function methodesFaites(){ const o = store.get("methodes", {}); return (o && typeof o === "object") ? o : {}; }
 function rMethodes(){
@@ -3478,7 +3693,8 @@ function feuilleMethode(id, revision){
       '<span class="etape-titre"><span class="sr">Étape '+(i+1)+' : </span>'+esc(e[0])+'</span>'+
       '<span class="etape-cache">Touche pour révéler les mots-clés</span>'+
       '<span class="puces etape-mc">'+mc+'</span>'+
-      '<span class="etape-dev">'+esc(e[2]||"")+'</span></span></button></li>';
+      '<span class="etape-dev">'+esc(e[2]||"")+'</span>'+
+      (noteEtape(m.id, i) ? '<span class="etape-note"><b>Ma note :</b> '+esc(noteEtape(m.id, i))+'</span>' : "")+'</span></button></li>';
   }).join("");
   ouvrirModale('<div class="feuille-meth'+(revision ? " revision" : "")+'" data-id="'+m.id+'">'+
     '<div class="ligne-titre"><span class="etiquette"><span class="anneau"></span>'+esc(f.nom)+' · '+m.id+'</span>'+
