@@ -8,7 +8,6 @@ Entraînement aux entretiens de Digital Analytics Consultant : 3 rounds de 30 mi
 
 ## Méthodes et « Quel cas ? »
 Onglet Méthodes : 19 cas en étapes (objet METHODES dans index.html). « Quel cas ? » relie téléphone (Saisie) et ordinateur (Affichage) via ntfy.sh : même topic sur les deux appareils (Réglages, rubrique « Quel cas ? »), seul le code du cas est envoyé.
-
 ## Clé Gemini (facultative)
 1. Crée une clé sur Google AI Studio (aistudio.google.com, rubrique « Get API key »).
 2. Accueil, engrenage, champ « Clé API », puis « Tester la clé ». La liste des modèles se remplit.
