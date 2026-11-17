@@ -398,6 +398,35 @@ html[data-theme="nuit"] .st-prototype{color:#9CC2FF}
 .dl-pres dd{margin:0;line-height:1.5}
 .a-completer{color:var(--orange-txt);font-weight:700}
 @media (max-width:420px){ .dl-pres div{grid-template-columns:1fr;gap:0} }
+.moi-actions{gap:8px}
+.moi-bloc{display:flex;flex-direction:column;gap:10px;padding:16px 18px;border-radius:var(--r);background:var(--carte);border:1px solid var(--ligne);box-shadow:var(--ombre)}
+.moi-tete{display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.moi-tete h3{font-size:1.15rem}
+.moi-duree{color:var(--txt2);font-size:.9rem;margin-right:auto}
+.moi-recit{margin:0;line-height:1.7;font-size:1.04rem}
+.frise-moi{list-style:none;margin:0;padding:0 0 0 18px;border-left:3px solid var(--ligne);display:flex;flex-direction:column;gap:14px}
+.frise-moi li{position:relative;display:flex;flex-direction:column;gap:2px}
+.frise-moi li::before{content:"";position:absolute;left:-26px;top:4px;width:13px;height:13px;border-radius:50%;background:var(--bleu);border:3px solid var(--carte)}
+.frise-per{font-size:.82rem;font-weight:800;color:var(--orange-txt);letter-spacing:.03em}
+.frise-appris{color:var(--txt2);font-size:.95rem}
+.chiffres-moi{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:8px;line-height:1.5;font-weight:600}
+.ia-section h3{display:flex;align-items:center;gap:8px}
+.ia-ligne{display:flex;flex-direction:column;gap:8px;padding-top:12px;border-top:1px solid var(--ligne)}
+.ia-ligne h4{margin:0;font-size:1.02rem}
+.ia-cols{display:grid;grid-template-columns:1fr;gap:8px}
+.ia-col{display:flex;flex-direction:column;align-items:flex-start;gap:6px;padding:10px 12px;border-radius:12px;background:var(--fond2);border:1px solid var(--ligne)}
+.ia-col-agent{background:rgba(20,163,139,.1);border-color:rgba(20,163,139,.4)}
+.ia-col p{margin:0;line-height:1.5}
+.ia-lbl{font-size:.75rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--txt2)}
+.st-teste{background:rgba(31,111,224,.12);color:#1659B8;border-color:rgba(31,111,224,.4)}
+html[data-theme="nuit"] .st-teste{color:#9CC2FF}
+.st-avalider{background:transparent;color:var(--txt2);border-style:dashed}
+.note-projet{margin:0;font-size:.9rem;font-weight:700;color:var(--orange-txt)}
+@media (min-width:700px){ .ia-cols{grid-template-columns:1fr 1fr} }
+.qc-affiche .moi-recit{font-size:clamp(1.1rem,1.6vw,1.3rem)}
+.qc-affiche .chiffres-moi,.qc-affiche .frise-moi{font-size:clamp(1.05rem,1.4vw,1.2rem)}
+.qc-affiche .qc-panneau .moi-recit{font-size:1rem}
+.qc-affiche .qc-panneau .chiffres-moi{font-size:1rem}
 @media (min-width:1024px){ .grille-pres{grid-template-columns:repeat(2,minmax(0,1fr))} }
 /* ---------- Méthodes ---------- */
 .nav button{width:60px}
@@ -552,6 +581,8 @@ kbd{display:inline-flex;align-items:center;justify-content:center;min-width:1.6e
 .qc-f-cro{--accent:var(--orange);--accent-txt:var(--orange-txt)}
 .qc-f-consulting{--accent:#8B6CE0;--accent-txt:#5B3FB8}
 .qc-f-ia{--accent:#14A38B;--accent-txt:#0B6E5E}
+.qc-f-moi{--accent:#E0567A;--accent-txt:#A3274A}
+html[data-theme="nuit"] .qc-f-moi{--accent-txt:#FF9DB6}
 html[data-theme="nuit"] .qc-f-ia{--accent-txt:#6FE0CB}
 html[data-theme="nuit"] .qc-famille,html[data-theme="nuit"] .qc-f-tracking{--accent-txt:#9CC2FF}
 html[data-theme="nuit"] .qc-f-consulting{--accent-txt:#C7B5FF}
@@ -1095,7 +1126,7 @@ const PLAN_EXEMPLE = [
    Chaque étape : [titre court, "mot-clé|mot-clé", "phrase de développement"].
    annonce : facultative (sinon construite à partir des titres).
    ===================================================================== */
-const VERSION_APP = "17 nov. 2026, n°15"; /* à changer à chaque mise en ligne, visible dans Réglages et Quel cas */
+const VERSION_APP = "17 nov. 2026, n°16"; /* à changer à chaque mise en ligne, visible dans Réglages et Quel cas */
 const FAMILLES_METHODES = [
   { id:"tracking", nom:"Tracking", ic:"etiquette" },
   { id:"cro", nom:"CRO et média", ic:"cible" },
@@ -1374,7 +1405,7 @@ const MOTS_REPERES = {
   A1:"Recette", A2:"Baisse", A3:"Cookies", A4:"KPI"
 };
 METHODES.forEach(m => { m.court = LIBELLES_COURTS[m.id] || m.titre; m.repere = MOTS_REPERES[m.id] || m.id; });
-function libelleCas(code){ const m = METHODES.find(x => x.id === code); return m ? m.court : code; }
+function libelleCas(code){ const m = typeof trouverItem === "function" ? trouverItem(code) : METHODES.find(x => x.id === code); return m ? m.court : code; }
 const NOMBRES_FR = ["zéro","une","deux","trois","quatre","cinq","six","sept","huit","neuf","dix"];
 function annonceMethode(m){
   if(m.annonce) return m.annonce;
@@ -3384,11 +3415,11 @@ const TRIGGERS = [
   { code:"A2", mots:["diagnostic par agent","hypotheses classees"] },
   { code:"A3", mots:["cookie","cookies","referentiel","crawl","luciol"] },
   { code:"A4", mots:["kpi","commentaire","e-mail","email","reporting"] },
-  { code:"K6", mots:["pourquoi le conseil","conseil","pourquoi nous","pourquoi fifty-five"] }
+  { code:"K6", mots:["pourquoi le conseil","conseil","pourquoi un cabinet"] }
 ];
 function chercherCas(texte){
   const n = norm(texte).trim(); if(!n) return [];
-  const direct = METHODES.find(m => norm(m.id) === n.replace(/\s+/g,""));
+  const direct = trouverItem(n.replace(/\s+/g,"").toUpperCase());
   if(direct) return [direct];
   const scores = TRIGGERS.map(t => {
     let s = 0;
@@ -3403,7 +3434,7 @@ function chercherCas(texte){
   if(a("agent") && (a("baisse") || a("drop"))) bonus("A2", 20);
   if(ia) ["A1","A2","A3","A4"].forEach((c, i) => bonus(c, 8 - i * 0.1));
   scores.sort((x,y) => y.s - x.s);
-  return scores.slice(0, 4).map(x => METHODES.find(m => m.id === x.code)).filter(Boolean);
+  return scores.slice(0, 4).map(x => trouverItem(x.code)).filter(Boolean);
 }
 
 /* ---------- Topic ntfy ---------- */
@@ -3461,7 +3492,7 @@ function ouvrirFluxQC(){
     if(!d || d.event !== "message") return;
     if(d.id) QC.dernierId = d.id;
     const code = String(d.message || "").trim().toUpperCase();
-    if(METHODES.some(m => m.id === code)) recevoirCas(code);
+    if(trouverItem(code)) recevoirCas(code);
   };
   es.onerror = () => {
     QC.etat = navigator.onLine === false ? "deconnecte" : "connexion"; majEtatQC();
@@ -3473,7 +3504,7 @@ function histoQC(){ const h = store.get("quelcasHisto", []); return Array.isArra
 function recevoirCas(code){
   const h = histoQC(); h.unshift({ code, date:new Date().toISOString() }); store.set("quelcasHisto", h.slice(0, 10));
   QC.affiche = code;
-  const m = METHODES.find(x => x.id === code);
+  const m = trouverItem(code);
   if(nomRoute() === "quelcas" && QC.vue === "affichage"){ renderAffichageQC(); toast("Nouveau cas : " + code + (m ? ", " + m.titre : "")); }
 }
 
@@ -3558,16 +3589,18 @@ function rSaisiePaysageQC(){
     '<div id="qc-sugg" class="qc-sugg qc-sugg-flottant"></div>'+
     '<div id="qc-envoye" class="qc-envoye qc-envoye-flottant" aria-live="polite"></div>'+
     blocTopicQC()+
-    '<div class="qc-pay-grille">'+FAMILLES_METHODES.map(f => '<div class="qc-pay-fam qc-f-'+f.id+'">'+esc(f.id === "consulting" ? "Consulting" : f.nom)+'</div>'+
-      '<div class="qc-pay-ligne qc-f-'+f.id+'">'+METHODES.filter(m => m.famille === f.id).map(m => '<div class="qc-cell qc-cell-case"><button class="qc-pay-case" data-action="envoyerCodeQC" data-arg="'+m.id+'" aria-label="'+esc(m.id+", "+m.court)+'" title="'+esc(m.court)+'"><span class="qc-pay-code">'+m.id+'</span><span class="qc-pay-mot">'+esc(m.repere)+'</span></button>'+boutonInfoQC(m)+'</div>').join("")+'</div>').join("")+
+    '<div class="qc-pay-grille">'+famillesQC().map(f => '<div class="qc-pay-fam qc-f-'+f.id+'">'+esc(f.id === "consulting" ? "Consulting" : f.nom)+'</div>'+
+      '<div class="qc-pay-ligne qc-f-'+f.id+'">'+itemsFamilleQC(f.id).map(m => '<div class="qc-cell qc-cell-case"><button class="qc-pay-case" data-action="envoyerCodeQC" data-arg="'+m.id+'" aria-label="'+esc(m.id+", "+m.court)+'" title="'+esc(m.court)+'"><span class="qc-pay-code">'+m.id+'</span><span class="qc-pay-mot">'+esc(m.repere)+'</span></button>'+boutonInfoQC(m)+'</div>').join("")+'</div>').join("")+
     '</div></div>';
   fermerFluxQC(); brancherChampQC(); viderFileQC(); majEtatQC();
 }
 /* Deux présentations des boutons, au choix, mémorisées sur l'appareil :
    « detail » : grands boutons avec le nom du cas et ses mots-clés ; « codes » : grille compacte T1 à K6. */
 function vueBoutonsQC(){ return store.get("quelcasVue", "famille") === "codes" ? "codes" : "famille"; }
-function familleQC(){ const f = store.get("quelcasFamille", "tracking"); return FAMILLES_METHODES.some(x => x.id === f) ? f : "tracking"; }
-const NOMS_ONGLETS_QC = { tracking:"Tracking", cro:"CRO, média", consulting:"Consulting", ia:"IA" };
+function famillesQC(){ return FAMILLES_METHODES.filter(f => f.id !== "ia").concat([{ id:"moi", nom:"Moi", ic:"personne" }]); }
+function itemsFamilleQC(id){ return id === "moi" ? MOI_ITEMS : METHODES.filter(m => m.famille === id); }
+function familleQC(){ const f = store.get("quelcasFamille", "tracking"); return famillesQC().some(x => x.id === f) ? f : "tracking"; }
+const NOMS_ONGLETS_QC = { tracking:"Tracking", cro:"CRO, média", consulting:"Consulting", ia:"IA", moi:"Moi" };
 function motsClesCas(code){
   const t = TRIGGERS.find(x => x.code === code); if(!t) return [];
   const vus = new Set(); return (langueMeth() === "en" ? (TRIGGERS_EN[code] || []) : (t.motsFR || t.mots)).filter(w => { const k = norm(w); if(vus.has(k) || [...vus].some(v => v.includes(k) || k.includes(v))) return false; vus.add(k); return true; }).slice(0, 4);
@@ -3576,15 +3609,15 @@ function grilleQC(){
   const vue = vueBoutonsQC();
   if(vue === "famille"){
     const fam = familleQC();
-    return '<div class="qc-fam-onglets" role="group" aria-label="Famille">'+FAMILLES_METHODES.map(f => '<button data-action="familleQC" data-arg="'+f.id+'" aria-pressed="'+(f.id === fam)+'">'+esc(NOMS_ONGLETS_QC[f.id] || f.nom)+'</button>').join("")+'</div>'+
-      '<div class="qc-liste-b qc-f-'+fam+'">'+METHODES.filter(m => m.famille === fam).map(m => '<div class="qc-cell qc-cell-b"><button class="qc-b" data-action="envoyerCodeQC" data-arg="'+m.id+'">'+
+    return '<div class="qc-fam-onglets" role="group" aria-label="Famille">'+famillesQC().map(f => '<button data-action="familleQC" data-arg="'+f.id+'" aria-pressed="'+(f.id === fam)+'">'+esc(NOMS_ONGLETS_QC[f.id] || f.nom)+'</button>').join("")+'</div>'+
+      '<div class="qc-liste-b qc-f-'+fam+'">'+itemsFamilleQC(fam).map(m => '<div class="qc-cell qc-cell-b"><button class="qc-b" data-action="envoyerCodeQC" data-arg="'+m.id+'">'+
         '<span class="qc-b-haut"><span class="qc-b-lib">'+esc(m.court)+'</span><span class="qc-b-code">'+m.id+'</span></span>'+
         '<span class="qc-b-mc">'+esc(motsClesCas(m.id).slice(0, 3).join(" · "))+'</span></button>'+boutonInfoQC(m)+'</div>').join("")+'</div>';
   }
-  return FAMILLES_METHODES.map(f => '<div class="qc-famille qc-f-'+f.id+'"><h4>'+ic(f.ic)+esc(f.nom)+'</h4>'+
+  return famillesQC().map(f => '<div class="qc-famille qc-f-'+f.id+'"><h4>'+ic(f.ic)+esc(f.nom)+'</h4>'+
     (vue === "codes"
-      ? '<div class="qc-codes qc-codes-compact">'+METHODES.filter(m => m.famille === f.id).map(m => '<div class="qc-cell qc-cell-code"><button class="qc-code-court" data-action="envoyerCodeQC" data-arg="'+m.id+'" aria-label="'+esc(m.id+", "+m.court)+'" title="'+esc(m.court)+'">'+m.id+'</button>'+boutonInfoQC(m)+'</div>').join("")+'</div>'
-      : '<div class="qc-liste">'+METHODES.filter(m => m.famille === f.id).map(m => '<button class="qc-gros" data-action="envoyerCodeQC" data-arg="'+m.id+'">'+
+      ? '<div class="qc-codes qc-codes-compact">'+itemsFamilleQC(f.id).map(m => '<div class="qc-cell qc-cell-code"><button class="qc-code-court" data-action="envoyerCodeQC" data-arg="'+m.id+'" aria-label="'+esc(m.id+", "+m.court)+'" title="'+esc(m.court)+'">'+m.id+'</button>'+boutonInfoQC(m)+'</div>').join("")+'</div>'
+      : '<div class="qc-liste">'+itemsFamilleQC(f.id).map(m => '<button class="qc-gros" data-action="envoyerCodeQC" data-arg="'+m.id+'">'+
           '<span class="qc-gros-haut"><span class="qc-gros-lib">'+esc(m.court)+'</span><span class="qc-code-id">'+m.id+'</span></span>'+
           '<span class="qc-gros-titre">'+esc(m.titre)+'</span>'+
           '<span class="qc-gros-mc">'+motsClesCas(m.id).map(k => '<span>'+esc(k)+'</span>').join("")+'</span></button>').join("")+'</div>')+
@@ -3604,8 +3637,19 @@ async function envoyerDepuisSaisie(code){
 }
 function renderAffichageQC(){
   const z = $("#qc-vue"); if(!z) return;
+  const moiItem = MOI_ITEMS.find(x => x.id === QC.affiche);
   const m = METHODES.find(x => x.id === QC.affiche), h = histoQC();
   const histo = h.length ? '<div class="qc-histo"><h3 class="qc-sous">Derniers cas</h3><div class="flex">'+h.map(x => '<button class="chip" data-action="afficherCodeQC" data-arg="'+esc(x.code)+'" aria-pressed="'+(x.code === QC.affiche)+'">'+esc(libelleCas(x.code))+'</button>').join("")+'</div></div>' : "";
+  if(moiItem){
+    z.innerHTML = '<div class="qc-affiche" id="qc-affiche"><div class="qc-aff-main">'+
+      '<div class="ligne-titre"><span class="etiquette"><span class="anneau"></span>Moi · '+moiItem.id+'</span>'+
+        '<div class="flex qc-aff-actions"><button class="btn btn-petit" data-action="ouvrirPalette">'+ic("cible")+'Chercher <kbd>Ctrl K</kbd></button>'+
+        '<button class="btn btn-petit" data-action="pleinEcranQC">'+ic("grille")+'Plein écran <kbd>F</kbd></button>'+
+        '<button class="btn btn-petit" data-action="aideClavier" aria-label="Raccourcis clavier"><kbd>?</kbd></button></div></div>'+
+      '<h2 class="qc-titre">'+esc(moiItem.titre)+'</h2>'+moiItem.html()+
+      '</div><aside class="qc-panneau" id="qc-panneau" aria-label="Rappels">'+(moiItem.id === "M3" ? htmlRecit() : htmlChiffres())+'</aside></div>'+histo;
+    return;
+  }
   if(!m){
     z.innerHTML = '<div class="carte qc-vide">'+ic("etapes")+'<h2>En attente d\'un cas</h2><p class="muet">Envoie un code depuis la vue Saisie de ton téléphone : il s\'affichera ici en grand.</p></div>'+histo;
     return;
@@ -3633,7 +3677,7 @@ function renderAffichageQC(){
   brancherEntrainementQC();
 }
 /* Bouton « i » : définition d'un cas sans l'envoyer */
-function boutonInfoQC(m){ return '<button class="qc-info" data-action="infoCasQC" data-arg="'+m.id+'" aria-label="Définition : '+esc(m.court)+'">i</button>'; }
+function boutonInfoQC(m){ if(m.famille === "moi") return ""; return '<button class="qc-info" data-action="infoCasQC" data-arg="'+m.id+'" aria-label="Définition : '+esc(m.court)+'">i</button>'; }
 function ficheCasQC(code){
   const m = METHODES.find(x => x.id === code); if(!m) return;
   const f = FAMILLES_METHODES.find(x => x.id === m.famille) || { nom:"" };
@@ -4492,7 +4536,7 @@ function flashTouche(touche, texte){
   clearTimeout(z._t); z._t = setTimeout(() => z.classList.remove("visible"), 1100);
 }
 function afficherCasLocal(code){
-  const m = METHODES.find(x => x.id === code); if(!m) return false;
+  const m = trouverItem(code); if(!m) return false;
   const h = histoQC(); if(!h[0] || h[0].code !== code){ h.unshift({ code, date:new Date().toISOString() }); store.set("quelcasHisto", h.slice(0, 10)); }
   QC.affiche = code;
   if(nomRoute() === "quelcas" && QC.vue === "affichage") renderAffichageQC(); else go("quelcas/affichage");
@@ -4504,10 +4548,10 @@ function afficherCasLocal(code){
 function resultatsPalette(q){
   const n = norm(q).trim(), res = [], vus = new Set();
   const ajoutCas = m => { if(m && !vus.has(m.id)){ vus.add(m.id); res.push({ type:"cas", id:m.id, titre:m.court, sous:m.titre }); } };
-  if(!n){ histoQC().forEach(x => ajoutCas(METHODES.find(m => m.id === x.code))); METHODES.forEach(ajoutCas); }
+  if(!n){ histoQC().forEach(x => ajoutCas(trouverItem(x.code))); MOI_ITEMS.forEach(ajoutCas); METHODES.forEach(ajoutCas); }
   else {
-    METHODES.filter(m => norm(m.id) === n.replace(/\s+/g, "")).forEach(ajoutCas);
-    METHODES.filter(m => norm(m.titre + " " + m.court).includes(n)).forEach(ajoutCas);
+    METHODES.concat(MOI_ITEMS).filter(m => norm(m.id) === n.replace(/\s+/g, "")).forEach(ajoutCas);
+    METHODES.concat(MOI_ITEMS).filter(m => norm(m.titre + " " + m.court).includes(n)).forEach(ajoutCas);
     chercherCas(q).forEach(ajoutCas);
   }
   const cas = res.slice(0, n ? 8 : 6);
@@ -4639,13 +4683,13 @@ document.addEventListener("keydown", e => {
   if(KB.combo && /^[1-9]$/.test(k)){
     const code = KB.combo + k; KB.combo = null; clearTimeout(KB.comboT);
     e.preventDefault();
-    if(METHODES.some(m => m.id === code)){
+    if(trouverItem(code)){
       flashTouche(code, libelleCas(code));
       if(route === "methodes") feuilleMethode(code, false); else afficherCasLocal(code);
     } else flashTouche(code, "Ce code n'existe pas");
     return;
   }
-  if(["T","C"].includes(lettre) || (lettre === "K" && !e.shiftKey)){
+  if(["T","C","A","M"].includes(lettre) || (lettre === "K" && !e.shiftKey)){
     KB.combo = lettre; clearTimeout(KB.comboT); KB.comboT = setTimeout(() => { KB.combo = null; }, 1600);
     flashTouche(lettre + " _", "Tape le chiffre"); return;
   }
@@ -4955,150 +4999,205 @@ Object.assign(ACTIONS, {
 });
 
 /* =====================================================================
-   Écran « Présentation » : pitch de 90 secondes et cartes projets.
-   PROJETS : modifier ici les projets par défaut. Les modifications faites dans l'app
-   sont enregistrées dans localStorage, clé harnais.v1.presentation.
-   Règle : aucun chiffre inventé. Un résultat inconnu reste « [à compléter] ».
+   Écran « Présentation » : onglet « Moi » (le récit) et onglet « Projets ».
+   Données par défaut : MOI_DEFAUT et PROJETS ci-dessous (à modifier ici).
+   Modifications faites dans l'app : localStorage, clé harnais.v1.presentation.
+   Règle : aucun chiffre inventé. Inconnu = « [à compléter] » ; à confirmer = « [à valider] ».
    ===================================================================== */
-const TAGS_PROJETS = ["IA agentique", "IA générative", "Tracking", "CRO", "Consulting", "Reporting", "Analyse"];
+const AC = "[à compléter]", AV = "[à valider]";
+const TAGS_PROJETS = ["Tracking", "CRO", "Reporting", "Consulting", "IA agentique", "IA générative", "Analyse"];
 const TAGS_IA = ["IA agentique", "IA générative"];
-const STATUTS_IA = ["Déployé", "Prototype", "Proposé"];
-const AC = "[à compléter]";
+const STATUTS = ["Déployé", "Testé", "Prototype", "Proposé"];
+
+const MOI_DEFAUT = {
+  recit:"Je suis web analyst, spécialisé en tracking, CRO et automatisation. Après un bachelor en digital et analytics à Bordeaux, j'ai commencé chez La Poste en CRO : j'ai mené des tests A/B et cherché les points de friction des parcours. Chez Cultura, depuis octobre 2024, je gère le tracking, la conformité RGPD et le reporting. J'ai vite remarqué que l'équipe refaisait chaque semaine les mêmes tâches à la main, alors je les ai automatisées avec Apps Script, Make et des modèles de langage. Mon master en data marketing et IA m'a conduit aux agents IA : un agent qui confronte une campagne aux signaux du moment, testé avec l'équipe trafic. Je cherche un poste de web analyst orienté tracking ou CRO, pour appliquer cette rigueur à plusieurs marques.",
+  parcours:[
+    { periode:"2021-2024", titre:"Bachelor Digital & Analytics, ESD Bordeaux", appris:AC },
+    { periode:"2023-2024", titre:"La Poste, Web Analyst / CRO", appris:"Tester et lire un parcours." },
+    { periode:"2024-2026", titre:"Master Data Marketing & IA, ESD (RNCP niveau 7)", appris:AC },
+    { periode:"Oct. 2024 à oct. 2026", titre:"Cultura, Web Analyst Tracking", appris:"Fiabiliser la donnée et automatiser." }
+  ],
+  chiffres:[
+    "3 ans de web analytics e-commerce.",
+    "+230 % " + AV + " : formulation à confirmer (visites robot repérées, ou reprises de visite).",
+    "3 outils internes construits chez Cultura : reporting, cookies, radio.",
+    "50 collègues e-commerce ont reçu l'agent Baromètre Data."
+  ],
+  pourquoi:"Le conseil me permettrait de travailler sur plusieurs marques et secteurs, avec un mélange de tracking, d'expérimentation et d'IA, sur l'automobile et la mobilité."
+};
+
+/* statut : statut de la version actuelle (null = à valider) ; agentique / statutAgentique : version agentique proposée */
 const PROJETS = [
-  { id:"barometre", titre:"Baromètre Data (M2)", tag:["IA agentique"], statut_ia:"Proposé",
-    contexte:"Projet de M2 Data Marketing et IA.", probleme:"Repérer des écarts de contenu sans tout vérifier à la main.",
-    action:"Des agents qui détectent des écarts de contenu.", resultat:AC, apprentissage:AC },
-  { id:"recette", titre:"Recette de tracking (Reelevant, Mediarithmics)", tag:["Tracking"], statut_ia:"Proposé",
-    contexte:"Cultura : tunnel d'achat, balises gérées dans TagCommander.", probleme:"Des données fausses ou incomplètes envoyées aux outils partenaires.",
-    action:"Recette du tunnel et correction des données via TagCommander (JavaScript ES5 ; problème de timing avec le site résolu avec sessionStorage).", resultat:AC, apprentissage:AC },
-  { id:"luciol", titre:"Référentiel cookies Luciol", tag:["Tracking", "IA agentique"], statut_ia:"Proposé",
-    contexte:"Cultura : conformité RGPD des cookies.", probleme:"Savoir quels cookies sont déposés et à quelle finalité ils servent.",
-    action:"Référentiel tenu avec le DPO. Proposition : un agent qui surveille et classe les nouveaux cookies, avec validation juridique (cas A3).", resultat:AC, apprentissage:AC },
-  { id:"eperf", titre:"ePerf Mail", tag:["Reporting", "IA agentique"], statut_ia:"Proposé",
-    contexte:"Reporting de la performance e-commerce.", probleme:"Des e-mails de performance à préparer à la main.",
-    action:"Automatisation des e-mails de performance e-commerce. Proposition : un commentaire des KPI rédigé par un modèle, relu avant l'envoi (cas A4).", resultat:AC, apprentissage:AC },
-  { id:"cookiescan", titre:"Cookie Scan", tag:["Tracking", "IA agentique"], statut_ia:"Proposé",
-    contexte:"RGPD : audit des cookies.", probleme:"Savoir quels cookies un site dépose réellement.",
-    action:"Audit des cookies d'un site.", resultat:AC, apprentissage:AC },
-  { id:"beastly", titre:"Beastly", tag:["IA générative"], statut_ia:"Proposé",
+  { id:"barometre", titre:"Baromètre Data", tag:["IA agentique"], statut:"Testé",
+    contexte:"Master Data Marketing & IA ; testé avec l'équipe trafic.", probleme:"Confronter une campagne aux signaux du moment.",
+    action:"Un agent confronte une campagne aux signaux du moment (météo, tendances Wikipédia), des règles métier calculent le score, Mistral relit le brief.",
+    resultat:"Agent reçu par 50 collègues e-commerce.", apprentissage:AC,
+    agentique:"Ajouter une boucle de correction du brief, avec validation humaine.", statutAgentique:"Proposé" },
+  { id:"cookies", titre:"Référentiel cookies (Cookie Manager, Luciol)", tag:["Tracking", "IA agentique"], statut:null,
+    contexte:"Cultura : conformité RGPD des cookies.", probleme:"Repérer les cookies nouveaux ou non conformes.",
+    action:"Référentiel aligné sur les règles du crawler ; les anomalies arrivent dans un Google Sheet.", resultat:AC, apprentissage:AC,
+    agentique:"L'agent classe les nouveaux cookies par finalité et propose la règle ; le DPO valide.", statutAgentique:"Proposé" },
+  { id:"eperf", titre:"ePerf Mail", tag:["Reporting", "IA agentique"], statut:null,
+    contexte:"Outil interne de reporting de la performance e-commerce.", probleme:"Des chiffres de performance à envoyer chaque jour et chaque semaine.",
+    action:"Web app Apps Script qui envoie les chiffres chaque jour et chaque semaine.", resultat:AC, apprentissage:AC,
+    agentique:"L'agent repère les anomalies, un modèle rédige le commentaire, relecture avant envoi.", statutAgentique:"Proposé" },
+  { id:"beastly", titre:"Beastly", tag:["IA générative", "IA agentique"], statut:null,
     contexte:AC, probleme:"Évaluer des influenceurs de façon comparable.",
-    action:"Scoring d'influenceurs avec Apify et un modèle de langage.", resultat:AC, apprentissage:AC },
-  { id:"harnais", titre:"Harnais", tag:["IA générative"], statut_ia:"Déployé",
-    contexte:"Préparation d'entretiens de Digital Analytics Consultant.", probleme:"S'entraîner à l'oral avec un retour précis, en français et en anglais.",
-    action:"Application construite avec Claude Code et l'API Gemini : simulation vocale, méthodes, mode Quel cas, correction par un coach.", resultat:AC, apprentissage:AC },
-  { id:"radio", titre:"Cultura Radio Analyzer", tag:["Analyse"], statut_ia:"Proposé",
+    action:"Scoring d'influenceurs avec Apify et un modèle de langage.", resultat:AC, apprentissage:AC,
+    agentique:"L'agent enchaîne recherche, collecte et scoring, et signale les profils à vérifier.", statutAgentique:"Proposé" },
+  { id:"recette", titre:"Recette de tracking", tag:["Tracking", "IA agentique"], statut:null,
+    contexte:"Cultura : tunnel d'achat, balises dans TagCommander (Reelevant, Mediarithmics).", probleme:"Des données fausses ou incomplètes envoyées aux outils.",
+    action:"Recette manuelle des parcours et correction des données via TagCommander.", resultat:AC, apprentissage:AC,
+    agentique:"L'agent rejoue les parcours, compare au back-office, ouvre un ticket par écart ; l'humain valide (méthode A1).", statutAgentique:"Proposé" },
+  { id:"diagnostic", titre:"Diagnostic de baisse de chiffre d'affaires", tag:["Analyse", "IA agentique"], statut:null,
+    contexte:AC, probleme:"Expliquer une baisse sans conclure trop vite.",
+    action:"Analyse manuelle.", resultat:AC, apprentissage:AC,
+    agentique:"Décomposition automatique, hypothèses classées par preuve ; l'humain décide de l'action (méthode A2).", statutAgentique:"Proposé" },
+  { id:"radio", titre:"Cultura Radio Analyzer", tag:["Analyse"], statut:null,
     contexte:"Mesurer les corrélations entre campagnes radio, trafic web et trafic en magasin.", probleme:"Pression des parties prenantes sur le résultat.",
     action:"Conception et développement d'une application React de suivi.", resultat:AC,
     apprentissage:"Garder l'intégrité des données face à la pression, et chercher un autre angle d'analyse plutôt que changer le résultat." },
-  { id:"frenchdays", titre:"Impact des French Days", tag:["CRO"], statut_ia:"Proposé",
-    contexte:AC, probleme:AC, action:AC, resultat:AC, apprentissage:AC },
-  { id:"powerbi", titre:"Migration Looker Studio vers Power BI", tag:["Reporting"], statut_ia:"Proposé",
+  { id:"frenchdays", titre:"Impact des French Days", tag:["CRO"], statut:null, contexte:AC, probleme:AC, action:AC, resultat:AC, apprentissage:AC },
+  { id:"powerbi", titre:"Migration Looker Studio vers Power BI", tag:["Reporting"], statut:null,
     contexte:AC, probleme:AC, action:"Migration des rapports de Looker Studio vers Power BI.", resultat:AC, apprentissage:AC },
-  { id:"funnel", titre:"Funnel Live", tag:["Analyse"], statut_ia:"Proposé",
-    contexte:AC, probleme:AC, action:"Entonnoir e-commerce construit à partir du dataset public GA4 dans BigQuery.", resultat:AC, apprentissage:AC }
-];
-const PITCH_DEFAUT = [
-  { id:"qui", titre:"Qui je suis", cible:15,
-    texte:"Je m'appelle {prenom}. Je suis web analyst, avec environ trois ans d'expérience côté annonceur : d'abord à La Poste en web analyse et CRO, puis chez Cultura en alternance. J'utilise au quotidien Adobe Analytics, TagCommander, Looker Studio et Google Apps Script. Je viens de terminer un M2 Data Marketing et IA." },
-  { id:"projets", titre:"Trois projets", cible:60,
-    texte:"Trois projets montrent ce que je fais. D'abord, chez Cultura, la recette du tracking du tunnel d'achat dans TagCommander, pour les outils partenaires Reelevant et Mediarithmics : en JavaScript, j'ai réglé un problème de timing du site avec le sessionStorage, et j'ai fait corriger les données avant qu'elles ne faussent les analyses. Ensuite, le référentiel cookies Luciol, tenu avec le DPO : chaque cookie a une finalité claire, ce qui sécurise la conformité RGPD. Je propose aussi d'automatiser cette veille avec un agent, la validation restant juridique. Enfin, côté IA, pendant mon M2, le Baromètre Data : des agents qui détectent des écarts de contenu. Et pour préparer cet entretien, j'ai construit Harnais, une application d'entraînement, avec Claude Code et l'API Gemini. Ce que je retiens : l'IA accélère l'analyse, mais la décision reste humaine." },
-  { id:"pourquoi", titre:"Pourquoi fifty-five", cible:15,
-    texte:"Je veux rejoindre fifty-five parce que vous réunissez ce qui me motive : le tracking, l'expérimentation et le conseil, pour plusieurs marques, dont l'automobile et la mobilité. J'ai envie d'y apporter cette rigueur, et une utilisation de l'IA avec méthode." }
+  { id:"funnel", titre:"Funnel Live", tag:["Analyse"], statut:null,
+    contexte:AC, probleme:AC, action:"Entonnoir e-commerce construit à partir du dataset public GA4 dans BigQuery.", resultat:AC, apprentissage:AC },
+  { id:"harnais", titre:"Harnais", tag:["IA générative"], statut:"Déployé",
+    contexte:"Préparation d'entretiens de Digital Analytics Consultant.", probleme:"S'entraîner à l'oral avec un retour précis, en français et en anglais.",
+    action:"Application construite avec Claude Code et l'API Gemini.", resultat:AC, apprentissage:AC },
+  { id:"thebitter", titre:"The Bitter", tag:["Développement assisté par IA"], statut:null, note:"À ne pas présenter comme un projet IA.",
+    contexte:AC, probleme:AC, action:AC, resultat:AC, apprentissage:AC }
 ];
 
-MODULES.unshift({ id:"presentation", nom:"Présentation", ic:"personne", desc:"Pitch 90 s, projets", special:true });
+MODULES.unshift({ id:"presentation", nom:"Présentation", ic:"personne", desc:"Moi et mes projets", special:true });
 function donneesPresentation(){ const o = store.get("presentation", {}); return (o && typeof o === "object") ? o : {}; }
 function majPresentation(p){ store.set("presentation", Object.assign(donneesPresentation(), p)); }
-function pitchBlocs(){
-  const o = donneesPresentation().pitch || {}, prenom = (profil().prenom || "[ton prénom]").trim();
-  return PITCH_DEFAUT.map(b => Object.assign({}, b, { texte:(o[b.id] != null ? o[b.id] : b.texte).replace(/\{prenom\}/g, prenom) }));
-}
-function projetsPresentation(){
-  const o = donneesPresentation().projets || {};
-  return PROJETS.map(p => Object.assign({}, p, o[p.id] || {}));
-}
+function moi(){ const o = donneesPresentation().moi || {}; return Object.assign({}, MOI_DEFAUT, o); }
+function projetsPresentation(){ const o = donneesPresentation().projets || {}; return PROJETS.map(p => Object.assign({}, p, o[p.id] || {})); }
 const MOTS_PAR_MINUTE = 150;
-function dureePitch(texte){ const n = mots(texte).length; return { mots:n, sec: Math.round(n / MOTS_PAR_MINUTE * 60) }; }
-function marquerACompleter(t){ return esc(t || AC).replace(/\[à compléter\]/g, '<span class="a-completer">[à compléter]</span>'); }
-function phraseProjet(p){
-  const v = x => String(x || AC).trim().replace(/[.\s]+$/, "");
-  return "Projet « " + p.titre + " ». Contexte : " + v(p.contexte) + ". Problème : " + v(p.probleme) + ". Ce que j'ai fait : " + v(p.action) + ". Résultat : " + v(p.resultat) + ". Ce que j'en retiens : " + v(p.apprentissage) + ".";
-}
+function dureeLecture(texte){ const n = mots(texte || "").length; return { mots:n, sec:Math.max(1, Math.round(n / MOTS_PAR_MINUTE * 60)) }; }
+function marquer(t){ return esc(t == null || t === "" ? AC : t).replace(/\[à compléter\]|\[à valider\]/g, x => '<span class="a-completer">'+x+'</span>'); }
 function lireFr(texte){
   try{
     speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(texte); u.lang = "fr-FR"; u.rate = 1;
+    const u = new SpeechSynthesisUtterance(String(texte).replace(/\[à (compléter|valider)\]/g, "")); u.lang = "fr-FR"; u.rate = 1;
     const v = (VOIX.voixListe || []).find(x => x.lang === "fr-FR") || (VOIX.voixListe || []).find(x => (x.lang || "").startsWith("fr")); if(v) u.voice = v;
     speechSynthesis.speak(u);
   }catch(e){ toast("Lecture à voix haute indisponible sur ce navigateur."); }
 }
-
-function rPresentation(){
-  const d = donneesPresentation(), edition = !!d.editionPitch, blocs = pitchBlocs();
-  const total = blocs.reduce((a, b) => a + dureePitch(b.texte).sec, 0), totalMots = blocs.reduce((a, b) => a + dureePitch(b.texte).mots, 0);
-  const filtre = d.filtre || "Tous";
-  const ps = projetsPresentation().filter(p => filtre === "Tous" || (p.tag || []).includes(filtre));
-  E().innerHTML = entete("Présentation", "modules")+'<div class="contenu presentation">'+
-    '<section class="carte pitch"><div class="ligne-titre"><h2>'+ic("chrono")+'Pitch de 90 secondes</h2>'+
-      '<span class="pitch-total '+(total > 100 ? "trop-long" : "")+'">≈ '+fmtMin(total)+' · '+totalMots+' mots</span></div>'+
-      '<p class="muet petit">Estimation à '+MOTS_PAR_MINUTE+' mots par minute. Lis un bloc après l\'autre, à voix haute.</p>'+
-      blocs.map(b => { const du = dureePitch(b.texte);
-        return '<div class="pitch-bloc"><div class="pitch-tete"><b>'+esc(b.titre)+'</b><span class="pitch-duree">≈ '+du.sec+' s (cible '+b.cible+' s)</span>'+
-          '<button class="btn btn-petit" data-action="lireBlocPitch" data-arg="'+b.id+'">'+ic("lecture")+'Lire</button></div>'+
-          (edition ? '<label class="sr" for="pitch-'+b.id+'">'+esc(b.titre)+'</label><textarea id="pitch-'+b.id+'" class="pitch-edit" rows="5">'+esc(b.texte)+'</textarea>'
-                   : '<p class="pitch-texte">'+marquerACompleter(b.texte)+'</p>')+'</div>'; }).join("")+
-      '<div class="flex">'+(edition
-        ? '<button class="btn btn-bleu" data-action="enregistrerPitch">'+ic("coche")+'Enregistrer</button><button class="btn" data-action="annulerPitch">Annuler</button><button class="btn" data-action="pitchDefaut">Revenir au texte de départ</button>'
-        : '<button class="btn btn-bleu" data-action="lirePitch">'+ic("lecture")+'Lire le pitch</button><button class="btn" data-action="arreterLecture">Arrêter</button><button class="btn" data-action="modifierPitch">'+ic("crayon")+'Modifier</button>')+'</div></section>'+
-    '<section class="projets-pres"><h2>Projets</h2>'+
-      '<div class="flex filtres-pres" role="group" aria-label="Filtrer par tag">'+TAGS_PROJETS.concat(["Tous"]).map(t => '<button class="chip" data-action="filtreProjets" data-arg="'+esc(t)+'" aria-pressed="'+(t === filtre)+'">'+esc(t)+' <span class="muet">'+(t === "Tous" ? PROJETS.length : projetsPresentation().filter(p => (p.tag || []).includes(t)).length)+'</span></button>').join("")+'</div>'+
-      (ps.length ? '<div class="grille-pres">'+ps.map(carteProjet).join("")+'</div>' : '<p class="muet">Aucun projet avec ce tag pour l\'instant.</p>')+
-    '</section></div>';
+function texteParcours(p){ return p.map(x => x.periode + " : " + x.titre + ". Ce que j'ai appris : " + x.appris).join(" "); }
+function blocTete(titre, texte, cle){
+  const du = dureeLecture(texte);
+  return '<div class="moi-tete"><h3>'+esc(titre)+'</h3><span class="moi-duree">≈ '+du.sec+' s · '+du.mots+' mots</span>'+
+    '<button class="btn btn-petit" data-action="lireMoi" data-arg="'+cle+'">'+ic("lecture")+'Lire</button></div>';
+}
+/* Blocs « Moi », partagés entre l'écran Présentation et l'Affichage de Quel cas */
+function htmlRecit(){ const m = moi(); return '<section class="moi-bloc">'+blocTete("Qui je suis", m.recit, "recit")+'<p class="moi-recit">'+marquer(m.recit)+'</p></section>'; }
+function htmlParcours(){
+  const m = moi();
+  return '<section class="moi-bloc">'+blocTete("Parcours", texteParcours(m.parcours), "parcours")+
+    '<ol class="frise-moi">'+m.parcours.map(x => '<li><span class="frise-per">'+esc(x.periode)+'</span><b>'+esc(x.titre)+'</b><span class="frise-appris">Ce que j\'ai appris : '+marquer(x.appris)+'</span></li>').join("")+'</ol></section>';
+}
+function htmlChiffres(){ const m = moi(); return '<section class="moi-bloc">'+blocTete("Chiffres clés", m.chiffres.join(" "), "chiffres")+'<ul class="chiffres-moi">'+m.chiffres.map(c => '<li>'+marquer(c)+'</li>').join("")+'</ul></section>'; }
+function htmlPourquoi(){
+  const m = moi(), d = donneesPresentation(), valide = !!d.pourquoiValide;
+  return '<section class="moi-bloc">'+blocTete("Pourquoi fifty-five", m.pourquoi, "pourquoi")+
+    '<p class="moi-recit">'+marquer(m.pourquoi)+(valide ? "" : ' <span class="a-completer">'+AV+'</span>')+'</p>'+
+    (valide ? '<p class="muet petit">Relu et validé.</p>' : '<button class="btn btn-petit" data-action="validerPourquoi">'+ic("coche")+'J\'ai relu ce texte</button>')+'</section>';
+}
+function badgeStatut(s, prefixe){ return '<span class="statut-ia st-'+(s ? norm(s).replace(/[^a-z]/g, "") : "avalider")+'">'+(prefixe ? esc(prefixe)+" : " : "")+esc(s || "Statut à valider")+'</span>'; }
+function htmlIAAgentique(){
+  const ps = projetsPresentation().filter(p => p.agentique);
+  return '<section class="moi-bloc ia-section"><h3>'+ic("eclair")+'IA agentique</h3>'+
+    ps.map(p => '<div class="ia-ligne"><h4>'+esc(p.titre)+'</h4><div class="ia-cols">'+
+      '<div class="ia-col"><span class="ia-lbl">Version actuelle</span><p>'+marquer(p.action)+'</p>'+badgeStatut(p.statut)+'</div>'+
+      '<div class="ia-col ia-col-agent"><span class="ia-lbl">Version agentique (proposée)</span><p>'+marquer(p.agentique)+'</p>'+badgeStatut(p.statutAgentique || "Proposé")+'</div>'+
+    '</div></div>').join("")+'</section>';
 }
 function carteProjet(p){
-  const ia = (p.tag || []).some(t => TAGS_IA.includes(t));
-  const champ = (lib, v) => '<div><dt>'+lib+'</dt><dd>'+marquerACompleter(v)+'</dd></div>';
-  return '<article class="carte carte-projet">'+
-    '<div class="ligne-titre"><h3>'+esc(p.titre)+'</h3>'+(ia ? '<span class="statut-ia st-'+norm(p.statut_ia || "Proposé").replace(/[^a-z]/g, "")+'">'+esc(p.statut_ia || "Proposé")+'</span>' : "")+'</div>'+
+  const champ = (lib, v) => '<div><dt>'+lib+'</dt><dd>'+marquer(v)+'</dd></div>';
+  return '<article class="carte carte-projet"><div class="ligne-titre"><h3>'+esc(p.titre)+'</h3>'+badgeStatut(p.statut)+'</div>'+
     '<div class="flex tags-pres">'+(p.tag || []).map(t => '<span class="tag-pres'+(TAGS_IA.includes(t) ? " tag-ia" : "")+'">'+esc(t)+'</span>').join("")+'</div>'+
-    '<dl class="dl-pres">'+champ("Contexte", p.contexte)+champ("Problème", p.probleme)+champ("Action", p.action)+champ("Résultat", p.resultat)+champ("Apprentissage", p.apprentissage)+'</dl>'+
+    (p.note ? '<p class="note-projet">'+esc(p.note)+'</p>' : "")+
+    '<dl class="dl-pres">'+champ("Contexte", p.contexte)+champ("Problème", p.probleme)+champ("Action", p.action)+champ("Résultat", p.resultat)+champ("Apprentissage", p.apprentissage)+
+    (p.agentique ? champ("Version agentique", p.agentique) : "")+'</dl>'+
     '<div class="flex"><button class="btn btn-petit" data-action="copierProjet" data-arg="'+p.id+'">'+ic("copier")+'Copier</button>'+
     '<button class="btn btn-petit" data-action="modifierProjet" data-arg="'+p.id+'">'+ic("crayon")+'Modifier</button></div></article>';
+}
+function phraseProjet(p){
+  const v = x => String(x || AC).trim().replace(/[.\s]+$/, "");
+  return "Projet « " + p.titre + " ». Contexte : " + v(p.contexte) + ". Problème : " + v(p.probleme) + ". Ce que j'ai fait : " + v(p.action) + ". Résultat : " + v(p.resultat) + ". Ce que j'en retiens : " + v(p.apprentissage) + ".";
+}
+
+function rPresentation(){
+  const d = donneesPresentation(), onglet = d.onglet === "projets" ? "projets" : "moi";
+  const ong = (k, l) => '<button class="qc-onglet" data-action="ongletPres" data-arg="'+k+'" aria-pressed="'+(onglet === k)+'">'+l+'</button>';
+  let corps;
+  if(onglet === "moi"){
+    const m = moi(), total = dureeLecture(m.recit).sec + dureeLecture(texteParcours(m.parcours)).sec + dureeLecture(m.chiffres.join(" ")).sec + dureeLecture(m.pourquoi).sec;
+    corps = d.editionMoi ? formulaireMoi(m)
+      : '<div class="flex moi-actions"><span class="pitch-total">Tout lire : ≈ '+fmtMin(total)+'</span><button class="btn btn-bleu" data-action="lireMoi" data-arg="tout">'+ic("lecture")+'Tout lire</button><button class="btn" data-action="arreterLecture">Arrêter</button><button class="btn" data-action="modifierMoi">'+ic("crayon")+'Modifier</button></div>'+
+        htmlRecit() + htmlParcours() + htmlChiffres() + htmlPourquoi();
+  } else {
+    const filtre = d.filtre || "Tous", ps = projetsPresentation().filter(p => filtre === "Tous" || (p.tag || []).includes(filtre));
+    corps = htmlIAAgentique()+
+      '<section class="projets-pres"><h2>Projets</h2>'+
+      '<div class="flex filtres-pres" role="group" aria-label="Filtrer par tag">'+TAGS_PROJETS.concat(["Tous"]).map(t => '<button class="chip" data-action="filtreProjets" data-arg="'+esc(t)+'" aria-pressed="'+(t === filtre)+'">'+esc(t)+' <span class="muet">'+(t === "Tous" ? PROJETS.length : projetsPresentation().filter(p => (p.tag || []).includes(t)).length)+'</span></button>').join("")+'</div>'+
+      (ps.length ? '<div class="grille-pres">'+ps.map(carteProjet).join("")+'</div>' : '<p class="muet">Aucun projet avec ce tag pour l\'instant.</p>')+'</section>';
+  }
+  E().innerHTML = entete("Présentation", "modules")+'<div class="contenu presentation">'+
+    '<div class="qc-onglets" role="group" aria-label="Onglet">'+ong("moi", "Moi")+ong("projets", "Projets")+'</div>'+corps+'</div>';
+}
+function formulaireMoi(m){
+  return '<section class="carte groupe"><h2>Modifier « Moi »</h2>'+
+    '<label class="champ">Qui je suis<textarea id="moi-recit" rows="8">'+esc(m.recit)+'</textarea></label>'+
+    '<label class="champ">Parcours (une étape par ligne : période ; intitulé ; ce que j\'ai appris)<textarea id="moi-parcours" rows="6">'+esc(m.parcours.map(x => x.periode + " ; " + x.titre + " ; " + x.appris).join("\n"))+'</textarea></label>'+
+    '<label class="champ">Chiffres clés (un par ligne, garde [à valider] tant que ce n\'est pas confirmé)<textarea id="moi-chiffres" rows="5">'+esc(m.chiffres.join("\n"))+'</textarea></label>'+
+    '<label class="champ">Pourquoi fifty-five<textarea id="moi-pourquoi" rows="4">'+esc(m.pourquoi)+'</textarea></label>'+
+    '<div class="flex"><button class="btn btn-bleu" data-action="enregistrerMoi">'+ic("coche")+'Enregistrer</button><button class="btn" data-action="annulerMoi">Annuler</button><button class="btn" data-action="moiDefaut">Revenir au texte de départ</button></div></section>';
 }
 function editerProjetPres(id){
   const p = projetsPresentation().find(x => x.id === id); if(!p) return;
   const champ = (k, lib, long) => '<label class="champ">'+lib+(long ? '<textarea id="pp-'+k+'" rows="3">'+esc(p[k] || "")+'</textarea>' : '<input id="pp-'+k+'" value="'+esc(p[k] || "")+'">')+'</label>';
-  ouvrirModale('<div class="groupe"><h2>'+esc(p.titre)+'</h2>'+
-    champ("titre", "Titre")+
-    '<label class="champ">Tags (séparés par des virgules)<input id="pp-tag" value="'+esc((p.tag || []).join(", "))+'"><small>Tags possibles : '+esc(TAGS_PROJETS.join(", "))+'</small></label>'+
-    '<label class="champ">Statut IA<select id="pp-statut">'+STATUTS_IA.map(s => '<option'+(s === (p.statut_ia || "Proposé") ? " selected" : "")+'>'+s+'</option>').join("")+'</select></label>'+
-    champ("contexte", "Contexte", true)+champ("probleme", "Problème", true)+champ("action", "Action", true)+
+  const sel = (k, lib, v) => '<label class="champ">'+lib+'<select id="pp-'+k+'"><option value="">Statut à valider</option>'+STATUTS.map(s => '<option'+(s === v ? " selected" : "")+'>'+s+'</option>').join("")+'</select></label>';
+  ouvrirModale('<div class="groupe"><h2>'+esc(p.titre)+'</h2>'+champ("titre", "Titre")+
+    '<label class="champ">Tags (séparés par des virgules)<input id="pp-tag" value="'+esc((p.tag || []).join(", "))+'"><small>Tags : '+esc(TAGS_PROJETS.join(", "))+'</small></label>'+
+    sel("statut", "Statut", p.statut)+
+    champ("contexte", "Contexte", true)+champ("probleme", "Problème", true)+champ("action", "Action (version actuelle)", true)+
     champ("resultat", "Résultat (chiffre réel uniquement, sinon laisse [à compléter])", true)+champ("apprentissage", "Apprentissage", true)+
+    (p.agentique != null ? champ("agentique", "Version agentique (proposée)", true)+sel("statutAgentique", "Statut de la version agentique", p.statutAgentique || "Proposé") : "")+
     '<div class="flex"><button class="btn btn-bleu" data-action="enregistrerProjet" data-arg="'+id+'">Enregistrer</button><button class="btn" data-action="fermerFeuille">Annuler</button>'+
     '<button class="btn" data-action="projetDefaut" data-arg="'+id+'">Revenir aux valeurs de départ</button></div></div>');
 }
 
 Object.assign(ACTIONS, {
   ouvrirPresentation(){ go("presentation"); },
-  lirePitch(){ lireFr(pitchBlocs().map(b => b.texte).join(" ")); },
-  lireBlocPitch(el){ const b = pitchBlocs().find(x => x.id === el.dataset.arg); if(b) lireFr(b.texte); },
-  arreterLecture(){ try{ speechSynthesis.cancel(); }catch(e){} },
-  modifierPitch(){ majPresentation({ editionPitch:true }); rPresentation(); },
-  annulerPitch(){ majPresentation({ editionPitch:false }); rPresentation(); },
-  enregistrerPitch(){
-    const o = {}; PITCH_DEFAUT.forEach(b => { const t = $("#pitch-" + b.id); if(t) o[b.id] = t.value.trim(); });
-    majPresentation({ pitch:o, editionPitch:false }); rPresentation(); toast("Pitch enregistré.");
+  ongletPres(el){ majPresentation({ onglet:el.dataset.arg }); rPresentation(); },
+  lireMoi(el){
+    const m = moi(), k = el.dataset.arg;
+    const t = { recit:m.recit, parcours:texteParcours(m.parcours), chiffres:m.chiffres.join(" "), pourquoi:m.pourquoi }[k] || [m.recit, texteParcours(m.parcours), m.chiffres.join(" "), m.pourquoi].join(" ");
+    lireFr(t);
   },
-  async pitchDefaut(){ if(await confirmer("Revenir au texte de départ du pitch ?", "Revenir")){ majPresentation({ pitch:{}, editionPitch:false }); rPresentation(); } },
+  arreterLecture(){ try{ speechSynthesis.cancel(); }catch(e){} },
+  validerPourquoi(){ majPresentation({ pourquoiValide:true }); if(nomRoute() === "presentation") rPresentation(); else if(typeof renderAffichageQC === "function") renderAffichageQC(); toast("Texte validé."); },
+  modifierMoi(){ majPresentation({ editionMoi:true }); rPresentation(); },
+  annulerMoi(){ majPresentation({ editionMoi:false }); rPresentation(); },
+  enregistrerMoi(){
+    const parcours = $("#moi-parcours").value.split("\n").map(l => l.split(";").map(x => x.trim())).filter(x => x[0]).map(x => ({ periode:x[0], titre:x[1] || AC, appris:x[2] || AC }));
+    const chiffres = $("#moi-chiffres").value.split("\n").map(x => x.trim()).filter(Boolean);
+    majPresentation({ moi:{ recit:$("#moi-recit").value.trim(), parcours, chiffres, pourquoi:$("#moi-pourquoi").value.trim() }, editionMoi:false });
+    rPresentation(); toast("Enregistré.");
+  },
+  async moiDefaut(){ if(await confirmer("Revenir aux textes de départ de l'onglet Moi ?", "Revenir")){ majPresentation({ moi:{}, editionMoi:false, pourquoiValide:false }); rPresentation(); } },
   filtreProjets(el){ majPresentation({ filtre:el.dataset.arg }); rPresentation(); },
   copierProjet(el){ const p = projetsPresentation().find(x => x.id === el.dataset.arg); if(p) copier(phraseProjet(p)); },
   modifierProjet(el){ editerProjetPres(el.dataset.arg); },
   enregistrerProjet(el){
-    const id = el.dataset.arg, d = donneesPresentation(), o = d.projets || {}, v = k => ($("#pp-" + k).value || "").trim();
-    o[id] = { titre:v("titre") || PROJETS.find(p => p.id === id).titre,
-      tag:v("tag").split(",").map(x => x.trim()).filter(Boolean),
-      statut_ia:$("#pp-statut").value, contexte:v("contexte") || AC, probleme:v("probleme") || AC, action:v("action") || AC,
-      resultat:v("resultat") || AC, apprentissage:v("apprentissage") || AC };
+    const id = el.dataset.arg, d = donneesPresentation(), o = d.projets || {}, v = k => { const z = $("#pp-" + k); return z ? (z.value || "").trim() : ""; };
+    const base = PROJETS.find(p => p.id === id);
+    o[id] = { titre:v("titre") || base.titre, tag:v("tag").split(",").map(x => x.trim()).filter(Boolean), statut:v("statut") || null,
+      contexte:v("contexte") || AC, probleme:v("probleme") || AC, action:v("action") || AC, resultat:v("resultat") || AC, apprentissage:v("apprentissage") || AC };
+    if(base.agentique != null){ o[id].agentique = v("agentique") || AC; o[id].statutAgentique = v("statutAgentique") || "Proposé"; }
     majPresentation({ projets:o }); fermerModale(); rPresentation(); toast("Projet enregistré.");
   },
   async projetDefaut(el){
@@ -5106,6 +5205,23 @@ Object.assign(ACTIONS, {
     if(await confirmer("Revenir aux valeurs de départ de ce projet ?", "Revenir")){ const d = donneesPresentation(), o = d.projets || {}; delete o[id]; majPresentation({ projets:o }); rPresentation(); }
   }
 });
+
+/* ---------- « Moi » dans Quel cas : l'onglet Moi remplace l'onglet IA de la Saisie ---------- */
+const MOI_ITEMS = [
+  { id:"M1", famille:"moi", titre:"Qui je suis", court:"Qui je suis", repere:"Moi", etapes:[], html:htmlRecit },
+  { id:"M2", famille:"moi", titre:"Parcours", court:"Parcours", repere:"Parcours", etapes:[], html:htmlParcours },
+  { id:"M3", famille:"moi", titre:"Chiffres clés", court:"Chiffres clés", repere:"Chiffres", etapes:[], html:htmlChiffres },
+  { id:"M4", famille:"moi", titre:"Pourquoi fifty-five", court:"Pourquoi fifty-five", repere:"Pourquoi 55", etapes:[], html:htmlPourquoi },
+  { id:"M5", famille:"moi", titre:"Projets IA agentique", court:"Projets IA", repere:"Projets", etapes:[], html:htmlIAAgentique }
+];
+function trouverItem(code){ return METHODES.find(m => m.id === code) || MOI_ITEMS.find(m => m.id === code) || null; }
+TRIGGERS.push(
+  { code:"M1", mots:["presente-toi","presentez-vous","parle-moi de toi","parlez-moi de vous","qui es-tu","tell me about yourself","introduce yourself"], motsFR:["présente-toi","parle-moi de toi","qui es-tu"] },
+  { code:"M2", mots:["ton parcours","votre parcours","formation","etudes","your background","your career"], motsFR:["ton parcours","formation","études"] },
+  { code:"M3", mots:["chiffres cles","tes resultats","vos resultats","key figures","your results"], motsFR:["chiffres clés","tes résultats"] },
+  { code:"M4", mots:["pourquoi fifty-five","pourquoi 55","pourquoi chez nous","why fifty-five","why 55"], motsFR:["pourquoi fifty-five","pourquoi chez nous"] },
+  { code:"M5", mots:["projets ia","tes projets","vos projets","your projects","ai projects"], motsFR:["projets IA","tes projets"] }
+);
 
 /* ---------- Méthodes : liste des cas d'usage et feuille stepper ---------- */
 function methodesFaites(){ const o = store.get("methodes", {}); return (o && typeof o === "object") ? o : {}; }
