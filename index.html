@@ -432,9 +432,17 @@ html[data-theme="nuit"] .famille-meth h2 .ic{color:#9CC2FF}
 .qc-sugg-item.premier{border:2px solid var(--bleu)}
 .qc-sugg-titre{font-size:1.3rem;font-weight:800;line-height:1.3}
 .qc-sous{font-size:1rem;margin:6px 0 0}
-.qc-codes{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
-.qc-code{min-height:52px;border-radius:12px;border:1px solid var(--ligne);background:var(--carte);color:var(--txt);font:inherit;font-weight:800;font-size:1.05rem;cursor:pointer}
+.qc-famille{display:flex;flex-direction:column;gap:8px;--accent:var(--bleu)}
+.qc-f-cro{--accent:var(--orange)}
+.qc-f-consulting{--accent:#8B6CE0}
+.qc-famille h4{display:flex;align-items:center;gap:8px;margin:6px 0 0;font-size:.85rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--txt2)}
+.qc-famille h4 .ic{width:18px;height:18px;color:var(--accent)}
+.qc-codes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
+.qc-code{display:flex;flex-direction:column;align-items:flex-start;justify-content:space-between;gap:6px;min-height:68px;padding:10px 12px;text-align:left;border-radius:12px;border:1px solid var(--ligne);border-left:4px solid var(--accent);background:var(--carte);color:var(--txt);font:inherit;cursor:pointer}
+.qc-code-lib{font-weight:700;font-size:1rem;line-height:1.25}
+.qc-code-id{font-size:.75rem;font-weight:700;color:var(--txt2)}
 .qc-code:active{background:var(--bleu);color:#fff}
+.qc-code:active .qc-code-id{color:#fff}
 .qc-vide{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
 .qc-vide>.ic{width:40px;height:40px;color:var(--bleu)}
 .qc-affiche{display:flex;flex-direction:column;gap:18px;background:var(--fond)}
@@ -447,7 +455,7 @@ html[data-theme="nuit"] .famille-meth h2 .ic{color:#9CC2FF}
 .qc-mc{display:block;font-size:max(20px,.8em);color:var(--txt2);font-weight:500;margin-top:2px}
 .qc-affiche .fb-bloc p{font-size:clamp(1.25rem,2vw,1.45rem)}
 .qc-histo .flex{gap:8px}
-@media (min-width:1024px){ .qc{max-width:1100px} .qc-codes{grid-template-columns:repeat(10,1fr)} }
+@media (min-width:1024px){ .qc{max-width:1100px} .qc-codes{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))} }
 @media print{.nav,.decor{display:none}#app{box-shadow:none;margin:0}}
 </style>
 </head>
@@ -1073,6 +1081,17 @@ const METHODES = [
     piege:"Expliquer son départ par ce qu'on fuit plutôt que par ce qu'on recherche.",
     conclusion:"Je veux appliquer ma méthode à plusieurs clients, dans un cabinet qui fait exactement ce métier." }
 ];
+/* Libellés courts, pour reconnaître un cas d'un coup d'œil (boutons de la Saisie, historique) */
+const LIBELLES_COURTS = {
+  T1:"Projet de tracking", T2:"Demande d'essai, devis", T3:"Écart outil et CRM", T4:"Chute après mise en prod",
+  T5:"Doublon de comptage", T6:"Appli et site",
+  C1:"Désaccord marketing et tech", C2:"Test A/B formulaire", C3:"Test non concluant (0,12)", C4:"Test significatif (0,04)",
+  C5:"Segment faible (tablette)", C6:"Formuler une hypothèse", C7:"Baisse de conversion",
+  K1:"Résultat garanti", K2:"Baisse du chiffre d'affaires", K3:"Recommander une action", K4:"Parler à un dirigeant",
+  K5:"« Le site marche bien »", K6:"Pourquoi le conseil"
+};
+METHODES.forEach(m => { m.court = LIBELLES_COURTS[m.id] || m.titre; });
+function libelleCas(code){ const m = METHODES.find(x => x.id === code); return m ? m.court : code; }
 const NOMBRES_FR = ["zéro","une","deux","trois","quatre","cinq","six","sept","huit","neuf","dix"];
 function annonceMethode(m){
   if(m.annonce) return m.annonce;
@@ -3193,7 +3212,9 @@ function renderSaisieQC(){
     '<div id="qc-envoye" class="qc-envoye" aria-live="polite"></div>'+
     '<div id="qc-sugg" class="qc-sugg"></div>'+
     '<h3 class="qc-sous">Envoi direct</h3>'+
-    '<div class="qc-codes">'+METHODES.map(m => '<button class="qc-code" data-action="envoyerCodeQC" data-arg="'+m.id+'" title="'+esc(m.titre)+'">'+m.id+'</button>').join("")+'</div>'+
+    FAMILLES_METHODES.map(f => '<div class="qc-famille qc-f-'+f.id+'"><h4>'+ic(f.ic)+esc(f.nom)+'</h4><div class="qc-codes">'+
+      METHODES.filter(m => m.famille === f.id).map(m => '<button class="qc-code" data-action="envoyerCodeQC" data-arg="'+m.id+'" title="'+esc(m.titre)+'"><span class="qc-code-lib">'+esc(m.court)+'</span><span class="qc-code-id">'+m.id+'</span></button>').join("")+
+    '</div></div>').join("")+
     '<p class="muet petit">Seul le code du cas (par exemple T3) est envoyé, via ntfy.sh. Le texte que tu tapes reste sur ce téléphone.</p>';
   const c = $("#qc-champ");
   c.addEventListener("input", () => afficherSuggQC(c.value));
@@ -3208,14 +3229,14 @@ function afficherSuggQC(v){
 async function envoyerDepuisSaisie(code){
   const ok = await envoyerCode(code);
   const e = $("#qc-envoye"), c = $("#qc-champ");
-  if(e){ e.textContent = ok ? "Envoyé ✓ " + code : "En file d'attente : " + code; e.classList.add("visible"); setTimeout(() => { e.classList.remove("visible"); e.textContent = ""; }, 1000); }
+  if(e){ e.textContent = ok ? "Envoyé ✓ " + libelleCas(code) : "En file d'attente : " + libelleCas(code); e.classList.add("visible"); setTimeout(() => { e.classList.remove("visible"); e.textContent = ""; }, 1000); }
   if(c){ c.value = ""; afficherSuggQC(""); c.focus(); }
   majEtatQC();
 }
 function renderAffichageQC(){
   const z = $("#qc-vue"); if(!z) return;
   const m = METHODES.find(x => x.id === QC.affiche), h = histoQC();
-  const histo = h.length ? '<div class="qc-histo"><h3 class="qc-sous">Derniers cas</h3><div class="flex">'+h.map(x => '<button class="chip" data-action="afficherCodeQC" data-arg="'+esc(x.code)+'" aria-pressed="'+(x.code === QC.affiche)+'">'+esc(x.code)+'</button>').join("")+'</div></div>' : "";
+  const histo = h.length ? '<div class="qc-histo"><h3 class="qc-sous">Derniers cas</h3><div class="flex">'+h.map(x => '<button class="chip" data-action="afficherCodeQC" data-arg="'+esc(x.code)+'" aria-pressed="'+(x.code === QC.affiche)+'">'+esc(libelleCas(x.code))+'</button>').join("")+'</div></div>' : "";
   if(!m){
     z.innerHTML = '<div class="carte qc-vide">'+ic("etapes")+'<h2>En attente d\'un cas</h2><p class="muet">Envoie un code depuis la vue Saisie de ton téléphone : il s\'affichera ici en grand.</p></div>'+histo;
     return;
