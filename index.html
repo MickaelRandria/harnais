@@ -442,6 +442,22 @@ html[data-theme="nuit"] .famille-meth h2 .ic{color:#9CC2FF}
 .qc-code-lib{font-weight:700;font-size:1rem;line-height:1.25}
 .qc-code-id{font-size:.75rem;font-weight:700;color:var(--txt2)}
 .qc-code:active{background:var(--bleu);color:#fff}
+.qc-vue-choix{margin-top:6px}
+.qc-bascule{display:inline-flex;padding:3px;border-radius:12px;background:var(--fond2);border:1px solid var(--ligne)}
+.qc-bascule button{min-height:40px;padding:6px 14px;border:0;border-radius:9px;background:transparent;color:var(--txt);font:inherit;font-weight:700;cursor:pointer}
+.qc-bascule button[aria-pressed="true"]{background:var(--bleu);color:#fff}
+.qc-liste{display:flex;flex-direction:column;gap:10px}
+.qc-gros{display:flex;flex-direction:column;align-items:stretch;gap:6px;width:100%;min-height:84px;padding:14px 16px;text-align:left;border-radius:16px;border:1px solid var(--ligne);border-left:6px solid var(--accent);background:var(--carte);color:var(--txt);font:inherit;cursor:pointer;box-shadow:var(--ombre)}
+.qc-gros:active{background:var(--bleu);color:#fff}
+.qc-gros-haut{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.qc-gros-lib{font-size:1.2rem;font-weight:800;line-height:1.25}
+.qc-gros-titre{font-size:.95rem;color:var(--txt2);line-height:1.35}
+.qc-gros:active .qc-gros-titre,.qc-gros:active .qc-code-id{color:#fff}
+.qc-gros-mc{display:flex;flex-wrap:wrap;gap:6px}
+.qc-gros-mc span{font-size:.85rem;font-weight:600;padding:3px 10px;border-radius:999px;background:var(--fond2);border:1px solid var(--ligne)}
+.qc-codes-compact{grid-template-columns:repeat(4,minmax(0,1fr))}
+.qc-code-court{min-height:56px;border-radius:12px;border:1px solid var(--ligne);border-bottom:4px solid var(--accent);background:var(--carte);color:var(--txt);font:inherit;font-weight:800;font-size:1.15rem;cursor:pointer}
+.qc-code-court:active{background:var(--bleu);color:#fff}
 .qc-code:active .qc-code-id{color:#fff}
 .qc-vide{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
 .qc-vide>.ic{width:40px;height:40px;color:var(--bleu)}
@@ -455,7 +471,7 @@ html[data-theme="nuit"] .famille-meth h2 .ic{color:#9CC2FF}
 .qc-mc{display:block;font-size:max(20px,.8em);color:var(--txt2);font-weight:500;margin-top:2px}
 .qc-affiche .fb-bloc p{font-size:clamp(1.25rem,2vw,1.45rem)}
 .qc-histo .flex{gap:8px}
-@media (min-width:1024px){ .qc{max-width:1100px} .qc-codes{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))} }
+@media (min-width:1024px){ .qc{max-width:1100px} .qc-codes{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))} .qc-codes-compact{grid-template-columns:repeat(auto-fill,minmax(90px,1fr))} .qc-liste{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr))} }
 @media print{.nav,.decor{display:none}#app{box-shadow:none;margin:0}}
 </style>
 </head>
@@ -868,6 +884,7 @@ const PLAN_EXEMPLE = [
    Chaque étape : [titre court, "mot-clé|mot-clé", "phrase de développement"].
    annonce : facultative (sinon construite à partir des titres).
    ===================================================================== */
+const VERSION_APP = "17 nov. 2026, n°5"; /* à changer à chaque mise en ligne, visible dans Réglages et Quel cas */
 const FAMILLES_METHODES = [
   { id:"tracking", nom:"Tracking", ic:"etiquette" },
   { id:"cro", nom:"CRO et média", ic:"cible" },
@@ -2845,6 +2862,7 @@ function rReglages(){
     '<div class="flex"><button class="btn" data-action="exportJSON">'+ic("telecharger")+'Export JSON</button><button class="btn" data-action="importJSON">'+ic("importer")+'Import JSON</button><input type="file" id="rg-import" accept="application/json,.json" class="cache"></div>'+
     '<div class="flex"><button class="btn" data-action="copierReponses">'+ic("copier")+'Copier les réponses (tabulations)</button><button class="btn" data-action="csvReponses">'+ic("telecharger")+'Réponses en CSV</button></div>'+
     '<button class="btn btn-danger" data-action="reinitialiser">'+ic("corbeille")+'Réinitialiser toutes les données</button></div>'+
+   '<p class="muet petit">Version de l\'app : '+VERSION_APP+'</p>'+
    '<p class="muet petit">Harnais fonctionne hors ligne en mode écrit avec l\'évaluation locale. Les données restent dans ce navigateur (localStorage, préfixe harnais.v1).</p></div>';
   $("#rg-vitesse").addEventListener("input", e => $("#rg-vit-v").textContent = e.target.value);
   $("#rg-import").addEventListener("change", importerFichier);
@@ -3211,15 +3229,35 @@ function renderSaisieQC(){
     '<input id="qc-champ" class="qc-champ" type="text" autocomplete="off" spellcheck="false" placeholder="Tape quelques mots de la question..." enterkeyhint="send">'+
     '<div id="qc-envoye" class="qc-envoye" aria-live="polite"></div>'+
     '<div id="qc-sugg" class="qc-sugg"></div>'+
-    '<h3 class="qc-sous">Envoi direct</h3>'+
-    FAMILLES_METHODES.map(f => '<div class="qc-famille qc-f-'+f.id+'"><h4>'+ic(f.ic)+esc(f.nom)+'</h4><div class="qc-codes">'+
-      METHODES.filter(m => m.famille === f.id).map(m => '<button class="qc-code" data-action="envoyerCodeQC" data-arg="'+m.id+'" title="'+esc(m.titre)+'"><span class="qc-code-lib">'+esc(m.court)+'</span><span class="qc-code-id">'+m.id+'</span></button>').join("")+
-    '</div></div>').join("")+
-    '<p class="muet petit">Seul le code du cas (par exemple T3) est envoyé, via ntfy.sh. Le texte que tu tapes reste sur ce téléphone.</p>';
+    '<div class="ligne-titre qc-vue-choix"><h3 class="qc-sous">Envoi direct</h3>'+
+      '<div class="qc-bascule" role="group" aria-label="Affichage des boutons">'+
+        '<button data-action="vueBoutonsQC" data-arg="detail" aria-pressed="'+(vueBoutonsQC() === "detail")+'">Détaillée</button>'+
+        '<button data-action="vueBoutonsQC" data-arg="codes" aria-pressed="'+(vueBoutonsQC() === "codes")+'">Codes</button></div></div>'+
+    '<div id="qc-grille">'+grilleQC()+'</div>'+
+    '<p class="muet petit">Seul le code du cas (par exemple T3) est envoyé, via ntfy.sh. Le texte que tu tapes reste sur ce téléphone.</p>'+
+    '<p class="muet petit">Version '+VERSION_APP+'</p>';
   const c = $("#qc-champ");
   c.addEventListener("input", () => afficherSuggQC(c.value));
   c.addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); const r = chercherCas(c.value); if(r[0]) envoyerDepuisSaisie(r[0].id); else toast("Aucun cas trouvé : utilise la grille."); } });
   setTimeout(() => c.focus(), 50);
+}
+/* Deux présentations des boutons, au choix, mémorisées sur l'appareil :
+   « detail » : grands boutons avec le nom du cas et ses mots-clés ; « codes » : grille compacte T1 à K6. */
+function vueBoutonsQC(){ return store.get("quelcasVue", "detail") === "codes" ? "codes" : "detail"; }
+function motsClesCas(code){
+  const t = TRIGGERS.find(x => x.code === code); if(!t) return [];
+  const vus = new Set(); return t.mots.filter(w => { const k = norm(w); if(vus.has(k) || [...vus].some(v => v.includes(k) || k.includes(v))) return false; vus.add(k); return true; }).slice(0, 4);
+}
+function grilleQC(){
+  const vue = vueBoutonsQC();
+  return FAMILLES_METHODES.map(f => '<div class="qc-famille qc-f-'+f.id+'"><h4>'+ic(f.ic)+esc(f.nom)+'</h4>'+
+    (vue === "codes"
+      ? '<div class="qc-codes qc-codes-compact">'+METHODES.filter(m => m.famille === f.id).map(m => '<button class="qc-code-court" data-action="envoyerCodeQC" data-arg="'+m.id+'" aria-label="'+esc(m.id+", "+m.court)+'" title="'+esc(m.court)+'">'+m.id+'</button>').join("")+'</div>'
+      : '<div class="qc-liste">'+METHODES.filter(m => m.famille === f.id).map(m => '<button class="qc-gros" data-action="envoyerCodeQC" data-arg="'+m.id+'">'+
+          '<span class="qc-gros-haut"><span class="qc-gros-lib">'+esc(m.court)+'</span><span class="qc-code-id">'+m.id+'</span></span>'+
+          '<span class="qc-gros-titre">'+esc(m.titre)+'</span>'+
+          '<span class="qc-gros-mc">'+motsClesCas(m.id).map(k => '<span>'+esc(k)+'</span>').join("")+'</span></button>').join("")+'</div>')+
+  '</div>').join("");
 }
 function afficherSuggQC(v){
   const s = $("#qc-sugg"); if(!s) return;
@@ -3261,6 +3299,11 @@ function blocReglagesQC(){
     '<button class="btn btn-bleu" data-action="collerTopic">Utiliser ce topic</button></div>';
 }
 Object.assign(ACTIONS, {
+  vueBoutonsQC(el){
+    store.set("quelcasVue", el.dataset.arg === "codes" ? "codes" : "detail");
+    const g = $("#qc-grille"); if(g) g.innerHTML = grilleQC();
+    $$(".qc-bascule button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.arg === vueBoutonsQC())));
+  },
   envoyerCodeQC(el){ envoyerDepuisSaisie(el.dataset.arg); },
   afficherCodeQC(el){ QC.affiche = el.dataset.arg; renderAffichageQC(); },
   copierTopic(){ copier(topicQC()); store.set("topicPartage", true); },
@@ -3347,7 +3390,7 @@ Object.assign(ACTIONS, {
 init();
 /* PWA : service worker (installation sur l'écran d'accueil, ouverture hors ligne). Ignoré si la page est ouverte en fichier local. */
 if("serviceWorker" in navigator && /^https?:$/.test(location.protocol)){
-  window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").catch(() => {}); });
+  window.addEventListener("load", () => { navigator.serviceWorker.register("sw.js").then(r => { try{ r.update(); }catch(e){} }).catch(() => {}); });
 }
 </script>
 </body>
