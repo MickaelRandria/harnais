@@ -3678,8 +3678,8 @@ function renderAffichageQC(){
         '<div class="flex qc-aff-actions"><button class="btn btn-petit" data-action="ouvrirPalette">'+ic("cible")+'Chercher <kbd>Ctrl K</kbd></button>'+
         '<button class="btn btn-petit" data-action="pleinEcranQC">'+ic("grille")+'Plein écran <kbd>F</kbd></button>'+
         '<button class="btn btn-petit" data-action="aideClavier" aria-label="Raccourcis clavier"><kbd>?</kbd></button></div></div>'+
-      '<h2 class="qc-titre">'+esc(moiItem.titre)+'</h2>'+moiItem.html()+
-      '</div><aside class="qc-panneau" id="qc-panneau" aria-label="Rappels">'+(moiItem.aside ? moiItem.aside() : moiItem.id === "M3" ? htmlRecit() : htmlChiffres())+'</aside></div>'+histo;
+      '<h2 class="qc-titre">'+esc(moiItem.famille === 'moi' && langueMeth() === 'en' ? MOI_EN[moiItem.id].titre : moiItem.titre)+'</h2>'+(moiItem.famille === 'moi' && langueMeth() === 'en' ? htmlMoiEN(moiItem.id) : moiItem.html())+
+      '</div><aside class="qc-panneau" id="qc-panneau" aria-label="Rappels">'+(moiItem.famille === 'moi' && langueMeth() === 'en' ? htmlMoiEN(moiItem.id === 'M3' ? 'M1' : 'M3') : moiItem.aside ? moiItem.aside() : moiItem.id === "M3" ? htmlRecit() : htmlChiffres())+'</aside></div>'+histo;
     return;
   }
   if(!m){
@@ -5274,6 +5274,19 @@ const MOI_ITEMS = [
   { id:"M4", famille:"moi", titre:"Pourquoi fifty-five", court:"Pourquoi fifty-five", repere:"Pourquoi 55", etapes:[], html:htmlPourquoi },
   { id:"M5", famille:"moi", titre:"Projets IA agentique", court:"Projets IA", repere:"Projets", etapes:[], html:htmlIAAgentique }
 ];
+/* English interview answers for Quel cas. They are based on the default profile. */
+const MOI_EN = {
+  M1:{ titre:"About me", texte:"I am a web analyst. I work on tracking, conversion and automation. I studied digital and analytics in Bordeaux. At La Poste, I worked on the customer journey and A/B tests. This helped me understand where people have problems on a website. At Cultura, I work on tracking, cookie consent and reports. I also use tools such as Google Apps Script and Make to automate tasks that the team repeats every week. During my master's in data marketing and AI, I explored how AI can help with marketing work. For example, I tested a tool that compares a campaign with current signals. I now want to use these skills with different clients and keep learning." },
+  M2:{ titre:"My background", texte:"From 2021 to 2024, I studied digital and analytics at ESD Bordeaux. In 2023 and 2024, I worked at La Poste as a web analyst in CRO. I learned how to look at a customer journey and use A/B tests to improve it. From 2024 to 2026, I studied for a master's in data marketing and AI. From October 2024 to October 2026, I worked at Cultura as a web analyst focused on tracking. There, I learned how to check data quality, manage consent and automate reports. These experiences taught me to connect technical work with business needs." },
+  M3:{ titre:"Key figures", texte:"I have three years of experience in e-commerce web analytics. At Cultura, I built three internal tools for reporting, cookies and radio analysis. I also shared the Data Barometer agent with 50 e-commerce colleagues. The figure of 230% still needs to be checked: I need to confirm exactly what it measures before I use it in an interview." },
+  M4:{ titre:"Why fifty-five?", texte:"I want to work in consulting because I would like to help different clients and learn about different industries. My experience at La Poste and Cultura gave me a practical view of tracking, conversion and data quality. At fifty-five, I would like to use these skills to solve client problems with a team. I am also interested in testing ideas and using AI to make useful work faster, while keeping a person in control of the final result. The work on automotive and mobility is interesting to me because the customer journey can include both online and offline steps. I would like to learn from more experienced consultants and grow with each project. This answer should be reviewed and adapted before the interview." },
+  M5:{ titre:"My AI projects", texte:"One project is the Data Barometer. I tested it with the traffic team. It compares a campaign with current signals, such as weather and Wikipedia trends. Business rules calculate a score, and Mistral reviews the brief. I shared the agent with 50 e-commerce colleagues. I also see ways to use AI in other projects. For cookie checks, an agent could suggest a category and a rule for a new cookie, but the data protection officer would check it. For reporting, an agent could find unusual numbers and draft a comment, but a person would review it before sending. These last ideas are proposals, not completed features. My goal is to save time while keeping human checks and reliable data." }
+};
+function htmlMoiEN(code){
+  const item = MOI_EN[code], du = dureeLecture(item.texte);
+  return '<section class="moi-bloc" lang="en"><div class="moi-tete"><h3>'+esc(item.titre)+'</h3><span class="moi-duree">? '+du.sec+' s ? '+du.mots+' words</span><button class="btn btn-petit" data-action="lireMoiEN" data-arg="'+code+'">'+ic("lecture")+'Listen</button></div><p class="moi-recit">'+esc(item.texte)+'</p><p class="muet petit">Based on the default profile. Check and adapt it to your own experience.</p></section>';
+}
+ACTIONS.lireMoiEN = function(el){ const item = MOI_EN[el.dataset.arg]; if(item){ VOIX.taire(); VOIX.parler(item.texte, "en"); } };
 function trouverItem(code){ return METHODES.find(m => m.id === code) || MOI_ITEMS.find(m => m.id === code) || (typeof SS_ITEMS !== "undefined" ? SS_ITEMS.find(m => m.id === code) : null) || null; }
 TRIGGERS.push(
   { code:"M1", mots:["presente-toi","presentez-vous","parle-moi de toi","parlez-moi de vous","qui es-tu","tell me about yourself","introduce yourself"], motsFR:["présente-toi","parle-moi de toi","qui es-tu"] },
