@@ -58,7 +58,7 @@ button,input,select,textarea{font:inherit;color:inherit}
 .decor .disque{position:absolute;width:620px;height:620px;border-radius:50%;background:var(--disque);top:-300px;right:-200px}
 .decor svg{position:absolute;fill:#fff;opacity:.9}
 #app{position:relative;z-index:1;max-width:480px;margin:0 auto;min-height:100vh;min-height:100dvh;background:var(--fond);display:flex;flex-direction:column;overflow:clip;color:var(--txt)}
-@media (min-width:600px){#app{margin:24px auto;min-height:calc(100vh - 48px);border-radius:36px;box-shadow:0 30px 80px rgba(14,26,61,.28)}}
+@media (min-width:600px) and (min-height:561px){#app{margin:24px auto;min-height:calc(100vh - 48px);border-radius:36px;box-shadow:0 30px 80px rgba(14,26,61,.28)}}
 main{flex:1;min-width:0;display:flex;flex-direction:column}
 .ic{width:24px;height:24px;flex:none}
 .nav{position:sticky;bottom:0;z-index:30;background:var(--nav);display:flex;justify-content:space-around;padding:10px 8px calc(10px + env(safe-area-inset-bottom));border-radius:26px 26px 0 0}
@@ -132,7 +132,7 @@ html[data-theme="nuit"] .tuile-act .ic{color:#9CC2FF}
 
 /* session */
 .session{display:flex;flex-direction:column;height:100vh;height:100dvh}
-@media (min-width:600px){.session{height:calc(100vh - 48px)}}
+@media (min-width:600px) and (min-height:561px){.session{height:calc(100vh - 48px)}}
 .sess-haut{display:flex;align-items:center;gap:8px;padding:12px 12px 8px;background:var(--fond2);border-bottom:1px solid var(--ligne)}
 .sess-titre{flex:1;min-width:0}
 .sess-titre .role{font-weight:700;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
@@ -432,9 +432,46 @@ html[data-theme="nuit"] .famille-meth h2 .ic{color:#9CC2FF}
 .qc-sugg-item.premier{border:2px solid var(--bleu)}
 .qc-sugg-titre{font-size:1.3rem;font-weight:800;line-height:1.3}
 .qc-sous{font-size:1rem;margin:6px 0 0}
-.qc-famille{display:flex;flex-direction:column;gap:8px;--accent:var(--bleu)}
-.qc-f-cro{--accent:var(--orange)}
-.qc-f-consulting{--accent:#8B6CE0}
+.qc-famille,.qc-f-tracking{--accent:var(--bleu);--accent-txt:#1659B8}
+.qc-famille{display:flex;flex-direction:column;gap:8px}
+.qc-f-cro{--accent:var(--orange);--accent-txt:var(--orange-txt)}
+.qc-f-consulting{--accent:#8B6CE0;--accent-txt:#5B3FB8}
+html[data-theme="nuit"] .qc-famille,html[data-theme="nuit"] .qc-f-tracking{--accent-txt:#9CC2FF}
+html[data-theme="nuit"] .qc-f-consulting{--accent-txt:#C7B5FF}
+/* Vue « Par famille » (portrait) */
+.qc-fam-onglets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:4px;border-radius:14px;background:var(--fond2);border:1px solid var(--ligne);margin-bottom:10px}
+.qc-fam-onglets button{min-height:44px;border:0;border-radius:10px;background:transparent;color:var(--txt);font:inherit;font-size:.95rem;font-weight:800;cursor:pointer}
+.qc-fam-onglets button[aria-pressed="true"]{background:var(--bleu);color:#fff}
+.qc-liste-b{display:flex;flex-direction:column;gap:8px}
+.qc-b{display:flex;flex-direction:column;align-items:stretch;gap:4px;width:100%;padding:10px 14px;text-align:left;border-radius:14px;border:1px solid var(--ligne);background:var(--carte);color:var(--txt);font:inherit;cursor:pointer}
+.qc-b:active{background:var(--bleu);color:#fff}
+.qc-b-haut{display:flex;justify-content:space-between;align-items:baseline;gap:10px}
+.qc-b-lib{font-size:1.06rem;font-weight:800;line-height:1.3}
+.qc-b-code{flex:none;font-size:.78rem;font-weight:800;color:var(--accent-txt)}
+.qc-b-mc{font-size:.85rem;color:var(--txt2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qc-b:active .qc-b-code,.qc-b:active .qc-b-mc{color:#fff}
+/* Téléphone tourné : pleine largeur, pas de cadre */
+@media (orientation: landscape) and (max-height:560px){ #app{max-width:none} }
+/* Vue paysage (téléphone tourné) */
+.qc-pay{position:relative;display:flex;flex-direction:column;gap:10px;padding:10px max(14px,env(safe-area-inset-right)) calc(10px + env(safe-area-inset-bottom)) max(14px,env(safe-area-inset-left));min-height:100dvh;box-sizing:border-box}
+.qc-pay-haut{display:flex;align-items:center;gap:10px}
+.qc-pay-haut .qc-champ{flex:1;min-width:0;min-height:44px;height:44px;font-size:1rem;padding:0 12px;border-radius:12px}
+.qc-pay-haut .qc-etat{flex:none;padding:6px 10px;font-size:.8rem;max-width:200px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.qc-sugg-flottant{position:absolute;top:60px;left:60px;right:14px;z-index:5;flex-direction:row;flex-wrap:wrap}
+.qc-sugg-flottant:empty{display:none}
+.qc-sugg-flottant .qc-sugg-item{flex:1 1 220px;box-shadow:var(--ombre)}
+.qc-sugg-flottant .qc-sugg-titre{font-size:1.05rem}
+.qc-sugg-flottant>p{background:var(--carte);padding:10px 14px;border-radius:12px;margin:0;box-shadow:var(--ombre)}
+.qc-envoye-flottant{position:absolute;top:62px;right:16px;z-index:6;background:var(--carte);padding:6px 12px;border-radius:10px;box-shadow:var(--ombre);pointer-events:none}
+.qc-envoye-flottant:empty{display:none}
+.qc-pay-grille{flex:1;display:grid;grid-template-columns:96px minmax(0,1fr);grid-template-rows:repeat(3,minmax(64px,1fr));align-items:stretch;gap:8px 10px}
+.qc-pay-fam{align-self:center;font-size:.72rem;font-weight:800;letter-spacing:.06em;text-transform:uppercase;color:var(--accent-txt)}
+.qc-pay-ligne{display:grid;grid-template-columns:repeat(7,minmax(0,1fr));gap:6px}
+.qc-pay-case{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;min-height:64px;border-radius:12px;border:1px solid var(--ligne);border-bottom:4px solid var(--accent);background:var(--carte);color:var(--txt);font:inherit;cursor:pointer}
+.qc-pay-case:active{background:var(--bleu);color:#fff}
+.qc-pay-code{font-size:1.25rem;font-weight:800;color:var(--accent-txt)}
+.qc-pay-mot{font-size:.8rem;font-weight:700;line-height:1.2;text-align:center}
+.qc-pay-case:active .qc-pay-code{color:#fff}
 .qc-famille h4{display:flex;align-items:center;gap:8px;margin:6px 0 0;font-size:.85rem;font-weight:800;letter-spacing:.05em;text-transform:uppercase;color:var(--txt2)}
 .qc-famille h4 .ic{width:18px;height:18px;color:var(--accent)}
 .qc-codes{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:8px}
@@ -884,7 +921,7 @@ const PLAN_EXEMPLE = [
    Chaque étape : [titre court, "mot-clé|mot-clé", "phrase de développement"].
    annonce : facultative (sinon construite à partir des titres).
    ===================================================================== */
-const VERSION_APP = "17 nov. 2026, n°5"; /* à changer à chaque mise en ligne, visible dans Réglages et Quel cas */
+const VERSION_APP = "17 nov. 2026, n°6"; /* à changer à chaque mise en ligne, visible dans Réglages et Quel cas */
 const FAMILLES_METHODES = [
   { id:"tracking", nom:"Tracking", ic:"etiquette" },
   { id:"cro", nom:"CRO et média", ic:"cible" },
@@ -1107,7 +1144,13 @@ const LIBELLES_COURTS = {
   K1:"Résultat garanti", K2:"Baisse du chiffre d'affaires", K3:"Recommander une action", K4:"Parler à un dirigeant",
   K5:"« Le site marche bien »", K6:"Pourquoi le conseil"
 };
-METHODES.forEach(m => { m.court = LIBELLES_COURTS[m.id] || m.titre; });
+/* Un mot repère par cas, pour les grilles compactes (vue paysage) */
+const MOTS_REPERES = {
+  T1:"Projet", T2:"Essai", T3:"Écart CRM", T4:"Chute", T5:"Doublon", T6:"Appli",
+  C1:"Désaccord", C2:"Test A/B", C3:"p 0,12", C4:"p 0,04", C5:"Tablette", C6:"Hypothèse", C7:"Conversion",
+  K1:"Garanti", K2:"CA", K3:"Reco", K4:"Dirigeant", K5:"Site OK", K6:"Conseil"
+};
+METHODES.forEach(m => { m.court = LIBELLES_COURTS[m.id] || m.titre; m.repere = MOTS_REPERES[m.id] || m.id; });
 function libelleCas(code){ const m = METHODES.find(x => x.id === code); return m ? m.court : code; }
 const NOMBRES_FR = ["zéro","une","deux","trois","quatre","cinq","six","sept","huit","neuf","dix"];
 function annonceMethode(m){
@@ -1892,7 +1935,9 @@ function route(){
   if(nom !== "session" && S && !S.fini && !S.pause){ pauser(); sauverEncours(); }
   if(nom !== "session") arreterTick();
   if(nom !== "quelcas" && typeof fermerFluxQC === "function") fermerFluxQC();
-  const nav = $("#nav"); nav.classList.toggle("cache", nom === "session"); $("#app").classList.toggle("plein", nom === "session");
+  const saisieQC = nom === "quelcas" && (arg === "saisie" || (!arg && window.innerWidth <= 900));
+  const pleinEcran = nom === "session" || saisieQC;
+  const nav = $("#nav"); nav.classList.toggle("cache", pleinEcran); $("#app").classList.toggle("plein", pleinEcran);
   const onglet = { accueil:"accueil", reglages:"accueil", entrainer:"entrainer", debrief:"entrainer", progression:"progression", modules:"modules", module:"modules", methodes:"methodes", quelcas:"methodes" }[nom] || "accueil";
   $$("#nav button").forEach(b => { if(b.dataset.go === onglet) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current"); });
   const R = { accueil:rAccueil, entrainer:rEntrainer, progression:rProgression, modules:rModules, module:rModule, reglages:rReglages, session:rSession, debrief:rDebrief, methodes:rMethodes, quelcas:rQuelCas }[nom] || rAccueil;
@@ -3209,9 +3254,12 @@ function blocTopicQC(){
     '<p class="qc-topic-val">'+esc(topicQC())+'</p>'+
     '<div class="flex"><button class="btn btn-bleu" data-action="copierTopic">'+ic("copier")+'Copier le topic</button><button class="btn" data-go="reglages">Coller un topic reçu</button><button class="btn" data-action="topicOk">C\'est fait</button></div></div>';
 }
+const PAYSAGE_QC = window.matchMedia("(orientation: landscape) and (max-height: 560px)");
+PAYSAGE_QC.addEventListener && PAYSAGE_QC.addEventListener("change", () => { if(nomRoute() === "quelcas" && QC.vue === "saisie") rQuelCas("saisie"); });
 function rQuelCas(vue){
   if(vue !== "saisie" && vue !== "affichage") vue = window.innerWidth > 900 ? "affichage" : "saisie";
   QC.vue = vue;
+  if(vue === "saisie" && PAYSAGE_QC.matches){ rSaisiePaysageQC(); return; }
   const onglet = (v, lib) => '<button class="qc-onglet" data-go="quelcas/'+v+'" aria-pressed="'+(vue === v)+'">'+lib+'</button>';
   E().innerHTML = '<div class="entete"><button class="btn-icone" data-go="methodes" aria-label="Retour aux méthodes">'+ic("retour")+'</button><h1>Quel cas ?</h1></div>'+
     '<div class="contenu qc">'+
@@ -3231,25 +3279,53 @@ function renderSaisieQC(){
     '<div id="qc-sugg" class="qc-sugg"></div>'+
     '<div class="ligne-titre qc-vue-choix"><h3 class="qc-sous">Envoi direct</h3>'+
       '<div class="qc-bascule" role="group" aria-label="Affichage des boutons">'+
-        '<button data-action="vueBoutonsQC" data-arg="detail" aria-pressed="'+(vueBoutonsQC() === "detail")+'">Détaillée</button>'+
+        '<button data-action="vueBoutonsQC" data-arg="famille" aria-pressed="'+(vueBoutonsQC() === "famille")+'">Par famille</button>'+
         '<button data-action="vueBoutonsQC" data-arg="codes" aria-pressed="'+(vueBoutonsQC() === "codes")+'">Codes</button></div></div>'+
     '<div id="qc-grille">'+grilleQC()+'</div>'+
     '<p class="muet petit">Seul le code du cas (par exemple T3) est envoyé, via ntfy.sh. Le texte que tu tapes reste sur ce téléphone.</p>'+
     '<p class="muet petit">Version '+VERSION_APP+'</p>';
-  const c = $("#qc-champ");
+  brancherChampQC();
+}
+function brancherChampQC(){
+  const c = $("#qc-champ"); if(!c) return;
   c.addEventListener("input", () => afficherSuggQC(c.value));
-  c.addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); const r = chercherCas(c.value); if(r[0]) envoyerDepuisSaisie(r[0].id); else toast("Aucun cas trouvé : utilise la grille."); } });
+  c.addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); const r = chercherCas(c.value); if(r[0]) envoyerDepuisSaisie(r[0].id); else toast("Aucun cas trouvé : utilise les boutons."); } });
   setTimeout(() => c.focus(), 50);
+}
+/* Vue paysage (téléphone tourné) : barre compacte en haut, puis une ligne par famille, code + mot repère */
+function rSaisiePaysageQC(){
+  E().innerHTML = '<div class="qc-pay">'+
+    '<div class="qc-pay-haut"><button class="btn-icone" data-go="methodes" aria-label="Retour aux méthodes">'+ic("retour")+'</button>'+
+      '<label class="sr" for="qc-champ">Mots de la question</label>'+
+      '<input id="qc-champ" class="qc-champ" type="text" autocomplete="off" spellcheck="false" placeholder="Tape quelques mots de la question..." enterkeyhint="send">'+
+      '<div class="qc-etat" id="qc-etat" role="status"></div>'+
+      '<button class="btn btn-petit" data-go="quelcas/affichage">Affichage</button></div>'+
+    '<div id="qc-sugg" class="qc-sugg qc-sugg-flottant"></div>'+
+    '<div id="qc-envoye" class="qc-envoye qc-envoye-flottant" aria-live="polite"></div>'+
+    blocTopicQC()+
+    '<div class="qc-pay-grille">'+FAMILLES_METHODES.map(f => '<div class="qc-pay-fam qc-f-'+f.id+'">'+esc(f.id === "consulting" ? "Consulting" : f.nom)+'</div>'+
+      '<div class="qc-pay-ligne qc-f-'+f.id+'">'+METHODES.filter(m => m.famille === f.id).map(m => '<button class="qc-pay-case" data-action="envoyerCodeQC" data-arg="'+m.id+'" aria-label="'+esc(m.id+", "+m.court)+'" title="'+esc(m.court)+'"><span class="qc-pay-code">'+m.id+'</span><span class="qc-pay-mot">'+esc(m.repere)+'</span></button>').join("")+'</div>').join("")+
+    '</div></div>';
+  fermerFluxQC(); brancherChampQC(); viderFileQC(); majEtatQC();
 }
 /* Deux présentations des boutons, au choix, mémorisées sur l'appareil :
    « detail » : grands boutons avec le nom du cas et ses mots-clés ; « codes » : grille compacte T1 à K6. */
-function vueBoutonsQC(){ return store.get("quelcasVue", "detail") === "codes" ? "codes" : "detail"; }
+function vueBoutonsQC(){ return store.get("quelcasVue", "famille") === "codes" ? "codes" : "famille"; }
+function familleQC(){ const f = store.get("quelcasFamille", "tracking"); return FAMILLES_METHODES.some(x => x.id === f) ? f : "tracking"; }
+const NOMS_ONGLETS_QC = { tracking:"Tracking", cro:"CRO, média", consulting:"Consulting" };
 function motsClesCas(code){
   const t = TRIGGERS.find(x => x.code === code); if(!t) return [];
   const vus = new Set(); return t.mots.filter(w => { const k = norm(w); if(vus.has(k) || [...vus].some(v => v.includes(k) || k.includes(v))) return false; vus.add(k); return true; }).slice(0, 4);
 }
 function grilleQC(){
   const vue = vueBoutonsQC();
+  if(vue === "famille"){
+    const fam = familleQC();
+    return '<div class="qc-fam-onglets" role="group" aria-label="Famille">'+FAMILLES_METHODES.map(f => '<button data-action="familleQC" data-arg="'+f.id+'" aria-pressed="'+(f.id === fam)+'">'+esc(NOMS_ONGLETS_QC[f.id] || f.nom)+'</button>').join("")+'</div>'+
+      '<div class="qc-liste-b qc-f-'+fam+'">'+METHODES.filter(m => m.famille === fam).map(m => '<button class="qc-b" data-action="envoyerCodeQC" data-arg="'+m.id+'">'+
+        '<span class="qc-b-haut"><span class="qc-b-lib">'+esc(m.court)+'</span><span class="qc-b-code">'+m.id+'</span></span>'+
+        '<span class="qc-b-mc">'+esc(motsClesCas(m.id).slice(0, 3).join(" · "))+'</span></button>').join("")+'</div>';
+  }
   return FAMILLES_METHODES.map(f => '<div class="qc-famille qc-f-'+f.id+'"><h4>'+ic(f.ic)+esc(f.nom)+'</h4>'+
     (vue === "codes"
       ? '<div class="qc-codes qc-codes-compact">'+METHODES.filter(m => m.famille === f.id).map(m => '<button class="qc-code-court" data-action="envoyerCodeQC" data-arg="'+m.id+'" aria-label="'+esc(m.id+", "+m.court)+'" title="'+esc(m.court)+'">'+m.id+'</button>').join("")+'</div>'
@@ -3300,10 +3376,11 @@ function blocReglagesQC(){
 }
 Object.assign(ACTIONS, {
   vueBoutonsQC(el){
-    store.set("quelcasVue", el.dataset.arg === "codes" ? "codes" : "detail");
+    store.set("quelcasVue", el.dataset.arg === "codes" ? "codes" : "famille");
     const g = $("#qc-grille"); if(g) g.innerHTML = grilleQC();
     $$(".qc-bascule button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.arg === vueBoutonsQC())));
   },
+  familleQC(el){ store.set("quelcasFamille", el.dataset.arg); const g = $("#qc-grille"); if(g) g.innerHTML = grilleQC(); },
   envoyerCodeQC(el){ envoyerDepuisSaisie(el.dataset.arg); },
   afficherCodeQC(el){ QC.affiche = el.dataset.arg; renderAffichageQC(); },
   copierTopic(){ copier(topicQC()); store.set("topicPartage", true); },
