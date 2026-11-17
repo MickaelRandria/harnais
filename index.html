@@ -428,6 +428,16 @@ html[data-theme="nuit"] .famille-meth h2 .ic{color:#9CC2FF}
 .lex-ecoute{flex:none;color:var(--bleu)}
 html[data-theme="nuit"] .lex-ecoute{color:#9CC2FF}
 @media (min-width:1024px){ .lex-liste{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))} }
+/* Correction du coach */
+.coach{gap:10px}
+.coach h4 .source{white-space:nowrap}
+.coach p{margin:0;line-height:1.55}
+.coach-verdict{display:flex;align-items:flex-start;gap:10px;font-weight:700}
+.coach-dec{flex:none;font-size:.8rem;font-weight:800;letter-spacing:.04em;text-transform:uppercase;padding:4px 10px;border-radius:999px}
+.dec-repete{background:rgba(242,162,92,.22);color:var(--orange-txt);border:1px solid rgba(242,162,92,.6)}
+.dec-passe{background:rgba(76,217,100,.18);color:var(--vert-txt);border:1px solid rgba(76,217,100,.55)}
+.coach-corr{margin:6px 0 0;padding-left:1.3em;display:flex;flex-direction:column;gap:6px;line-height:1.5}
+.coach-version{display:flex;flex-direction:column;gap:6px;padding-top:8px;border-top:1px solid var(--ligne)}
 /* Réponse type de A à Z */
 .rep-type{padding:14px 16px;border-radius:14px;background:var(--carte);border:1px solid var(--ligne)}
 .rep-type>summary{list-style:none;cursor:pointer;display:flex;align-items:center;min-height:36px}
@@ -1024,7 +1034,7 @@ const PLAN_EXEMPLE = [
    Chaque étape : [titre court, "mot-clé|mot-clé", "phrase de développement"].
    annonce : facultative (sinon construite à partir des titres).
    ===================================================================== */
-const VERSION_APP = "17 nov. 2026, n°11"; /* à changer à chaque mise en ligne, visible dans Réglages et Quel cas */
+const VERSION_APP = "17 nov. 2026, n°12"; /* à changer à chaque mise en ligne, visible dans Réglages et Quel cas */
 const FAMILLES_METHODES = [
   { id:"tracking", nom:"Tracking", ic:"etiquette" },
   { id:"cro", nom:"CRO et média", ic:"cible" },
@@ -2386,10 +2396,10 @@ async function lancerReponseModele(i){
   let r = null;
   if(geminiActif()){
     m.fb.rmEnCours = true; majCarteFb(s, i);
-    try{ r = await genererReponseModele(q, question, m.texte, lang); }
-    catch(e){ r = reponseModeleLocale(q, question, lang); if(r) r.erreur = (e && e.message) || "Gemini indisponible."; }
+    try{ r = await genererCorrectionCoach(q, question, m.texte, lang); }
+    catch(e){ r = correctionLocale(q, question, m.texte, m.fb, lang); if(r) r.erreur = (e && e.message) || "Gemini indisponible."; }
     m.fb.rmEnCours = false;
-  } else r = reponseModeleLocale(q, question, lang);
+  } else r = correctionLocale(q, question, m.texte, m.fb, lang);
   if(!r){ if(S === s) toast("Pas de réponse modèle disponible pour cette question."); majCarteFb(s, i); return; }
   m.fb.reponse_modele = r;
   majReponseStockee(m.recId, { reponseModele:r });
@@ -2403,8 +2413,9 @@ function majCarteFb(s, i){
   const ouvert = el.open; el.outerHTML = carteFeedback(m.fb, i, ouvert);
 }
 function blocReponseModele(r, i, enCours, cible){
-  if(enCours) return '<div class="rm fb-bloc ton-bleu"><h4>'+ic("etoile")+'Réponse modèle</h4><p class="muet">Rédaction en cours par Gemini...</p></div>';
-  if(!r) return '<div class="rm rm-vide"><button class="btn btn-petit btn-bleu" data-action="'+(cible==="rep"?"reponseModeleRep":"reponseModele")+'" data-arg="'+esc(String(i))+'">'+ic("etoile")+'Voir une réponse modèle</button></div>';
+  if(enCours) return '<div class="rm fb-bloc ton-bleu"><h4>'+ic("etoile")+'Correction du coach</h4><p class="muet">Correction en cours par Gemini...</p></div>';
+  if(r && r.coach) return blocCoach(r, i, cible);
+  if(!r) return '<div class="rm rm-vide"><button class="btn btn-petit btn-bleu" data-action="'+(cible==="rep"?"reponseModeleRep":"reponseModele")+'" data-arg="'+esc(String(i))+'">'+ic("etoile")+'Correction du coach</button></div>';
   return '<div class="rm fb-bloc ton-bleu"><h4>'+ic("etoile")+'Réponse modèle <span class="source">'+(r.source === "gemini" ? "rédigée par Gemini" : "trame locale")+'</span></h4>'+
     '<p class="rm-texte">'+esc(r.texte)+'</p>'+
     (r.pourquoi && r.pourquoi.length ? '<ul class="prose petit" style="margin:4px 0 0">'+r.pourquoi.map(x => '<li>'+esc(x)+'</li>').join("")+'</ul>' : "")+
@@ -2998,7 +3009,7 @@ function rReglages(){
     '<label class="champ">Modèle<select id="rg-modele">'+modeles.map(m => opt(m,m,R.modele)).join("")+'</select></label>'+
     '<label class="champ">Ou saisie libre du modèle<input id="rg-modele-libre" placeholder="exemple : gemini-flash-latest" spellcheck="false"></label>'+
     '<label class="interrupteur">Envoyer mes fiches projets à l\'API<input type="checkbox" id="rg-projets" '+(R.envoiProjets?"checked":"")+'></label>'+
-    '<label class="interrupteur">Réponse modèle automatique quand la note est sous 4<input type="checkbox" id="rg-rm-auto" '+(R.reponseModeleAuto!==false?"checked":"")+'></label>'+
+    '<label class="interrupteur">Correction du coach automatique quand la note est sous 4<input type="checkbox" id="rg-rm-auto" '+(R.reponseModeleAuto!==false?"checked":"")+'></label>'+
     '<label class="interrupteur">Mode rapide : Flash-Lite pour tous les appels (plus rapide, un peu moins fin)<input type="checkbox" id="rg-rapide" '+(R.modeRapide?"checked":"")+'></label>'+
     '<p class="avert petit">Les textes de tes réponses, et les projets si l\'option est activée, sont envoyés à Google AI Studio. Ne saisis pas de chiffres confidentiels. Sans clé, aucun texte ne quitte l\'appareil, à part la reconnaissance vocale du navigateur.</p>'+
     '<p class="muet petit">Requêtes Gemini aujourd\'hui : '+c.n+'. Une requête par réponse, au moins 6 secondes entre deux requêtes.</p>'+libDureesGemini()+'</div>'+
@@ -3192,10 +3203,10 @@ const ACTIONS = {
   async reponseModeleRep(el){
     const id = el.dataset.arg, rep = store.get("reponses", []), r = rep.find(x => x.id === id); if(!r) return;
     const q = (r.questionId ? qParId(r.questionId) : null) || { type:r.type || "question", attendu:[], tags:[], pieges:[] };
-    el.disabled = true; el.textContent = geminiActif() ? "Rédaction en cours par Gemini..." : "Préparation...";
+    el.disabled = true; el.textContent = geminiActif() ? "Correction en cours par Gemini..." : "Préparation...";
     let res = null;
-    if(geminiActif()){ try{ res = await genererReponseModele(q, r.question||"", r.texte||"", r.lang); }catch(e){ res = reponseModeleLocale(q, r.question, r.lang); if(res) res.erreur = e.message; } }
-    else res = reponseModeleLocale(q, r.question, r.lang);
+    if(geminiActif()){ try{ res = await genererCorrectionCoach(q, r.question||"", r.texte||"", r.lang); }catch(e){ res = correctionLocale(q, r.question, r.texte, { note:r.note }, r.lang); if(res) res.erreur = e.message; } }
+    else res = correctionLocale(q, r.question, r.texte, { note:r.note }, r.lang);
     if(!res){ el.textContent = "Pas de réponse modèle pour cette question."; return; }
     majReponseStockee(id, { reponseModele:res });
     const box = el.closest(".rm"); if(box) box.outerHTML = blocReponseModele(res, id, false, "rep");
@@ -4457,6 +4468,134 @@ Object.assign(ACTIONS, {
   aideClavier(){ ouvrirAideClavier(); },
   allerReponseType(){ allerReponseType(); }
 });
+
+/* =====================================================================
+   Correction du coach : remplace la « réponse modèle » après chaque réponse.
+   PROMPT_COACH = le prompt fourni par l'utilisateur, tel quel (seul le prénom vient du profil).
+   FORMAT_COACH = consigne technique ajoutée pour que l'application puisse afficher le retour.
+   Sans Gemini : correctionLocale applique les mêmes critères par règles, instantanément.
+   ===================================================================== */
+const PROMPT_COACH = `Tu es un coach d'entretien pour un poste de Digital Analytics Consultant chez fifty-five. Tu corriges les réponses orales d'un candidat, {PRENOM}, qui a déjà été transcrit à l'écrit. Tu dois être précis, bienveillant et sans complaisance.
+
+## Ce que tu reçois
+- La question posée par le manager (technique, CRO ou consulting).
+- La réponse du candidat, telle qu'elle a été dite, avec ses hésitations.
+- Le cas d'usage attendu, si l'application l'a identifié.
+
+## Ce que tu renvoies
+Un retour structuré, en français, sans liste à rallonge :
+
+1. **Verdict en une phrase** : la réponse est-elle bonne, à répéter, ou à passer ? Dis-le d'abord.
+2. **Ce qui est juste** : une phrase, sur le fond (méthode, décision, ordre des étapes).
+3. **Ce qu'il faut corriger** : trois points maximum, concrets. Chaque point nomme le problème et dit quoi faire à la place.
+4. **Version corrigée** : une réponse modèle de 4 à 6 phrases, à l'oral, sans « euh », sans « donc » en début de phrase, avec le plan annoncé et une conclusion.
+5. **Décision** : « Répète » (avec la structure à reprendre) ou « Passe ».
+
+## Critères de correction
+- **Décision ou priorité** dite dès la première phrase.
+- **Plan annoncé** : le nombre d'étapes annoncé doit correspondre au nombre d'étapes énoncées. Compte-les.
+- **Ordre logique** : cadrer avant d'auditer, auditer avant de décider, décider avant de suivre.
+- **Vérification finale** avant toute présentation de chiffre ou toute mise en production.
+- **Conclusion** : une action et un critère de décision.
+- **Vocabulaire** : pas de « euh », « donc », « voilà », « sûrement », « en dualité », « mère de sûreté », « Adobe Analytics Fiery 4 ». Pas d'anglicisme quand un mot français existe. Préfère « tableau de bord » à « dashboard ».
+- **Précision** : pas de chiffre inventé, pas d'outil inexistant, pas de « Adobe Analytics ou Google Analytics 4 » sans préciser lequel est utilisé chez le client.
+
+## Règles de fond à faire respecter
+- **p-value** : c'est le risque d'observer un écart aussi grand par hasard si les versions sont identiques. Ce n'est pas la probabilité que la variante gagne.
+- **Seuil de 5 %** : une convention. Un test à p = 0,09 ou 0,11 n'est pas significatif et on ne déploie pas. Un test à p = 0,02 ou 0,04 est significatif, mais on vérifie l'échantillon, les garde-fous (annulations, rendez-vous non honorés) et l'intervalle de confiance avant de déployer, puis on suit l'effet après mise en production.
+- **Bots** : ils gonflent surtout le trafic. Ils ne font pas baisser les conversions. Ils peuvent fausser le taux en augmentant le dénominateur.
+- **Filtrer le trafic** pour améliorer un taux de conversion : c'est un piège à signaler.
+- **Écart outil d'analyse / CRM** : le CRM est la référence. Un écart stable n'est pas forcément juste. Une cassure nette à une date précise est un bug de collecte, traité en priorité.
+- **Doublon** : un volume double du CRM signale souvent un événement déclenché deux fois. Vérifier les déclenchements dans TagCommander.
+- **Client qui veut un résultat garanti** : ne jamais promettre. Cadrer le chiffre (+1 point sur 3 % = +33 % de conversions), proposer une démarche en étapes, un point d'étape.
+- **Baisse de chiffre d'affaires** : décomposer en commandes × panier moyen avant de conclure. Une baisse des commandes ne prouve pas un problème de tracking.
+- **Dirigeant** : parler en termes de décision et de délai, pas de jargon. Commencer par la conclusion.
+- **Pourquoi le conseil** : une raison positive, un lien avec le parcours, aucune critique de l'employeur actuel.
+
+## Ce que tu ne fais pas
+- Tu ne réécris pas la réponse en entier si elle est déjà bonne : tu dis « passe » et tu indiques la seule chose à retenir.
+- Tu ne fais pas de débrief global sauf si on te le demande.
+- Tu ne donnes aucun nom de personne.
+- Tu ne fais pas de liste de plus de trois points par section.
+- Tu n'utilises pas de tirets longs dans ta réponse.`;
+
+const FORMAT_COACH = `
+
+## Format technique (imposé par l'application)
+Réponds uniquement avec un objet JSON valide, sans texte autour :
+{ "verdict": "une phrase", "juste": "une phrase", "corriger": [ { "probleme": "le problème", "action": "quoi faire à la place" } ], "version_corrigee": "4 à 6 phrases, ou chaîne vide si la décision est Passe", "a_retenir": "si Passe : la seule chose à retenir, sinon chaîne vide", "decision": "Répète" ou "Passe", "structure": "si Répète : la structure à reprendre, en une ligne, sinon chaîne vide" }
+"corriger" contient 0 à 3 éléments. Si la réponse du candidat est en anglais, rédige "version_corrigee" en anglais ; tout le reste reste en français.`;
+
+function casIdentifie(question, texte){
+  const r = chercherCas(question || ""); if(r[0]) return r[0];
+  const r2 = chercherCas((question || "") + " " + (texte || "")); return r2[0] || null;
+}
+async function genererCorrectionCoach(q, question, texte, lang){
+  const prenom = (profil().prenom || "le candidat").trim();
+  const systeme = PROMPT_COACH.replace("{PRENOM}", prenom) + FORMAT_COACH;
+  const cas = casIdentifie(question, texte);
+  const infoCas = cas ? cas.id + " · " + METHODES_FR[METHODES.indexOf(cas)].titre + ". Étapes attendues : " + METHODES_FR[METHODES.indexOf(cas)].etapes.map(e => e[0]).join(", ") + ". Piège : " + (METHODES_FR[METHODES.indexOf(cas)].piege || "") + ". Conclusion attendue : " + (METHODES_FR[METHODES.indexOf(cas)].conclusion || "")
+    : (q && q.attendu && q.attendu.length ? "Non identifié parmi les méthodes. Points attendus pour cette question : " + q.attendu.map(a => a.point).join(", ") : "Non identifié");
+  const contenu = "Question posée par le manager : " + question + "\nRéponse du candidat (transcription) : " + texte + "\nCas d'usage attendu : " + infoCas;
+  const { obj, modele } = await geminiJSON(systeme, [{ role:"user", parts:[{ text:contenu }] }], { temperature:0.4, priorite:"basse", rapide:true });
+  if(!obj || typeof obj.verdict !== "string" || !obj.verdict.trim()) throw new ErrGem("json", "Correction vide renvoyée par Gemini.");
+  const dec = /passe/i.test(String(obj.decision || "")) ? "Passe" : "Répète";
+  return { source:"gemini", modele, coach:true, decision:dec, verdict:sansTiret(obj.verdict.trim()), juste:sansTiret(String(obj.juste || "").trim()),
+    corriger:(Array.isArray(obj.corriger) ? obj.corriger : []).slice(0, 3).map(c => ({ p:sansTiret(String((c && c.probleme) || "").trim()), a:sansTiret(String((c && c.action) || "").trim()) })).filter(c => c.p || c.a),
+    texte:sansTiret(String(obj.version_corrigee || "").trim()), aRetenir:sansTiret(String(obj.a_retenir || "").trim()), structure:sansTiret(String(obj.structure || "").trim()), cas: cas ? cas.id : null, pourquoi:[] };
+}
+
+/* Correction locale par règles (instantanée) : mêmes critères que le prompt, version corrigée = réponse type du cas */
+const MOTS_A_BANNIR = [["euh","euh","rien, une courte pause"],["voila","voilà","rien, termine ta phrase"],["surement","sûrement","« probablement » ou un fait vérifié"],["en dualite","en dualité","« en parallèle » ou « en comparaison »"],["mere de surete","mère de sûreté","« marge de sécurité »"],["fiery","Fiery","le nom exact de l'outil (Adobe Analytics)"],["dashboard","dashboard","« tableau de bord »"]];
+function correctionLocale(q, question, texte, ev, lang){
+  ev = ev || {};
+  const n = norm(texte || ""), en = lang === "en", ph = phrases(texte || ""), nw = mots(texte || "").length;
+  const cas = casIdentifie(question, texte), pts = [];
+  /* Règles de fond */
+  if(/chances? de gagner|probabilite que la variante|% de chance|chance of winning/.test(n)) pts.push({ p:"p-value mal définie.", a:"Dis : c'est le risque d'observer un écart aussi grand par hasard si les versions sont identiques, pas la probabilité que la variante gagne." });
+  if(/\bbots?\b/.test(n) && /(baisse|chute|drop|lower)/.test(n) && /conversion/.test(n)) pts.push({ p:"Bots mal placés.", a:"Les bots gonflent surtout le trafic ; ils ne font pas baisser les conversions, ils peuvent seulement fausser le taux par le dénominateur." });
+  if(/filtr\w*\s+(le\s+|du\s+)?trafic/.test(n)) pts.push({ p:"Filtrer le trafic pour améliorer le taux.", a:"Signale-le comme un piège : ça embellit l'indicateur sans changer la réalité." });
+  if(/(je vous garantis|je garantis|on garantit|je promets|i guarantee|we guarantee)/.test(n)) pts.push({ p:"Promesse de résultat.", a:"Ne promets jamais : cadre le chiffre, propose une démarche en étapes et un point d'étape." });
+  if(/adobe/.test(n) && /(ga4|google analytics)/.test(n) && /\bou\b|\bor\b/.test(n)) pts.push({ p:"Outil imprécis.", a:"Précise l'outil réellement utilisé chez le client, au lieu de « Adobe Analytics ou GA4 »." });
+  /* Plan annoncé et étapes énoncées */
+  const NB = { un:1,une:1,deux:2,trois:3,quatre:4,cinq:5,six:6,sept:7,huit:8,two:2,three:3,four:4,five:5,seven:7,eight:8 };
+  const m = n.match(/\b(?:en|in)\s+(\d|un|une|deux|trois|quatre|cinq|six|sept|huit|two|three|four|five|seven|eight)\s+(?:etapes|points|temps|steps|parts)\b/);
+  const marqueurs = (n.match(/\b(d'abord|premierement|ensuite|deuxiemement|puis|troisiemement|enfin|finalement|first|firstly|secondly|then|thirdly|finally)\b/g) || []).length;
+  if(m){ const annonce = NB[m[1]] || Number(m[1]); if(marqueurs && Math.abs(marqueurs - annonce) >= 1) pts.push({ p:"Plan annoncé : "+annonce+" étapes, mais "+marqueurs+" énoncées.", a:"Compte tes étapes : le nombre annoncé doit correspondre à ce que tu déroules." }); }
+  else if(nw >= 40) pts.push({ p:"Pas de plan annoncé.", a:"Annonce ta décision ou ta priorité, puis ton plan, dès la première phrase : « Je procède en N étapes : … »." });
+  /* Conclusion */
+  const derniere = norm(ph[ph.length - 1] || "");
+  if(nw >= 25 && !/(pour conclure|en resume|au final|ce que je retiens|je recommande|ma recommandation|la decision|to sum up|in short|i'd recommend|so overall|my recommendation)/.test(derniere)) pts.push({ p:"Pas de conclusion.", a:"Termine par une action et un critère de décision." });
+  /* Vocabulaire */
+  const voc = MOTS_A_BANNIR.filter(([w]) => new RegExp("\\b" + w + "\\b").test(n)).map(([w, lib, alt]) => "« " + lib + " » (dis plutôt " + alt + ")");
+  if(ph.some(p => /^donc\b/.test(norm(p).trim()))) voc.push("« donc » en début de phrase (commence directement par l'idée)");
+  if(voc.length) pts.push({ p:"Vocabulaire.", a:"À retirer : " + voc.slice(0, 3).join(", ") + "." });
+  const nbFond = pts.filter(x => /p-value|Bots|Filtrer|Promesse|Outil/.test(x.p)).length;
+  if(nw < 40) pts.push({ p:"Réponse trop courte ("+nw+" mots).", a:"Développe : décision, plan annoncé, chaque étape en une phrase, conclusion." });
+  /* La décision suit les critères du coach, pas la note générique de l'application */
+  const passe = !pts.length;
+  const verdict = passe ? "Bonne réponse : passe." : nbFond ? "Erreur de fond : à répéter." : "Le fond tient, mais la forme est à reprendre : à répéter.";
+  const rt = cas && REPONSES_TYPES[cas.id] ? REPONSES_TYPES[cas.id][en ? "en" : "fr"] : "";
+  const trame = rt || (reponseModeleLocale(q, question, lang) || {}).texte || "";
+  return { source:"local", coach:true, decision: passe ? "Passe" : "Répète", verdict, juste: (voc.length && /tic|clair/i.test(ev.point_fort || "")) ? (cas ? "Tu traites le bon sujet : " + (cas.court.charAt(0).toLowerCase() + cas.court.slice(1)) + "." : "Tu restes sur le sujet de la question.") : (ev.point_fort || ""),
+    corriger: pts.slice(0, 3), texte: passe ? "" : trame,
+    aRetenir: passe ? "Garde cette structure : décision d'abord, plan annoncé et tenu, conclusion avec une action." : "",
+    structure: passe ? "" : (cas ? annonceMethode(cas) : "Décision ou priorité, plan annoncé, étapes dans l'ordre, vérification, conclusion."),
+    cas: cas ? cas.id : null, pourquoi:[] };
+}
+function blocCoach(r, i, cible){
+  const passe = r.decision === "Passe";
+  return '<div class="rm fb-bloc ton-bleu coach"><h4>'+ic("etoile")+'Correction du coach <span class="source">'+(r.source === "gemini" ? "Gemini" : "règles locales")+'</span></h4>'+
+    '<p class="coach-verdict"><span class="coach-dec '+(passe ? "dec-passe" : "dec-repete")+'">'+(passe ? "Passe" : "Répète")+'</span>'+esc(r.verdict || "")+'</p>'+
+    (r.juste ? '<p><b>Ce qui est juste :</b> '+esc(r.juste)+'</p>' : "")+
+    (r.corriger && r.corriger.length ? '<div><b>À corriger</b><ol class="coach-corr">'+r.corriger.map(c => '<li><b>'+esc(c.p)+'</b> '+esc(c.a)+'</li>').join("")+'</ol></div>' : "")+
+    (r.aRetenir ? '<p><b>À retenir :</b> '+esc(r.aRetenir)+'</p>' : "")+
+    (r.texte ? '<div class="coach-version"><b>Version corrigée'+(r.source !== "gemini" && r.cas ? " (réponse type " + esc(r.cas) + ")" : "")+'</b><p class="rm-texte">'+esc(r.texte)+'</p></div>' : "")+
+    (!passe && r.structure ? '<p class="muet petit"><b>Structure à reprendre :</b> '+esc(r.structure)+'</p>' : "")+
+    (r.erreur ? '<p class="muet petit">Gemini : '+esc(r.erreur)+'</p>' : "")+
+    (r.texte ? '<div class="flex"><button class="btn btn-petit" data-action="ecouterModele" data-arg="'+esc(String(i))+'" data-cible="'+(cible||"msg")+'">'+ic("lecture")+'Écouter</button></div>' : "")+
+  '</div>';
+}
 
 /* ---------- Méthodes : liste des cas d'usage et feuille stepper ---------- */
 function methodesFaites(){ const o = store.get("methodes", {}); return (o && typeof o === "object") ? o : {}; }

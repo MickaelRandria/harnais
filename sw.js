@@ -2,7 +2,7 @@
    - Page et icônes : réseau d'abord (les mises à jour arrivent tout de suite), cache en secours hors ligne.
    - Polices Google : cache d'abord.
    - Tout le reste (Gemini, ntfy.sh, reconnaissance vocale) n'est jamais intercepté. */
-const CACHE = "harnais-v8";
+const CACHE = "harnais-v9";
 const COQUILLE = ["./", "./index.html", "./manifest.webmanifest", "./icons/icon-192.png", "./icons/icon-512.png", "./icons/icon-maskable-512.png", "./icons/apple-touch-icon.png"];
 
 self.addEventListener("install", e => {
