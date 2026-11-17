@@ -438,6 +438,28 @@ html[data-theme="nuit"] .famille-meth h2 .ic{color:#9CC2FF}
 .qc-f-consulting{--accent:#8B6CE0;--accent-txt:#5B3FB8}
 html[data-theme="nuit"] .qc-famille,html[data-theme="nuit"] .qc-f-tracking{--accent-txt:#9CC2FF}
 html[data-theme="nuit"] .qc-f-consulting{--accent-txt:#C7B5FF}
+/* Bouton « i » (définition) */
+.qc-cell{position:relative}
+.qc-info{position:absolute;top:6px;right:6px;z-index:1;width:28px;height:28px;padding:0;border-radius:50%;border:1.5px solid var(--ligne);background:var(--fond2);color:var(--txt);font:italic 800 15px/1 Georgia,"Times New Roman",serif;display:grid;place-items:center;cursor:pointer}
+.qc-info::after{content:"";position:absolute;inset:-8px}
+.qc-info:hover,.qc-info:focus-visible{border-color:var(--bleu);color:var(--bleu)}
+html[data-theme="nuit"] .qc-info:hover{color:#9CC2FF;border-color:#9CC2FF}
+.qc-cell-b .qc-b{padding-right:56px}
+.qc-cell-b .qc-info{top:50%;right:12px;transform:translateY(-50%);width:32px;height:32px}
+.qc-cell-code .qc-info{top:4px;right:4px;width:22px;height:22px;font-size:12px}
+.qc-cell-code .qc-code-court{width:100%}
+.qc-cell-case{display:flex}
+.qc-cell-case .qc-pay-case{flex:1}
+.qc-cell-case .qc-info{top:5px;right:5px;width:24px;height:24px;font-size:13px}
+.qc-info-inline{position:relative;top:auto;right:auto;flex:none;width:30px;height:30px}
+.qc-et-corps{display:flex;flex-direction:column;min-width:0}
+.qc-et-ligne{display:flex;align-items:center;gap:10px}
+.qc-def{display:none;margin-top:6px;padding:10px 14px;border-radius:12px;background:rgba(31,111,224,.09);border:1px solid rgba(31,111,224,.3);font-size:max(20px,.8em);line-height:1.45;font-weight:500}
+.def-ouverte .qc-def{display:block}
+.qc-fiche{display:flex;flex-direction:column;gap:14px}
+.qc-fiche h2{font-size:1.3rem}
+.qc-fiche-quand{margin:0;color:var(--txt2)}
+.qc-fiche-etapes{margin:0;padding-left:1.3em;display:flex;flex-direction:column;gap:8px;line-height:1.5}
 /* Vue « Par famille » (portrait) */
 .qc-fam-onglets{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:4px;padding:4px;border-radius:14px;background:var(--fond2);border:1px solid var(--ligne);margin-bottom:10px}
 .qc-fam-onglets button{min-height:44px;border:0;border-radius:10px;background:transparent;color:var(--txt);font:inherit;font-size:.95rem;font-weight:800;cursor:pointer}
@@ -921,7 +943,7 @@ const PLAN_EXEMPLE = [
    Chaque étape : [titre court, "mot-clé|mot-clé", "phrase de développement"].
    annonce : facultative (sinon construite à partir des titres).
    ===================================================================== */
-const VERSION_APP = "17 nov. 2026, n°6"; /* à changer à chaque mise en ligne, visible dans Réglages et Quel cas */
+const VERSION_APP = "17 nov. 2026, n°7"; /* à changer à chaque mise en ligne, visible dans Réglages et Quel cas */
 const FAMILLES_METHODES = [
   { id:"tracking", nom:"Tracking", ic:"etiquette" },
   { id:"cro", nom:"CRO et média", ic:"cible" },
@@ -3255,7 +3277,16 @@ function blocTopicQC(){
     '<div class="flex"><button class="btn btn-bleu" data-action="copierTopic">'+ic("copier")+'Copier le topic</button><button class="btn" data-go="reglages">Coller un topic reçu</button><button class="btn" data-action="topicOk">C\'est fait</button></div></div>';
 }
 const PAYSAGE_QC = window.matchMedia("(orientation: landscape) and (max-height: 560px)");
-PAYSAGE_QC.addEventListener && PAYSAGE_QC.addEventListener("change", () => { if(nomRoute() === "quelcas" && QC.vue === "saisie") rQuelCas("saisie"); });
+/* Bascule portrait / paysage : on vérifie au changement de media query, au redimensionnement et à la rotation */
+function verifierOrientationQC(){
+  if(nomRoute() !== "quelcas" || QC.vue !== "saisie") return;
+  if(PAYSAGE_QC.matches !== !!document.querySelector(".qc-pay")) rQuelCas("saisie");
+}
+let minuteurOrientationQC = null;
+function planifierOrientationQC(){ clearTimeout(minuteurOrientationQC); minuteurOrientationQC = setTimeout(verifierOrientationQC, 120); }
+PAYSAGE_QC.addEventListener && PAYSAGE_QC.addEventListener("change", planifierOrientationQC);
+window.addEventListener("resize", planifierOrientationQC);
+window.addEventListener("orientationchange", planifierOrientationQC);
 function rQuelCas(vue){
   if(vue !== "saisie" && vue !== "affichage") vue = window.innerWidth > 900 ? "affichage" : "saisie";
   QC.vue = vue;
@@ -3304,7 +3335,7 @@ function rSaisiePaysageQC(){
     '<div id="qc-envoye" class="qc-envoye qc-envoye-flottant" aria-live="polite"></div>'+
     blocTopicQC()+
     '<div class="qc-pay-grille">'+FAMILLES_METHODES.map(f => '<div class="qc-pay-fam qc-f-'+f.id+'">'+esc(f.id === "consulting" ? "Consulting" : f.nom)+'</div>'+
-      '<div class="qc-pay-ligne qc-f-'+f.id+'">'+METHODES.filter(m => m.famille === f.id).map(m => '<button class="qc-pay-case" data-action="envoyerCodeQC" data-arg="'+m.id+'" aria-label="'+esc(m.id+", "+m.court)+'" title="'+esc(m.court)+'"><span class="qc-pay-code">'+m.id+'</span><span class="qc-pay-mot">'+esc(m.repere)+'</span></button>').join("")+'</div>').join("")+
+      '<div class="qc-pay-ligne qc-f-'+f.id+'">'+METHODES.filter(m => m.famille === f.id).map(m => '<div class="qc-cell qc-cell-case"><button class="qc-pay-case" data-action="envoyerCodeQC" data-arg="'+m.id+'" aria-label="'+esc(m.id+", "+m.court)+'" title="'+esc(m.court)+'"><span class="qc-pay-code">'+m.id+'</span><span class="qc-pay-mot">'+esc(m.repere)+'</span></button>'+boutonInfoQC(m)+'</div>').join("")+'</div>').join("")+
     '</div></div>';
   fermerFluxQC(); brancherChampQC(); viderFileQC(); majEtatQC();
 }
@@ -3322,13 +3353,13 @@ function grilleQC(){
   if(vue === "famille"){
     const fam = familleQC();
     return '<div class="qc-fam-onglets" role="group" aria-label="Famille">'+FAMILLES_METHODES.map(f => '<button data-action="familleQC" data-arg="'+f.id+'" aria-pressed="'+(f.id === fam)+'">'+esc(NOMS_ONGLETS_QC[f.id] || f.nom)+'</button>').join("")+'</div>'+
-      '<div class="qc-liste-b qc-f-'+fam+'">'+METHODES.filter(m => m.famille === fam).map(m => '<button class="qc-b" data-action="envoyerCodeQC" data-arg="'+m.id+'">'+
+      '<div class="qc-liste-b qc-f-'+fam+'">'+METHODES.filter(m => m.famille === fam).map(m => '<div class="qc-cell qc-cell-b"><button class="qc-b" data-action="envoyerCodeQC" data-arg="'+m.id+'">'+
         '<span class="qc-b-haut"><span class="qc-b-lib">'+esc(m.court)+'</span><span class="qc-b-code">'+m.id+'</span></span>'+
-        '<span class="qc-b-mc">'+esc(motsClesCas(m.id).slice(0, 3).join(" · "))+'</span></button>').join("")+'</div>';
+        '<span class="qc-b-mc">'+esc(motsClesCas(m.id).slice(0, 3).join(" · "))+'</span></button>'+boutonInfoQC(m)+'</div>').join("")+'</div>';
   }
   return FAMILLES_METHODES.map(f => '<div class="qc-famille qc-f-'+f.id+'"><h4>'+ic(f.ic)+esc(f.nom)+'</h4>'+
     (vue === "codes"
-      ? '<div class="qc-codes qc-codes-compact">'+METHODES.filter(m => m.famille === f.id).map(m => '<button class="qc-code-court" data-action="envoyerCodeQC" data-arg="'+m.id+'" aria-label="'+esc(m.id+", "+m.court)+'" title="'+esc(m.court)+'">'+m.id+'</button>').join("")+'</div>'
+      ? '<div class="qc-codes qc-codes-compact">'+METHODES.filter(m => m.famille === f.id).map(m => '<div class="qc-cell qc-cell-code"><button class="qc-code-court" data-action="envoyerCodeQC" data-arg="'+m.id+'" aria-label="'+esc(m.id+", "+m.court)+'" title="'+esc(m.court)+'">'+m.id+'</button>'+boutonInfoQC(m)+'</div>').join("")+'</div>'
       : '<div class="qc-liste">'+METHODES.filter(m => m.famille === f.id).map(m => '<button class="qc-gros" data-action="envoyerCodeQC" data-arg="'+m.id+'">'+
           '<span class="qc-gros-haut"><span class="qc-gros-lib">'+esc(m.court)+'</span><span class="qc-code-id">'+m.id+'</span></span>'+
           '<span class="qc-gros-titre">'+esc(m.titre)+'</span>'+
@@ -3361,10 +3392,28 @@ function renderAffichageQC(){
       '<button class="btn btn-petit" data-action="pleinEcranQC">'+ic("grille")+'Plein écran</button></div>'+
     '<h2 class="qc-titre">'+esc(m.titre)+'</h2>'+
     '<div class="annonce-meth"><p>« '+esc(annonceMethode(m))+' »</p><button class="btn btn-petit" data-action="copierAnnonce" data-arg="'+m.id+'">'+ic("copier")+'Copier</button></div>'+
-    '<ol class="qc-etapes">'+m.etapes.map((e, i) => '<li><span class="etape-num">'+(i+1)+'</span><span><b>'+esc(e[0])+'</b><span class="qc-mc">'+esc(String(e[1]||"").split("|").join(" · "))+'</span></span></li>').join("")+'</ol>'+
+    '<ol class="qc-etapes">'+m.etapes.map((e, i) => '<li><span class="etape-num">'+(i+1)+'</span><span class="qc-et-corps"><span class="qc-et-ligne"><b>'+esc(e[0])+'</b>'+
+      '<button class="qc-info qc-info-inline" data-action="defEtapeQC" aria-expanded="false" aria-label="Définition de l\'étape '+(i+1)+' : '+esc(e[0])+'">i</button></span>'+
+      '<span class="qc-mc">'+esc(String(e[1]||"").split("|").join(" · "))+'</span><span class="qc-def">'+esc(e[2]||"")+'</span></span></li>').join("")+'</ol>'+
     '<div class="fb-bloc ton-orange"><h4>'+ic("eclair")+'Piège à éviter</h4><p>'+esc(m.piege||"")+'</p></div>'+
     '<div class="fb-bloc ton-vert"><h4>'+ic("drapeau")+'Conclusion</h4><p>« '+esc(m.conclusion||"")+' »</p></div>'+
   '</div>'+histo;
+}
+/* Bouton « i » : définition d'un cas sans l'envoyer */
+function boutonInfoQC(m){ return '<button class="qc-info" data-action="infoCasQC" data-arg="'+m.id+'" aria-label="Définition : '+esc(m.court)+'">i</button>'; }
+function ficheCasQC(code){
+  const m = METHODES.find(x => x.id === code); if(!m) return;
+  const f = FAMILLES_METHODES.find(x => x.id === m.famille) || { nom:"" };
+  ouvrirModale('<div class="qc-fiche qc-f-'+m.famille+'">'+
+    '<div class="ligne-titre"><span class="etiquette"><span class="anneau"></span>'+esc(f.nom)+' · '+m.id+'</span>'+
+      '<button class="btn-icone" data-action="fermerFeuille" aria-label="Fermer">'+ic("retour")+'</button></div>'+
+    '<h2>'+esc(m.titre)+'</h2>'+
+    '<p class="qc-fiche-quand"><b>Mots qui le déclenchent :</b> '+esc(motsClesCas(m.id).join(", "))+'.</p>'+
+    '<div class="annonce-meth"><p>« '+esc(annonceMethode(m))+' »</p></div>'+
+    '<ol class="qc-fiche-etapes">'+m.etapes.map(e => '<li><b>'+esc(e[0])+'</b> : '+esc(e[2]||"")+'</li>').join("")+'</ol>'+
+    '<div class="fb-bloc ton-orange"><h4>'+ic("eclair")+'Piège à éviter</h4><p>'+esc(m.piege||"")+'</p></div>'+
+    '<div class="flex actions-meth"><button class="btn btn-bleu" data-action="envoyerDepuisFicheQC" data-arg="'+m.id+'">'+ic("envoyer")+'Envoyer ce cas</button><button class="btn" data-action="fermerFeuille">Fermer</button></div>'+
+  '</div>');
 }
 function blocReglagesQC(){
   return '<div class="carte groupe"><h3>Quel cas ? (synchronisation)</h3>'+
@@ -3380,6 +3429,9 @@ Object.assign(ACTIONS, {
     const g = $("#qc-grille"); if(g) g.innerHTML = grilleQC();
     $$(".qc-bascule button").forEach(b => b.setAttribute("aria-pressed", String(b.dataset.arg === vueBoutonsQC())));
   },
+  infoCasQC(el){ ficheCasQC(el.dataset.arg); },
+  envoyerDepuisFicheQC(el){ const c = el.dataset.arg; fermerModale(); envoyerDepuisSaisie(c); },
+  defEtapeQC(el){ const li = el.closest("li"); if(!li) return; const on = !li.classList.contains("def-ouverte"); li.classList.toggle("def-ouverte", on); el.setAttribute("aria-expanded", String(on)); },
   familleQC(el){ store.set("quelcasFamille", el.dataset.arg); const g = $("#qc-grille"); if(g) g.innerHTML = grilleQC(); },
   envoyerCodeQC(el){ envoyerDepuisSaisie(el.dataset.arg); },
   afficherCodeQC(el){ QC.affiche = el.dataset.arg; renderAffichageQC(); },
