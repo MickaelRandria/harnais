@@ -406,6 +406,42 @@ html[data-theme="nuit"] .famille-meth h2 .ic{color:#9CC2FF}
   .regles{grid-template-columns:repeat(4,auto);justify-content:start;gap:8px 28px}
   .nav button{width:100%}
 }
+/* ---------- Quel cas ? ---------- */
+.entete-meth{justify-content:space-between;padding-right:16px}
+.qc-onglets{display:grid;grid-template-columns:1fr 1fr;gap:6px;padding:4px;border-radius:14px;background:var(--fond2);border:1px solid var(--ligne)}
+.qc-onglet{min-height:44px;border:0;border-radius:10px;background:transparent;color:var(--txt);font:inherit;font-weight:700;cursor:pointer}
+.qc-onglet[aria-pressed="true"]{background:var(--bleu);color:#fff}
+.qc-etat{display:flex;align-items:center;gap:8px;font-weight:600;font-size:.95rem;padding:8px 12px;border-radius:10px;background:var(--fond2)}
+.qc-etat::before{content:"";width:10px;height:10px;border-radius:50%;background:var(--txt3);flex:none}
+.qc-etat.connecte::before{background:var(--vert)}
+.qc-etat.attente::before{background:var(--orange)}
+.qc-etat.deconnecte::before{background:var(--rouge)}
+.qc-topic{display:flex;flex-direction:column;gap:10px}
+.qc-topic-val{font-family:ui-monospace,Consolas,monospace;font-size:1rem;padding:10px 12px;border-radius:10px;background:var(--fond2);word-break:break-all;margin:0}
+.qc-champ{width:100%;min-height:60px;font:inherit;font-size:1.2rem;padding:14px 16px;border-radius:16px;border:2px solid var(--bleu);background:var(--champ);color:var(--txt)}
+.qc-envoye{min-height:28px;font-weight:800;color:var(--vert-txt);opacity:0;transition:opacity .2s}
+.qc-envoye.visible{opacity:1}
+.qc-sugg{display:flex;flex-direction:column;gap:10px}
+.qc-sugg-item{display:flex;flex-direction:column;align-items:flex-start;gap:4px;text-align:left;padding:14px 16px;border-radius:16px;border:1px solid var(--ligne);background:var(--carte);color:var(--txt);font:inherit;cursor:pointer}
+.qc-sugg-item.premier{border:2px solid var(--bleu)}
+.qc-sugg-titre{font-size:1.3rem;font-weight:800;line-height:1.3}
+.qc-sous{font-size:1rem;margin:6px 0 0}
+.qc-codes{display:grid;grid-template-columns:repeat(5,1fr);gap:8px}
+.qc-code{min-height:52px;border-radius:12px;border:1px solid var(--ligne);background:var(--carte);color:var(--txt);font:inherit;font-weight:800;font-size:1.05rem;cursor:pointer}
+.qc-code:active{background:var(--bleu);color:#fff}
+.qc-vide{display:flex;flex-direction:column;align-items:flex-start;gap:10px}
+.qc-vide>.ic{width:40px;height:40px;color:var(--bleu)}
+.qc-affiche{display:flex;flex-direction:column;gap:18px;background:var(--fond)}
+.qc-affiche:fullscreen{padding:40px 6vw;overflow-y:auto}
+.qc-titre{font-size:clamp(1.6rem,4vw,2.6rem);line-height:1.2}
+.qc-affiche .annonce-meth p{font-size:clamp(1.1rem,2vw,1.4rem)}
+.qc-etapes{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:14px}
+.qc-etapes li{display:flex;gap:14px;align-items:flex-start;font-size:clamp(1.25rem,2.2vw,1.6rem);line-height:1.35}
+.qc-etapes .etape-num{width:40px;height:40px;margin:0}
+.qc-mc{display:block;font-size:max(20px,.8em);color:var(--txt2);font-weight:500;margin-top:2px}
+.qc-affiche .fb-bloc p{font-size:clamp(1.25rem,2vw,1.45rem)}
+.qc-histo .flex{gap:8px}
+@media (min-width:1024px){ .qc{max-width:1100px} .qc-codes{grid-template-columns:repeat(10,1fr)} }
 @media print{.nav,.decor{display:none}#app{box-shadow:none;margin:0}}
 </style>
 </head>
@@ -1813,10 +1849,11 @@ function route(){
   const h = location.hash.slice(1) || "accueil"; const [nom, arg] = h.split("/");
   if(nom !== "session" && S && !S.fini && !S.pause){ pauser(); sauverEncours(); }
   if(nom !== "session") arreterTick();
+  if(nom !== "quelcas" && typeof fermerFluxQC === "function") fermerFluxQC();
   const nav = $("#nav"); nav.classList.toggle("cache", nom === "session"); $("#app").classList.toggle("plein", nom === "session");
-  const onglet = { accueil:"accueil", reglages:"accueil", entrainer:"entrainer", debrief:"entrainer", progression:"progression", modules:"modules", module:"modules", methodes:"methodes" }[nom] || "accueil";
+  const onglet = { accueil:"accueil", reglages:"accueil", entrainer:"entrainer", debrief:"entrainer", progression:"progression", modules:"modules", module:"modules", methodes:"methodes", quelcas:"methodes" }[nom] || "accueil";
   $$("#nav button").forEach(b => { if(b.dataset.go === onglet) b.setAttribute("aria-current","page"); else b.removeAttribute("aria-current"); });
-  const R = { accueil:rAccueil, entrainer:rEntrainer, progression:rProgression, modules:rModules, module:rModule, reglages:rReglages, session:rSession, debrief:rDebrief, methodes:rMethodes }[nom] || rAccueil;
+  const R = { accueil:rAccueil, entrainer:rEntrainer, progression:rProgression, modules:rModules, module:rModule, reglages:rReglages, session:rSession, debrief:rDebrief, methodes:rMethodes, quelcas:rQuelCas }[nom] || rAccueil;
   R(arg ? decodeURIComponent(arg) : undefined);
   window.scrollTo(0,0);
 }
@@ -1849,7 +1886,8 @@ function rAccueil(){
     ["ouvrirCas","dossier","Cas pratique","Tirage au sort ou cas généré"],
     ["ouvrirAnglais","globe","Anglais","15 questions, niveau C1"],
     ["ouvrirVocab","texte","Vocabulaire","5 minutes, idéal dans le bus"],
-    ["ouvrirAtelier","etiquette","Atelier plan de marquage","Recommandé sur PC"]
+    ["ouvrirAtelier","etiquette","Atelier plan de marquage","Recommandé sur PC"],
+    ["ouvrirQuelCas","etapes","Quel cas ?","Téléphone et ordinateur reliés"]
   ].map(t => '<button class="tuile-act" role="listitem" data-action="'+t[0]+'">'+ic(t[1])+'<span><strong>'+t[2]+'</strong><span>'+t[3]+'</span></span></button>').join("");
   E().innerHTML =
   '<section class="hero">'+(nuit ? paysageNuit() : paysageJour())+
@@ -2776,6 +2814,7 @@ function rReglages(){
     '<label class="champ">Taille du texte<select id="rg-taille">'+opt("normal","Normale",R.taille)+opt("grand","Grande",R.taille)+opt("bus","Mode bus (grand texte, sans animation)",R.taille)+'</select></label>'+
     '<label class="champ">Thème<select id="rg-theme">'+opt("auto","Automatique (jour avant 18 h, nuit après)",R.theme)+opt("jour","Jour",R.theme)+opt("nuit","Nuit",R.theme)+'</select></label></div>'+
    '<button class="btn btn-bleu btn-bloc" data-action="enregistrerReglages">Enregistrer les réglages</button>'+
+   blocReglagesQC()+
    '<div class="carte groupe"><h3>Données</h3>'+
     '<label class="interrupteur">Inclure la clé API dans l\'export<input type="checkbox" id="rg-exp-cle"></label>'+
     '<div class="flex"><button class="btn" data-action="exportJSON">'+ic("telecharger")+'Export JSON</button><button class="btn" data-action="importJSON">'+ic("importer")+'Import JSON</button><input type="file" id="rg-import" accept="application/json,.json" class="cache"></div>'+
@@ -2996,11 +3035,230 @@ function init(){
   document.addEventListener("visibilitychange", () => { if(document.hidden && S && !S.fini){ sauverEncours(); } });
 }
 
+/* =====================================================================
+   « Quel cas ? » : Saisie (téléphone) et Affichage (ordinateur), reliés par ntfy.sh
+   Seul le code du cas (ex. « T3 ») part sur le réseau, jamais le texte saisi.
+   ===================================================================== */
+const TRIGGERS = [
+  { code:"T1", mots:["projet","étapes","piloter","projet de tracking","mettre en place le tracking"] },
+  { code:"T2", mots:["demande d'essai","devis","formulaire","essai","prise de rendez-vous"] },
+  { code:"T3", mots:["écart","crm","remonte pas","ne remonte pas","différence de volume"] },
+  { code:"T4", mots:["mise en production","chute","mise en prod","après la refonte","refonte"] },
+  { code:"T5", mots:["doublon","deux fois","double","en double"] },
+  { code:"T6", mots:["application","web","app","appli","site et application"] },
+  { code:"C1", mots:["désaccord","technique","conflit","marketing et technique"] },
+  { code:"C2", mots:["a/b","ab test","test ab","abandon","test a/b"] },
+  { code:"C3", mots:["p-value","significatif","non concluant","0,12","0.12","pas significatif"] },
+  { code:"C4", mots:["p-value","significatif","0,04","0.04","concluant"] },
+  { code:"C5", mots:["tablette","mobile","segment","sous-performe","appareil"] },
+  { code:"C6", mots:["hypothèse","formuler une hypothèse"] },
+  { code:"C7", mots:["de 3 à 2,5","baisse de conversion","taux de conversion baisse","2,5 %","2,5%"] },
+  { code:"K1", mots:["garanti","en un mois","promettre","garantie","promesse"] },
+  { code:"K2", mots:["chiffre d'affaires","ventes","ca baisse","baisse du ca"] },
+  { code:"K3", mots:["recommandation","recommander","que recommandes-tu"] },
+  { code:"K4", mots:["dirigeant","comité","direction","codir","comex"] },
+  { code:"K5", mots:["le site marche bien","marche bien","à quoi sert le tracking"] },
+  { code:"K6", mots:["pourquoi le conseil","conseil","pourquoi nous","pourquoi fifty-five"] }
+];
+function chercherCas(texte){
+  const n = norm(texte).trim(); if(!n) return [];
+  const direct = METHODES.find(m => norm(m.id) === n.replace(/\s+/g,""));
+  if(direct) return [direct];
+  const scores = TRIGGERS.map(t => {
+    let s = 0;
+    t.mots.forEach(w => { const k = norm(w); if(k && n.includes(k)) s += 1 + k.length / 10; });
+    return { code:t.code, s };
+  }).filter(x => x.s > 0).sort((a,b) => b.s - a.s);
+  return scores.slice(0, 4).map(x => METHODES.find(m => m.id === x.code)).filter(Boolean);
+}
+
+/* ---------- Topic ntfy ---------- */
+function nouveauTopic(){
+  const al = "abcdefghijklmnopqrstuvwxyz0123456789"; let s = "";
+  const b = new Uint8Array(20);
+  try{ crypto.getRandomValues(b); }catch(e){ for(let i=0;i<20;i++) b[i] = Math.floor(Math.random()*256); }
+  b.forEach(x => s += al[x % al.length]);
+  return "harnais-" + s;
+}
+function topicQC(){ return store.get("topic", ""); }
+function topicValide(t){ return /^[A-Za-z0-9_-]{8,64}$/.test(t || ""); }
+if(!topicQC()) store.set("topic", nouveauTopic()); /* premier lancement */
+
+const QC = { es:null, etat:"ferme", dernierId:null, relance:null, envoiEnCours:false, dernierEnvoiOk:null };
+function fileQC(){ const f = store.get("fileQuelCas", []); return Array.isArray(f) ? f : []; }
+async function posterCode(code){
+  const t = topicQC(); if(!topicValide(t)) throw new Error("topic");
+  const r = await fetch("https://ntfy.sh/" + encodeURIComponent(t), { method:"POST", body:code, headers:{ "Content-Type":"text/plain" } });
+  if(!r.ok) throw new Error("HTTP " + r.status);
+}
+/* Envoi dans l'ordre : on ajoute à la file, puis on vide la file une entrée à la fois */
+async function envoyerCode(code){
+  const f = fileQC(); f.push(code); store.set("fileQuelCas", f); majEtatQC();
+  await viderFileQC();
+  return fileQC().length === 0;
+}
+async function viderFileQC(){
+  if(QC.envoiEnCours) return; QC.envoiEnCours = true;
+  try{
+    while(fileQC().length){
+      const f = fileQC();
+      try{ await posterCode(f[0]); QC.dernierEnvoiOk = true; }
+      catch(e){ QC.dernierEnvoiOk = false; break; }
+      const g = fileQC(); g.shift(); store.set("fileQuelCas", g);
+    }
+  } finally { QC.envoiEnCours = false; majEtatQC(); }
+}
+window.addEventListener("online", () => { viderFileQC(); if(nomRoute() === "quelcas") { majEtatQC(); if(QC.vue === "affichage") ouvrirFluxQC(); } });
+window.addEventListener("offline", () => majEtatQC());
+setInterval(() => { if(fileQC().length && navigator.onLine !== false) viderFileQC(); }, 8000);
+
+/* Réception : flux SSE, reconnexion automatique, reprise depuis le dernier message reçu */
+function ouvrirFluxQC(){
+  const t = topicQC(); if(!topicValide(t)) return;
+  if(QC.es && QC.es.readyState !== 2 && QC.esTopic === t) return;
+  fermerFluxQC();
+  const url = "https://ntfy.sh/" + encodeURIComponent(t) + "/sse" + (QC.dernierId ? "?since=" + encodeURIComponent(QC.dernierId) : "");
+  let es;
+  try{ es = new EventSource(url); }catch(e){ QC.etat = "deconnecte"; majEtatQC(); return; }
+  QC.es = es; QC.esTopic = t; QC.etat = "connexion"; majEtatQC();
+  es.onopen = () => { QC.etat = "connecte"; majEtatQC(); };
+  es.onmessage = ev => {
+    let d; try{ d = JSON.parse(ev.data); }catch(e){ return; }
+    if(!d || d.event !== "message") return;
+    if(d.id) QC.dernierId = d.id;
+    const code = String(d.message || "").trim().toUpperCase();
+    if(METHODES.some(m => m.id === code)) recevoirCas(code);
+  };
+  es.onerror = () => {
+    QC.etat = navigator.onLine === false ? "deconnecte" : "connexion"; majEtatQC();
+    if(es.readyState === 2){ clearTimeout(QC.relance); QC.relance = setTimeout(() => { if(nomRoute() === "quelcas" && QC.vue === "affichage") ouvrirFluxQC(); }, 3000); }
+  };
+}
+function fermerFluxQC(){ clearTimeout(QC.relance); if(QC.es){ try{ QC.es.close(); }catch(e){} } QC.es = null; QC.etat = "ferme"; }
+function histoQC(){ const h = store.get("quelcasHisto", []); return Array.isArray(h) ? h : []; }
+function recevoirCas(code){
+  const h = histoQC(); h.unshift({ code, date:new Date().toISOString() }); store.set("quelcasHisto", h.slice(0, 10));
+  QC.affiche = code;
+  const m = METHODES.find(x => x.id === code);
+  if(nomRoute() === "quelcas" && QC.vue === "affichage"){ renderAffichageQC(); toast("Nouveau cas : " + code + (m ? ", " + m.titre : "")); }
+}
+
+/* ---------- Vues ---------- */
+function etatTexteQC(){
+  const n = fileQC().length;
+  if(QC.vue === "affichage"){
+    if(navigator.onLine === false) return ["deconnecte", "Déconnecté : en attente du réseau"];
+    return QC.etat === "connecte" ? ["connecte", "Connecté, en écoute"] : QC.etat === "connexion" ? ["attente", "Connexion en cours..."] : ["deconnecte", "Déconnecté"];
+  }
+  if(n) return ["attente", "File d'attente : " + n + " code" + (n > 1 ? "s" : "") + " à envoyer"];
+  if(navigator.onLine === false || QC.dernierEnvoiOk === false) return ["deconnecte", "Déconnecté : les codes seront envoyés au retour du réseau"];
+  return ["connecte", "Connecté"];
+}
+function majEtatQC(){
+  const b = $("#qc-etat"); if(!b) return;
+  const [cls, txt] = etatTexteQC();
+  b.className = "qc-etat " + cls; b.textContent = txt;
+}
+function blocTopicQC(){
+  if(store.get("topicPartage", false)) return "";
+  return '<div class="carte qc-topic"><h3>Relier tes deux appareils</h3>'+
+    '<p>Les deux appareils doivent utiliser le même topic. Copie celui-ci, puis colle-le sur l\'autre appareil dans <b>Réglages, rubrique « Quel cas ? »</b>.</p>'+
+    '<p class="qc-topic-val">'+esc(topicQC())+'</p>'+
+    '<div class="flex"><button class="btn btn-bleu" data-action="copierTopic">'+ic("copier")+'Copier le topic</button><button class="btn" data-go="reglages">Coller un topic reçu</button><button class="btn" data-action="topicOk">C\'est fait</button></div></div>';
+}
+function rQuelCas(vue){
+  if(vue !== "saisie" && vue !== "affichage") vue = window.innerWidth > 900 ? "affichage" : "saisie";
+  QC.vue = vue;
+  const onglet = (v, lib) => '<button class="qc-onglet" data-go="quelcas/'+v+'" aria-pressed="'+(vue === v)+'">'+lib+'</button>';
+  E().innerHTML = '<div class="entete"><button class="btn-icone" data-go="methodes" aria-label="Retour aux méthodes">'+ic("retour")+'</button><h1>Quel cas ?</h1></div>'+
+    '<div class="contenu qc">'+
+    '<div class="qc-onglets" role="group" aria-label="Vue">'+onglet("saisie","Saisie")+onglet("affichage","Affichage")+'</div>'+
+    '<div class="qc-etat" id="qc-etat" role="status"></div>'+
+    blocTopicQC()+
+    '<div id="qc-vue"></div></div>';
+  if(vue === "saisie"){ fermerFluxQC(); renderSaisieQC(); viderFileQC(); }
+  else { ouvrirFluxQC(); if(!QC.affiche){ const h = histoQC(); if(h[0]) QC.affiche = h[0].code; } renderAffichageQC(); }
+  majEtatQC();
+}
+function renderSaisieQC(){
+  const z = $("#qc-vue"); if(!z) return;
+  z.innerHTML = '<label class="sr" for="qc-champ">Mots de la question</label>'+
+    '<input id="qc-champ" class="qc-champ" type="text" autocomplete="off" spellcheck="false" placeholder="Tape quelques mots de la question..." enterkeyhint="send">'+
+    '<div id="qc-envoye" class="qc-envoye" aria-live="polite"></div>'+
+    '<div id="qc-sugg" class="qc-sugg"></div>'+
+    '<h3 class="qc-sous">Envoi direct</h3>'+
+    '<div class="qc-codes">'+METHODES.map(m => '<button class="qc-code" data-action="envoyerCodeQC" data-arg="'+m.id+'" title="'+esc(m.titre)+'">'+m.id+'</button>').join("")+'</div>'+
+    '<p class="muet petit">Seul le code du cas (par exemple T3) est envoyé, via ntfy.sh. Le texte que tu tapes reste sur ce téléphone.</p>';
+  const c = $("#qc-champ");
+  c.addEventListener("input", () => afficherSuggQC(c.value));
+  c.addEventListener("keydown", e => { if(e.key === "Enter"){ e.preventDefault(); const r = chercherCas(c.value); if(r[0]) envoyerDepuisSaisie(r[0].id); else toast("Aucun cas trouvé : utilise la grille."); } });
+  setTimeout(() => c.focus(), 50);
+}
+function afficherSuggQC(v){
+  const s = $("#qc-sugg"); if(!s) return;
+  const r = chercherCas(v);
+  s.innerHTML = !v.trim() ? "" : r.length ? r.map((m, i) => '<button class="qc-sugg-item'+(i === 0 ? " premier" : "")+'" data-action="envoyerCodeQC" data-arg="'+m.id+'"><span class="meth-id">'+m.id+(i === 0 ? " · Entrée" : "")+'</span><span class="qc-sugg-titre">'+esc(m.titre)+'</span></button>').join("") : '<p class="muet">Aucun cas trouvé. Essaie un autre mot, ou la grille ci-dessous.</p>';
+}
+async function envoyerDepuisSaisie(code){
+  const ok = await envoyerCode(code);
+  const e = $("#qc-envoye"), c = $("#qc-champ");
+  if(e){ e.textContent = ok ? "Envoyé ✓ " + code : "En file d'attente : " + code; e.classList.add("visible"); setTimeout(() => { e.classList.remove("visible"); e.textContent = ""; }, 1000); }
+  if(c){ c.value = ""; afficherSuggQC(""); c.focus(); }
+  majEtatQC();
+}
+function renderAffichageQC(){
+  const z = $("#qc-vue"); if(!z) return;
+  const m = METHODES.find(x => x.id === QC.affiche), h = histoQC();
+  const histo = h.length ? '<div class="qc-histo"><h3 class="qc-sous">Derniers cas</h3><div class="flex">'+h.map(x => '<button class="chip" data-action="afficherCodeQC" data-arg="'+esc(x.code)+'" aria-pressed="'+(x.code === QC.affiche)+'">'+esc(x.code)+'</button>').join("")+'</div></div>' : "";
+  if(!m){
+    z.innerHTML = '<div class="carte qc-vide">'+ic("etapes")+'<h2>En attente d\'un cas</h2><p class="muet">Envoie un code depuis la vue Saisie de ton téléphone : il s\'affichera ici en grand.</p></div>'+histo;
+    return;
+  }
+  const f = FAMILLES_METHODES.find(x => x.id === m.famille) || { nom:"" };
+  z.innerHTML = '<div class="qc-affiche" id="qc-affiche">'+
+    '<div class="ligne-titre"><span class="etiquette"><span class="anneau"></span>'+esc(f.nom)+' · '+m.id+'</span>'+
+      '<button class="btn btn-petit" data-action="pleinEcranQC">'+ic("grille")+'Plein écran</button></div>'+
+    '<h2 class="qc-titre">'+esc(m.titre)+'</h2>'+
+    '<div class="annonce-meth"><p>« '+esc(annonceMethode(m))+' »</p><button class="btn btn-petit" data-action="copierAnnonce" data-arg="'+m.id+'">'+ic("copier")+'Copier</button></div>'+
+    '<ol class="qc-etapes">'+m.etapes.map((e, i) => '<li><span class="etape-num">'+(i+1)+'</span><span><b>'+esc(e[0])+'</b><span class="qc-mc">'+esc(String(e[1]||"").split("|").join(" · "))+'</span></span></li>').join("")+'</ol>'+
+    '<div class="fb-bloc ton-orange"><h4>'+ic("eclair")+'Piège à éviter</h4><p>'+esc(m.piege||"")+'</p></div>'+
+    '<div class="fb-bloc ton-vert"><h4>'+ic("drapeau")+'Conclusion</h4><p>« '+esc(m.conclusion||"")+' »</p></div>'+
+  '</div>'+histo;
+}
+function blocReglagesQC(){
+  return '<div class="carte groupe"><h3>Quel cas ? (synchronisation)</h3>'+
+    '<p class="muet petit">Relie ton téléphone (Saisie) et ton ordinateur (Affichage). Les deux appareils doivent avoir le même topic. Seul le code du cas transite par ntfy.sh.</p>'+
+    '<label class="champ">Topic de cet appareil<input id="rg-topic-actuel" value="'+esc(topicQC())+'" readonly></label>'+
+    '<div class="flex"><button class="btn" data-action="copierTopic">'+ic("copier")+'Copier</button></div>'+
+    '<label class="champ">Coller le topic de l\'autre appareil<input id="rg-topic" placeholder="harnais-..." autocomplete="off" spellcheck="false"></label>'+
+    '<button class="btn btn-bleu" data-action="collerTopic">Utiliser ce topic</button></div>';
+}
+Object.assign(ACTIONS, {
+  envoyerCodeQC(el){ envoyerDepuisSaisie(el.dataset.arg); },
+  afficherCodeQC(el){ QC.affiche = el.dataset.arg; renderAffichageQC(); },
+  copierTopic(){ copier(topicQC()); store.set("topicPartage", true); },
+  topicOk(){ store.set("topicPartage", true); const b = $(".qc-topic"); if(b) b.remove(); },
+  collerTopic(){
+    const v = ($("#rg-topic").value || "").trim();
+    if(!topicValide(v)){ toast("Topic invalide : 8 à 64 caractères, lettres, chiffres, tirets."); return; }
+    store.set("topic", v); store.set("topicPartage", true); QC.dernierId = null; fermerFluxQC();
+    $("#rg-topic-actuel").value = v; $("#rg-topic").value = ""; toast("Topic enregistré : les deux appareils sont reliés.");
+  },
+  pleinEcranQC(){
+    const el = $("#qc-affiche") || document.documentElement;
+    try{
+      if(document.fullscreenElement) document.exitFullscreen();
+      else if(el.requestFullscreen) el.requestFullscreen().catch(() => toast("Plein écran refusé par le navigateur."));
+      else toast("Plein écran indisponible sur ce navigateur.");
+    }catch(e){ toast("Plein écran indisponible sur ce navigateur."); }
+  }
+});
+
 /* ---------- Méthodes : liste des cas d'usage et feuille stepper ---------- */
 function methodesFaites(){ const o = store.get("methodes", {}); return (o && typeof o === "object") ? o : {}; }
 function rMethodes(){
   const fait = methodesFaites(), nb = METHODES.filter(m => fait[m.id]).length;
-  E().innerHTML = '<div class="entete"><h1>Méthodes</h1></div><div class="contenu">'+
+  E().innerHTML = '<div class="entete entete-meth"><h1>Méthodes</h1><button class="btn btn-bleu" data-go="quelcas">'+ic("etapes")+'Quel cas ?</button></div><div class="contenu">'+
     '<div class="carte regles-or"><span class="etiquette"><span class="anneau"></span>Règles d\'or</span>'+
       '<ol class="regles">'+REGLES_OR.map(r => '<li>'+esc(r)+'</li>').join("")+'</ol></div>'+
     '<p class="muet">Une méthode par cas, en étapes, pour restituer sans improviser. '+nb+' sur '+METHODES.length+' révisée'+(nb > 1 ? "s" : "")+'.</p>'+
@@ -3039,6 +3297,7 @@ function feuilleMethode(id, revision){
   const h = $("#modale-boite h2"); if(h){ h.setAttribute("tabindex","-1"); h.focus(); }
 }
 Object.assign(ACTIONS, {
+  ouvrirQuelCas(){ go("quelcas"); },
   ouvrirMethode(el){ feuilleMethode(el.dataset.arg, false); },
   fermerFeuille(){ fermerModale(); },
   etapeMethode(el){
