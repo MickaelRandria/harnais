@@ -3,7 +3,7 @@
 Entraînement aux entretiens de Digital Analytics Consultant : 3 rounds de 30 minutes avec 3 managers simulés (technique, CRO et analyse, conseil), feedback sur chaque réponse, progression, modules. Interface mobile, et web app sur ordinateur (menu latéral, retours dans un panneau à droite). Avec Gemini, le manager pose aussi ses propres questions, adaptées à ton parcours, et chaque module propose « Nouvelles questions (IA) ».
 
 ## Ouvrir l'app
-- En ligne (téléphone compris) : l'adresse GitHub Pages du dépôt, en HTTPS, donc le micro fonctionne.
+- En ligne : https://harnais-one.vercel.app (HTTPS, micro OK). PWA : installable sur l'écran d'accueil, ouverture hors ligne (sw.js, manifest.webmanifest, icons/).
 - En local : double-clic sur `index.html`. Si le micro ou l'API sont bloqués, lance `python -m http.server 8000` dans ce dossier puis ouvre `http://localhost:8000`.
 
 ## Méthodes et « Quel cas ? »

@@ -1,0 +1,23 @@
+{
+  "name": "Harnais, entraînement aux entretiens",
+  "short_name": "Harnais",
+  "description": "Entraînement aux entretiens de Digital Analytics Consultant : simulation, méthodes et mode Quel cas.",
+  "lang": "fr",
+  "id": "./",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "any",
+  "background_color": "#0E1A3D",
+  "theme_color": "#0E1A3D",
+  "categories": ["education", "productivity"],
+  "icons": [
+    { "src": "icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icons/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ],
+  "shortcuts": [
+    { "name": "Quel cas ?", "short_name": "Quel cas", "url": "./#quelcas", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] },
+    { "name": "Méthodes", "url": "./#methodes", "icons": [{ "src": "icons/icon-192.png", "sizes": "192x192" }] }
+  ]
+}
