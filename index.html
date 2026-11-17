@@ -428,6 +428,28 @@ html[data-theme="nuit"] .famille-meth h2 .ic{color:#9CC2FF}
 .lex-ecoute{flex:none;color:var(--bleu)}
 html[data-theme="nuit"] .lex-ecoute{color:#9CC2FF}
 @media (min-width:1024px){ .lex-liste{display:grid;grid-template-columns:repeat(2,minmax(0,1fr))} }
+/* Fiches : question, plan en mots-clés, mots utiles */
+.fiche-lbl{display:block;font-size:.75rem;font-weight:800;letter-spacing:.07em;text-transform:uppercase;color:var(--txt2);margin-bottom:6px}
+.fiche-q{padding:12px 16px;border-radius:14px;background:var(--carte);border:1px solid var(--ligne)}
+.fiche-q p{margin:0;font-weight:700;line-height:1.45}
+.fiche-q-en{margin-top:4px!important;font-weight:600!important;color:var(--txt2);font-style:italic}
+.fiche-plan{padding:14px 16px;border-radius:16px;background:var(--marine);color:#fff}
+.fiche-plan .fiche-lbl{color:#F6D5B5}
+.fiche-plan ol{list-style:none;margin:0;padding:0;display:flex;flex-wrap:wrap;gap:8px}
+.fiche-plan li{display:inline-flex;align-items:center;gap:8px;padding:7px 12px 7px 7px;border-radius:999px;background:rgba(255,255,255,.12);font-weight:800;font-size:1.02rem}
+.fiche-plan li b{display:inline-grid;place-items:center;width:26px;height:26px;border-radius:50%;background:var(--orange);color:#0E1A3D;font-size:.85rem}
+.qc-affiche .fiche-plan li{font-size:clamp(1.05rem,1.5vw,1.25rem)}
+.fiche-mots{padding:12px 16px;border-radius:14px;background:var(--carte);border:1px solid var(--ligne)}
+.fiche-mots ul{list-style:none;margin:0;padding:0;display:grid;grid-template-columns:repeat(auto-fill,minmax(220px,1fr));gap:6px 16px}
+.fiche-mots li{display:flex;flex-direction:column;padding:4px 0;border-bottom:1px dashed var(--ligne)}
+.fiche-mots li span{color:var(--txt2);font-size:.92rem}
+.fiche-vig{margin:0;padding-left:1.2em;display:flex;flex-direction:column;gap:4px;line-height:1.5}
+.entraine{padding:14px 16px;border-radius:14px;background:var(--carte);border:2px solid var(--bleu)}
+.entraine textarea{width:100%;box-sizing:border-box;min-height:110px;border-radius:12px;border:1px solid var(--ligne);background:var(--champ);color:var(--txt);font:inherit;font-size:1.02rem;line-height:1.5;padding:10px 12px;resize:vertical}
+.rep-type-fr{margin-top:6px}
+.qc-affiche .entraine p,.qc-affiche .coach p{font-size:1rem}
+.qc-affiche .coach .rm-texte{font-size:1.08rem}
+.rep-type-fr>summary{cursor:pointer;font-weight:700;color:var(--txt2)}
 /* Correction du coach */
 .coach{gap:10px}
 .coach h4 .source{white-space:nowrap}
@@ -1034,7 +1056,7 @@ const PLAN_EXEMPLE = [
    Chaque étape : [titre court, "mot-clé|mot-clé", "phrase de développement"].
    annonce : facultative (sinon construite à partir des titres).
    ===================================================================== */
-const VERSION_APP = "17 nov. 2026, n°12"; /* à changer à chaque mise en ligne, visible dans Réglages et Quel cas */
+const VERSION_APP = "17 nov. 2026, n°13"; /* à changer à chaque mise en ligne, visible dans Réglages et Quel cas */
 const FAMILLES_METHODES = [
   { id:"tracking", nom:"Tracking", ic:"etiquette" },
   { id:"cro", nom:"CRO et média", ic:"cible" },
@@ -1044,17 +1066,18 @@ const REGLES_OR = ["Annoncer le plan.", "Étapes logiques.", "Conclusion systém
 const METHODES = [
   /* ---------- Tracking ---------- */
   { id:"T1", famille:"tracking", titre:"Piloter un projet de tracking",
-    annonce:"Je procède en six étapes : cadrer, auditer, concevoir, valider, déployer, suivre.",
+    annonce:"Je procède en sept étapes : cadrer, auditer, plan de marquage, mise en place, recette, validation, surveillance.",
     etapes:[
-      ["Cadrer", "besoin métier|objectif|KPI prioritaires", "Je pars du besoin métier : quelle décision la donnée doit éclairer, et quels KPI comptent en priorité."],
-      ["Auditer", "existant|outils|écarts connus", "Je fais l'état des lieux : ce qui est déjà mesuré, avec quels outils, et les écarts déjà connus."],
-      ["Concevoir", "plan de marquage|événements|variables|paramètres|consentement RGPD", "Je rédige le plan de marquage : événements, variables, paramètres, et les règles de consentement RGPD."],
-      ["Valider", "double validation|marketing|technique", "Je fais valider le plan deux fois : par le marketing pour l'usage, par la technique pour la faisabilité."],
-      ["Déployer", "recette fonctionnelle|écarts bloquants|mise en production", "Je recette, je fais corriger les écarts bloquants, puis seulement on met en production."],
-      ["Suivre", "volumes par jour|cohérence back-office|alertes", "Je suis les volumes jour par jour, je les compare au back-office et je pose des alertes."]
+      ["Cadrer", "besoin métier|indicateurs|décision", "Je pars du besoin métier : quelle décision la donnée doit éclairer, et quels indicateurs suivre."],
+      ["Auditer", "suivi existant|outils|écarts connus", "J'audite le suivi existant : ce qui est déjà mesuré, avec quels outils, et les écarts connus."],
+      ["Plan de marquage", "événements|paramètres|consentement|validation marketing et technique", "Je prépare le plan de marquage et je le fais valider : le marketing pour l'usage, l'équipe technique pour la faisabilité."],
+      ["Mise en place", "équipe technique|data layer|gestionnaire de balises", "L'équipe technique met en place le suivi ; je réponds à ses questions."],
+      ["Recette", "tests|problèmes bloquants|corrections", "J'organise la recette et je fais corriger les problèmes bloquants."],
+      ["Validation", "feu vert|avant la mise en production", "Je valide avant la mise en production : pas de lancement tant que la recette n'est pas bonne."],
+      ["Surveillance", "données après le lancement|back-office|écarts expliqués", "Après le lancement, je surveille les données, je les compare au back-office quand c'est pertinent et j'explique les écarts inattendus."]
     ],
-    piege:"Définir les événements avant le besoin métier, ou déployer sans recette.",
-    conclusion:"Le tracking est validé quand les volumes collent au back-office." },
+    piege:"Promettre des volumes parfaitement identiques au back-office : le consentement et des définitions différentes expliquent une partie des écarts.",
+    conclusion:"Le suivi est fiable quand les écarts avec le back-office sont connus, stables et expliqués." },
   { id:"T2", famille:"tracking", titre:"Suivre une demande (essai, devis)",
     etapes:[
       ["Déclencheur", "validation réelle|pas le clic", "Je déclenche l'événement à la validation réelle de la demande, pas au clic sur le bouton."],
@@ -1065,7 +1088,7 @@ const METHODES = [
       ["Comparaison", "volumes jour par jour|GA4 et CRM", "Je compare les volumes jour par jour entre l'outil d'analyse et le CRM."]
     ],
     piege:"Compter les demandes au clic, donc les erreurs et les doublons.",
-    conclusion:"La mesure est fiable quand les volumes suivent ceux du CRM jour après jour." },
+    conclusion:"La mesure est fiable quand l'écart avec le CRM est faible, stable et expliqué." },
   { id:"T3", famille:"tracking", titre:"Écart entre l'outil d'analyse et le CRM",
     etapes:[
       ["Référence", "CRM|source de vérité", "Je prends le CRM comme référence pour mesurer l'écart."],
@@ -1115,36 +1138,36 @@ const METHODES = [
   /* ---------- CRO et média ---------- */
   { id:"C1", famille:"cro", titre:"Désaccord entre marketing et technique",
     etapes:[
-      ["Besoin marketing", "quelle décision|usage de la donnée", "Je demande au marketing quelle décision la donnée doit permettre."],
-      ["Contrainte technique", "difficulté|effort", "Je demande à la technique quelle est la difficulté et l'effort réel."],
-      ["Comparer", "demande initiale|alternatives|utilité|coût", "Je compare la demande initiale et les alternatives, en utilité et en coût."],
-      ["Décider ensemble", "arbitrage commun", "On décide ensemble, sur la base de cette comparaison."],
-      ["Consigner", "solution retenue|trace écrite", "Je consigne la solution retenue pour que personne ne rouvre le sujet."]
+      ["Besoin marketing", "décision à prendre|usage de la donnée", "Je comprends le besoin marketing : quelle décision la donnée doit permettre."],
+      ["Contrainte technique", "difficulté|effort estimé", "Je comprends la difficulté technique et je fais estimer l'effort."],
+      ["Comparer", "demande initiale|alternatives|utilité|coût", "Je compare la demande initiale et les alternatives, selon leur utilité et leur coût."],
+      ["Valider et consigner", "solution validée|décision écrite", "Je fais valider une solution et je consigne la décision."]
     ],
-    piege:"Prendre parti pour une équipe avant d'avoir compris les deux besoins.",
-    conclusion:"La solution retenue est écrite et acceptée par le marketing comme par la technique." },
+    piege:"Dire qu'une collecte est impossible simplement parce qu'elle est complexe.",
+    conclusion:"La solution retenue est validée, écrite, et chacun sait pourquoi." },
   { id:"C2", famille:"cro", titre:"Test A/B sur un formulaire",
     etapes:[
-      ["Diagnostic", "points d'abandon", "Je pars du diagnostic : à quels champs les utilisateurs abandonnent."],
-      ["Hypothèse", "formulaire plus court|plus de demandes confirmées", "Mon hypothèse : un formulaire plus court donnera plus de demandes confirmées."],
-      ["Versions", "actuelle contre nouvelle|répartition aléatoire", "Je compare la version actuelle et la nouvelle, avec une répartition aléatoire."],
-      ["Avant lancement", "taille d'échantillon|seuil", "Avant de lancer, je fixe la taille d'échantillon et le seuil de décision."],
-      ["KPI principal", "taux de demandes confirmées", "Mon KPI principal : le taux de demandes confirmées."],
-      ["Garde-fou", "qualité des demandes", "Je surveille un garde-fou : la qualité des demandes reçues."],
-      ["Décision", "résultat concluant|qualité préservée", "Je déploie seulement si le résultat est concluant et la qualité préservée."]
+      ["Diagnostic", "abandons|champs du formulaire", "Je diagnostique les abandons : à quels champs les utilisateurs quittent le formulaire."],
+      ["Hypothèse", "hypothèse claire", "Je formule une hypothèse claire, par exemple : un formulaire plus court donnera plus de demandes confirmées."],
+      ["Deux versions", "version actuelle|variante|répartition aléatoire", "Je compare la version actuelle et une variante, avec une répartition aléatoire du trafic."],
+      ["Avant le lancement", "taille d'échantillon|seuil statistique|indicateurs", "Avant le lancement, je fixe la taille d'échantillon, le seuil statistique et les indicateurs."],
+      ["Indicateur principal", "taux de demandes confirmées", "Mon indicateur principal est le taux de demandes confirmées, pas les clics sur le bouton."],
+      ["Qualité", "qualité des demandes", "Je surveille aussi la qualité des demandes."],
+      ["Décision", "résultat|intérêt métier|qualité", "Je décide selon le résultat, son intérêt métier et les indicateurs de qualité."]
     ],
-    piege:"Lancer le test sans avoir fixé l'échantillon et le seuil à l'avance.",
-    conclusion:"On déploie la version gagnante seulement si le gain est démontré et la qualité préservée." },
+    piege:"Compter un clic sur le bouton comme une demande confirmée.",
+    conclusion:"On déploie la variante seulement si le gain est démontré, utile pour le métier, et sans perte de qualité." },
   { id:"C3", famille:"cro", titre:"Test non concluant (p-value de 0,12)",
     etapes:[
-      ["Seuil prévu", "0,05|non concluant", "Le seuil prévu était 0,05 : avec 0,12, le test n'est pas concluant."],
-      ["Lecture", "hausse encourageante|non démontrée", "La hausse est encourageante, mais elle n'est pas démontrée."],
-      ["Test en cours", "poursuivre le plan initial", "Si le test est en cours, je poursuis le plan initial sans m'arrêter en route."],
-      ["Test terminé", "présenter l'incertitude|nouveau test si utile", "S'il est terminé, je présente l'incertitude et je propose un nouveau test si c'est utile."],
-      ["Définition", "versions aussi performantes|écart surprenant", "La p-value répond à une question : si les versions étaient aussi performantes, l'écart observé serait-il surprenant ?"]
+      ["Lire le résultat", "+8 %|p = 0,12|seuil 0,05", "Hausse observée de +8 %, p-value de 0,12, seuil fixé à 0,05 avant le test."],
+      ["Conclure", "encourageant|non concluant", "Le résultat est encourageant, mais non concluant au seuil prévu."],
+      ["Pas de déploiement", "pas sur ce seul résultat", "Je ne recommande pas le déploiement sur ce seul résultat."],
+      ["Test en cours", "suivre le plan initial|ne pas prolonger", "Si le test est en cours, je suis le plan initial, sans le prolonger juste pour obtenir une p-value favorable."],
+      ["Test terminé", "communiquer l'incertitude|nouveau test si l'enjeu le justifie", "S'il est terminé, je communique l'incertitude et j'envisage un nouveau test si l'enjeu le justifie."],
+      ["Définition", "écart aussi grand ou plus|versions aussi performantes", "La p-value dit à quel point un écart comme celui-ci, ou plus extrême, serait surprenant si les deux versions étaient en réalité aussi performantes."]
     ],
-    piege:"Parler de « 88 % de chances de gagner ».",
-    conclusion:"Le résultat n'est pas démontré : on ne déploie pas sur cette seule base." },
+    piege:"Dire que la p-value est la probabilité que la variante gagne (« 88 % de chances ») ou la probabilité que les versions soient identiques.",
+    conclusion:"Résultat encourageant mais non démontré : pas de déploiement sur cette seule base." },
   { id:"C4", famille:"cro", titre:"Test significatif (p-value de 0,04)",
     etapes:[
       ["Pas tout de suite", "ne pas déployer immédiatement", "Je ne déploie pas tout de suite, même si 0,04 passe sous le seuil."],
@@ -1198,16 +1221,16 @@ const METHODES = [
     ],
     piege:"Dire au client qu'il se trompe, ou répondre « c'est compliqué » sans plan.",
     conclusion:"Pas de garantie, mais un plan, des jalons et un objectif réaliste." },
-  { id:"K2", famille:"consulting", titre:"Expliquer une baisse de chiffre d'affaires",
+  { id:"K2", famille:"consulting", titre:"Expliquer une baisse de chiffre d'affaires en ligne",
     etapes:[
-      ["Cadrer", "périmètre|période|définition du chiffre", "Je cadre : quel périmètre, quelle période, quelle définition du chiffre d'affaires."],
-      ["Source de référence", "confirmer la source", "Je confirme la source de référence."],
-      ["Décomposer", "commandes × valeur moyenne", "Je décompose : nombre de commandes multiplié par la valeur moyenne."],
-      ["Annulations et retours", "annulations|retours", "Je vérifie les annulations et les retours."],
-      ["Levier touché", "trafic|conversion|canaux|appareils|saisonnalité", "Je creuse le levier touché : trafic, conversion, canaux, appareils ou saisonnalité."]
+      ["Cadrer", "période|périmètre|définition du chiffre d'affaires", "Je cadre la période, le périmètre et la définition du chiffre d'affaires."],
+      ["Source de référence", "source|cohérence des données", "Je vérifie la source de référence et la cohérence des données."],
+      ["Commandes et panier", "nombre de commandes|valeur moyenne par commande", "Je regarde le nombre de commandes et la valeur moyenne par commande."],
+      ["Annulations et retours", "annulations|retours|selon la définition", "J'examine les annulations ou les retours, selon la définition retenue."],
+      ["Levier touché", "trafic|conversion|canaux|appareils|saisonnalité", "Je creuse le levier touché : trafic, conversion, canaux, appareils, saisonnalité."]
     ],
-    piege:"Conclure à un problème de tracking parce que les commandes baissent.",
-    conclusion:"J'identifie le levier qui explique la baisse, puis l'action qui le corrige." },
+    piege:"Attribuer directement la baisse au tracking, ou annoncer une cause avant de l'avoir vérifiée.",
+    conclusion:"Je distingue une vraie baisse de performance d'un problème de mesure, puis je propose l'action adaptée." },
   { id:"K3", famille:"consulting", titre:"Recommander une action",
     etapes:[
       ["Synthèse", "une phrase", "Je commence par la synthèse, en une phrase."],
@@ -1218,16 +1241,16 @@ const METHODES = [
     ],
     piege:"Donner dix pistes sans priorité.",
     conclusion:"Une décision attendue, trois actions au plus, et une date pour le prochain point." },
-  { id:"K4", famille:"consulting", titre:"Présenter une situation à un dirigeant",
+  { id:"K4", famille:"consulting", titre:"Présenter la situation à un dirigeant",
     etapes:[
-      ["Ce qu'on sait", "constat confirmé|périmètre", "Ce qu'on sait : le constat confirmé et son périmètre."],
-      ["Ce qu'on ne sait pas", "cause à identifier", "Ce qu'on ne sait pas encore : la cause à identifier."],
-      ["Ce qu'on fait", "analyses prioritaires", "Ce qu'on fait : les analyses prioritaires en cours."],
-      ["Quand on revient", "délai convenu", "Quand on revient vers lui : un délai convenu."],
-      ["Décision attendue", "décision", "La décision qu'on attend de lui, s'il y en a une."]
+      ["Ce qu'on sait", "constat confirmé|périmètre", "Ce que nous savons : le constat confirmé et son périmètre."],
+      ["Ce qu'on ne sait pas", "cause pas encore confirmée", "Ce que nous ne savons pas encore : la cause n'est pas confirmée."],
+      ["Ce qu'on vérifie", "vérifications en cours", "Ce que nous sommes en train de vérifier."],
+      ["Prochaine mise à jour", "date|délai", "Quand je reviens vers vous avec une mise à jour."],
+      ["Décision demandée", "seulement s'il y en a une", "La décision que je vous demande, seulement s'il y en a une."]
     ],
-    piege:"Noyer le dirigeant dans le détail technique, ou annoncer une cause non confirmée.",
-    conclusion:"Le dirigeant sait ce qui est sûr, ce qui est en cours, et quand il aura la suite." },
+    piege:"Présenter une hypothèse comme une certitude, inventer un résultat, ou noyer le dirigeant dans le jargon.",
+    conclusion:"Vous savez ce qui est sûr, ce qui est en cours, et quand vous aurez la suite." },
   { id:"K5", famille:"consulting", titre:"Expliquer le tracking à un client qui trouve que « le site marche bien »",
     etapes:[
       ["Définir", "remonter les données de vente", "Le tracking, c'est ce qui remonte les données de vente vers vos outils de pilotage."],
@@ -3497,15 +3520,17 @@ function renderAffichageQC(){
       '<button class="btn btn-petit" data-action="pleinEcranQC">'+ic("grille")+'Plein écran <kbd>F</kbd></button>'+
       '<button class="btn btn-petit" data-action="aideClavier" aria-label="Raccourcis clavier"><kbd>?</kbd></button></div></div>'+
     '<h2 class="qc-titre">'+esc(m.titre)+'</h2>'+
+    blocQuestionFiche(m)+blocPlanFiche(m)+blocEntrainementQC(m)+
     '<div class="annonce-meth"><p>« '+esc(annonceMethode(m))+' »</p><button class="btn btn-petit" data-action="copierAnnonce" data-arg="'+m.id+'">'+ic("copier")+'Copier</button>'+'<button class="btn btn-petit" data-action="ecouterAnnonce" data-arg="'+m.id+'">'+ic("lecture")+tr("ecouter")+'</button>'+'</div>'+
     '<ol class="qc-etapes">'+m.etapes.map((e, i) => '<li data-i="'+i+'" data-action="selEtapeQC" class="'+(QC.etapeSel === i ? "selection " : "")+(notes[String(i)] ? "a-note" : "")+'"><span class="etape-num">'+(i+1)+'</span><span class="qc-et-corps"><span class="qc-et-ligne"><button class="qc-et-titre" data-action="selEtapeQC" aria-pressed="'+(QC.etapeSel === i)+'">'+esc(e[0])+'</button><span class="qc-note-marque" title="Cette étape a une note" aria-label="Note">'+ic("crayon")+'</span>'+
       '<button class="qc-info qc-info-inline" data-action="defEtapeQC" aria-expanded="false" aria-label="Définition de l\'étape '+(i+1)+' : '+esc(e[0])+'">i</button></span>'+
       '<span class="qc-mc">'+esc(String(e[1]||"").split("|").join(" · "))+'</span><span class="qc-def">'+esc(e[2]||"")+'</span></span></li>').join("")+'</ol>'+
-    '<div class="fb-bloc ton-orange"><h4>'+ic("eclair")+tr("piege")+'</h4><p>'+esc(m.piege||"")+'</p></div>'+
+    blocPiegesFiche(m)+
     '<div class="fb-bloc ton-vert"><h4>'+ic("drapeau")+tr("conclusion")+'</h4><p>« '+esc(m.conclusion||"")+' »</p></div>'+
-    blocReponseType(m, true)+
+    blocReponseType(m, true)+blocMotsFiche(m)+
   '</div><aside class="qc-panneau" id="qc-panneau" aria-label="Notes et questions probables"></aside></div>'+histo;
   renderPanneauQC();
+  brancherEntrainementQC();
 }
 /* Bouton « i » : définition d'un cas sans l'envoyer */
 function boutonInfoQC(m){ return '<button class="qc-info" data-action="infoCasQC" data-arg="'+m.id+'" aria-label="Définition : '+esc(m.court)+'">i</button>'; }
@@ -3516,10 +3541,11 @@ function ficheCasQC(code){
     '<div class="ligne-titre"><span class="etiquette"><span class="anneau"></span>'+esc(f.nom)+' · '+m.id+'</span>'+
       '<button class="btn-icone" data-action="fermerFeuille" aria-label="Fermer">'+ic("retour")+'</button></div>'+
     '<h2>'+esc(m.titre)+'</h2>'+
+    blocQuestionFiche(m)+blocPlanFiche(m)+
     '<p class="qc-fiche-quand"><b>'+tr("declenchent")+' :</b> '+esc(motsClesCas(m.id).join(", "))+'.</p>'+
     '<div class="annonce-meth"><p>« '+esc(annonceMethode(m))+' »</p></div>'+
     '<ol class="qc-fiche-etapes">'+m.etapes.map(e => '<li><b>'+esc(e[0])+'</b> : '+esc(e[2]||"")+'</li>').join("")+'</ol>'+
-    '<div class="fb-bloc ton-orange"><h4>'+ic("eclair")+tr("piege")+'</h4><p>'+esc(m.piege||"")+'</p></div>'+
+    blocPiegesFiche(m)+
     blocReponseType(m, false)+
     '<div class="flex actions-meth"><button class="btn btn-bleu" data-action="envoyerDepuisFicheQC" data-arg="'+m.id+'">'+ic("envoyer")+'Envoyer ce cas</button><button class="btn" data-action="fermerFeuille">Fermer</button></div>'+
   '</div>');
@@ -3748,246 +3774,247 @@ Object.assign(ACTIONS, {
    ===================================================================== */
 const METHODES_EN = {
   T1:{ titre:"Running a tracking project", court:"Tracking project", repere:"Project",
-    annonce:"I'd approach this in six steps: scope, audit, design, validate, deploy, monitor.",
-    etapes:[["Scope","business need|objective|priority KPIs","I start from the business need: which decision the data should inform, and which KPIs matter most."],
-      ["Audit","current set-up|tools|known gaps","I review what's already tracked, with which tools, and the gaps we already know about."],
-      ["Design","tagging plan|events|variables|parameters|GDPR consent","I write the tagging plan: events, variables, parameters, and the GDPR consent rules."],
-      ["Validate","double sign-off|marketing|tech","I get it signed off twice: by marketing for the use case, by tech for feasibility."],
-      ["Deploy","functional testing|blocking issues|go-live","We test, fix the blocking issues, and only then go live."],
-      ["Monitor","daily volumes|back-office match|alerts","I monitor volumes day by day, compare them with the back office, and set up alerts."]],
-    piege:"Defining events before the business need, or going live without testing.",
-    conclusion:"The tracking is validated when the volumes match the back office." },
-  T2:{ titre:"Tracking a lead (test drive, quote)", court:"Test drive, quote", repere:"Test drive",
-    etapes:[["Trigger","actual submission|not the click","I fire the event on the actual submission, not on the button click."],
-      ["Standard name","test_drive_submitted|naming convention","I give it a standard name, for instance test_drive_submitted, following the naming convention."],
-      ["Parameters","useful parameters|no personal data","I add the parameters that matter for analysis, with no personal data."],
-      ["Consent","sent only if accepted|CMP","The event only fires if the user has given consent."],
-      ["Destinations","GA4 for analysis|CRM for sales","The data goes to GA4 for analysis and to the CRM for the sales team."],
-      ["Comparison","daily volumes|GA4 vs CRM","I compare daily volumes between the analytics tool and the CRM."]],
-    piege:"Counting leads on the click, which includes errors and duplicates.",
-    conclusion:"The measurement is reliable when the volumes track the CRM day after day." },
+    annonce:"I'd do it in seven steps: scope, audit, tracking plan, build, testing, go-live check, monitoring.",
+    etapes:[["Scope","business need|KPIs|decision","I start with the business need. What decision will the data support? Which KPIs?"],
+      ["Audit","current tracking|tools|known issues","I check what we already track, with which tools, and the known issues."],
+      ["Tracking plan","events|parameters|consent|sign-off","I write the tracking plan. Marketing checks the use. The tech team checks it's doable."],
+      ["Build","tech team|data layer|tag manager","The tech team builds the tracking. I answer their questions."],
+      ["Testing","QA|blocking issues|fixes","I organise the testing. We fix the blocking issues."],
+      ["Go-live check","sign-off|before go-live","I check everything before go-live. No launch until the tests pass."],
+      ["Monitoring","data after launch|back office|explained gaps","After launch, I monitor the data. I compare it with the back office and explain any unexpected gap."]],
+    piege:"Saying the numbers must match the back office exactly. Consent and different definitions explain part of the gap.",
+    conclusion:"The tracking is reliable when the gaps are known, stable and explained." },
+  T2:{ titre:"Tracking a lead form (test drive, quote)", court:"Test drive, quote", repere:"Test drive",
+    etapes:[["Trigger","real submission|not the click","The event fires when the form is really sent, not on the click."],
+      ["Name","test_drive_submitted|naming rules","I give it a clear name, like test_drive_submitted."],
+      ["Parameters","useful data|no personal data","I add useful parameters, like the car model. No personal data."],
+      ["Consent","only with consent|CMP","The event only fires if the user gives consent."],
+      ["Destinations","GA4 for analysis|CRM for sales","The data goes to GA4 for analysis and to the CRM for sales."],
+      ["Check","daily volumes|GA4 vs CRM","I compare daily volumes in GA4 and in the CRM."]],
+    piege:"Counting leads on the click. Then you count errors and double clicks.",
+    conclusion:"The tracking works when the gap with the CRM is small, stable and explained." },
   T3:{ titre:"Gap between the analytics tool and the CRM", court:"Tool vs CRM gap", repere:"CRM gap",
-    etapes:[["Baseline","CRM|source of truth","I take the CRM as the baseline to measure the gap."],
-      ["Stability","stable gap|not necessarily right","I check whether the gap is stable, bearing in mind that a stable gap isn't necessarily a correct one."],
-      ["Breakdown","browser|device|OS|source","I break the gap down by browser, device, operating system and traffic source."],
-      ["Sharp break","specific date|collection bug|priority","A sharp break on a specific date is a collection bug: I treat it as a priority."],
-      ["Structural causes","consent refusals|ad blockers","Then I quantify the structural part: consent refusals and ad blockers."],
-      ["End-to-end test","a few leads|form to CRM","I follow a few leads end to end, from the form to the CRM."],
-      ["Threshold and monitoring","acceptable threshold|ongoing monitoring","I set an acceptable threshold and monitor it over time."]],
-    piege:"Saying “that's normal” with no figure and no method.",
-    conclusion:"The remaining gap is explained, quantified and monitored against a threshold." },
+    etapes:[["Reference","CRM|source of truth","The CRM is my reference."],
+      ["Stable?","stable gap|not always right","I check if the gap is stable. A stable gap is not always a correct one."],
+      ["Breakdown","browser|device|OS|source","I split the gap by browser, device, OS and traffic source."],
+      ["Sharp break","one date|tracking bug|priority","A sharp break on one date means a tracking bug. I fix it first."],
+      ["Normal causes","consent refusals|ad blockers","Then I measure the normal part: consent refusals and ad blockers."],
+      ["End-to-end test","a few leads|form to CRM","I follow a few leads from the form to the CRM."],
+      ["Threshold","acceptable gap|monitoring","We agree on an acceptable gap, and I monitor it."]],
+    piege:"Saying “that's normal” with no number and no method.",
+    conclusion:"The remaining gap is explained, measured and monitored." },
   T4:{ titre:"Drop after a release", court:"Drop after release", repere:"Drop",
-    etapes:[["Changes released","list of changes|release date","First, I list everything that changed in the release."],
-      ["Before and after","browser|device|OS","I compare before and after by browser, device and OS to pinpoint the drop."],
-      ["Tagging","TagCommander|confirmation tag","In TagCommander, I check that the confirmation tag still fires."],
-      ["User journey","Contentsquare|drop-off points","With Contentsquare, I look at where users drop off in the new journey."],
-      ["Bots","inflate traffic|don't lower conversions","I rule out bots: they inflate traffic, they don't lower conversions."],
-      ["Fix","fix|back to previous level","I get it fixed, then check that conversions return to their previous level."]],
-    piege:"Starting with bots, or not stating the priority.",
-    conclusion:"The drop is closed when conversions are back to their pre-release level." },
+    etapes:[["What changed","list of changes|release date","First, I list what changed in the release."],
+      ["Before vs after","browser|device|OS","I compare before and after, by browser, device and OS."],
+      ["Tags","TagCommander|confirmation tag","In TagCommander, I check the confirmation tag still fires."],
+      ["User journey","Contentsquare|drop-off points","In Contentsquare, I look where users leave the new journey."],
+      ["Bots","more traffic|not fewer conversions","Bots add traffic. They don't remove conversions."],
+      ["Fix","fix|back to normal","We fix it, and I check that conversions come back."]],
+    piege:"Starting with bots, or not saying what comes first.",
+    conclusion:"It's closed when conversions are back to their usual level." },
   T5:{ titre:"Double counting (twice the CRM volume)", court:"Double counting", repere:"Duplicate",
-    etapes:[["Hypothesis","fired twice","My starting hypothesis: the event fires twice."],
-      ["CRM baseline","CRM as the baseline","I use the CRM as the baseline to measure the excess."],
-      ["Threshold","gap above 10%|counting issue","Above a 10% gap, I treat it as a counting issue."],
-      ["Firing rules","TagCommander|firing rules","I check in TagCommander how many rules fire the event."],
-      ["Confirmation page","fires once|page reload","I make sure the confirmation page fires the event only once."],
-      ["Fix","fix|testing","I get it fixed and tested before it goes back live."],
-      ["Check","volume over a week","I check the volume over a full week after the fix."]],
-    piege:"Fixing it before proving where the double firing happens.",
-    conclusion:"The duplicate is solved when volumes match the CRM over a full week." },
-  T6:{ titre:"Measuring an app and a website", court:"App and website", repere:"App",
-    etapes:[["Shared plan","same names|same parameters","I start from a shared tagging plan: same event names, same parameters."],
-      ["Mapping table","web and app|dashboard","I keep a web to app mapping table for the dashboard."],
-      ["App-only events","push notifications|native navigation|equivalent goals","App-only events, like push notifications or native navigation, are compared with equivalent goals."],
-      ["Validation","web teams|app teams","I get the plan validated by both the web and the app teams."],
-      ["Consistency","consistency check","I run a consistency check on the figures across both platforms before publishing."]],
-    piege:"Letting each team name its events its own way.",
-    conclusion:"Website and app read in a single dashboard, with the same definitions." },
-  C1:{ titre:"Disagreement between marketing and tech", court:"Marketing vs tech", repere:"Disagree",
-    etapes:[["Marketing need","which decision|use of the data","I ask marketing which decision the data should support."],
-      ["Tech constraint","difficulty|effort","I ask tech what the real difficulty and effort are."],
-      ["Compare","initial request|alternatives|value|cost","I compare the initial request with the alternatives, in value and in cost."],
-      ["Decide together","joint decision","We decide together, based on that comparison."],
-      ["Document","agreed solution|written record","I document the agreed solution so that nobody reopens the debate."]],
-    piege:"Taking sides before understanding both needs.",
-    conclusion:"The agreed solution is written down and accepted by both marketing and tech." },
-  C2:{ titre:"A/B testing a form", court:"A/B test on a form", repere:"A/B test",
-    etapes:[["Diagnosis","drop-off points","I start from the diagnosis: at which fields users drop off."],
-      ["Hypothesis","shorter form|more confirmed leads","My hypothesis: a shorter form will bring more confirmed leads."],
-      ["Variants","control vs variant|random split","I compare the current version with the new one, with a random split."],
-      ["Before launch","sample size|threshold","Before launching, I set the sample size and the decision threshold."],
-      ["Primary KPI","confirmed lead rate","My primary KPI is the confirmed lead rate."],
-      ["Guardrail","lead quality","I monitor a guardrail metric: lead quality."],
-      ["Decision","conclusive result|quality preserved","I roll out only if the result is conclusive and quality is preserved."]],
-    piege:"Launching the test without setting the sample size and the threshold in advance.",
-    conclusion:"We roll out the winner only if the uplift is proven and quality is preserved." },
-  C3:{ titre:"Inconclusive test (p-value of 0.12)", court:"Inconclusive (0.12)", repere:"p 0.12",
-    etapes:[["Planned threshold","0.05|inconclusive","The planned threshold was 0.05: at 0.12, the test is inconclusive."],
-      ["Reading","promising uplift|not proven","The uplift is promising, but it isn't proven."],
-      ["Test still running","stick to the plan","If the test is still running, I stick to the original plan and don't stop early."],
-      ["Test finished","present the uncertainty|new test if useful","If it's finished, I present the uncertainty and suggest a new test if it's worth it."],
-      ["Definition","equally good versions|surprising gap","The p-value answers one question: if both versions performed the same, how surprising would this gap be?"]],
-    piege:"Saying there's “an 88% chance of winning”.",
-    conclusion:"The result isn't proven: we don't roll out on that basis alone." },
-  C4:{ titre:"Significant test (p-value of 0.04)", court:"Significant (0.04)", repere:"p 0.04",
-    etapes:[["Not straight away","don't roll out immediately","I don't roll out straight away, even though 0.04 is below the threshold."],
-      ["Sample size","planned size reached","I check that the planned sample size has been reached."],
-      ["Guardrails","cancellations|no-shows","I check the guardrails, such as cancellations or missed appointments."],
-      ["Confidence interval","range of the uplift","I look at the confidence interval of the uplift, not just the p-value."],
-      ["Roll-out","if the uplift holds","I roll out if the uplift holds after those checks."],
-      ["Follow-up","impact after go-live","I track the real impact after go-live."]],
-    piege:"Rolling out as soon as the p-value drops below 0.05, without checking the sample or the guardrails.",
-    conclusion:"The uplift is confirmed when it holds after go-live." },
-  C5:{ titre:"Underperforming segment (tablet, for example)", court:"Weak segment (tablet)", repere:"Tablet",
-    etapes:[["Observe","lower rate|screen size","I see a lower rate on one screen size, for instance tablet."],
-      ["Volume and mix","enough volume|traffic mix","I check there's enough volume and that the traffic mix is comparable."],
-      ["By source","same screen size|compare by source","I compare by traffic source, at the same screen size."],
-      ["Attribution","UTMs for campaigns|referrers and search","UTMs for campaigns, referrers and search for the rest."],
-      ["Act","gap persists|it's the page","If the gap persists at equal source, it's the page: we act on it."]],
-    piege:"Blaming the page when the gap comes from the traffic mix.",
-    conclusion:"If the gap persists at equal source, the page needs reworking." },
+    etapes:[["Hypothesis","fires twice","My first idea: the event fires twice."],
+      ["CRM reference","CRM as reference","I use the CRM as the reference."],
+      ["Threshold","gap over 10%|counting issue","Over a 10% gap, I treat it as a counting issue."],
+      ["Firing rules","TagCommander|rules","In TagCommander, I check how many rules fire the event."],
+      ["Thank-you page","fires once|page reload","The thank-you page must fire it only once, even after a reload."],
+      ["Fix","fix|testing","We fix it and test it before go-live."],
+      ["Check","one full week","I check the volume for one full week."]],
+    piege:"Fixing it before finding where it fires twice.",
+    conclusion:"It's solved when the volume matches the CRM for a full week." },
+  T6:{ titre:"Tracking an app and a website", court:"App and website", repere:"App",
+    etapes:[["One plan","same names|same parameters","I use one tracking plan: same event names, same parameters."],
+      ["Mapping table","web vs app|dashboard","I keep a web vs app mapping table for the dashboard."],
+      ["App-only events","push notifications|app navigation|similar goals","App-only events, like push notifications, get a similar goal on the web."],
+      ["Sign-off","web team|app team","The web and app teams validate the plan together."],
+      ["Consistency","compare numbers","I compare the numbers on both before I publish."]],
+    piege:"Letting each team name events its own way.",
+    conclusion:"Web and app are in one dashboard, with the same definitions." },
+  C1:{ titre:"Marketing and tech disagree", court:"Marketing vs tech", repere:"Disagree",
+    etapes:[["Marketing need","decision to make|use of the data","I ask marketing: what decision will this data help?"],
+      ["Tech constraint","difficulty|effort estimate","I ask the tech team: what is hard, and how much effort?"],
+      ["Compare","first request|other options|value|cost","I compare the first request with other options: value and cost."],
+      ["Agree and write it down","validated option|written decision","We validate one option, and I write the decision down."]],
+    piege:"Saying data collection is impossible just because it's complex.",
+    conclusion:"One option is validated, written down, and everyone knows why." },
+  C2:{ titre:"A/B test on a form", court:"A/B test on a form", repere:"A/B test",
+    etapes:[["Diagnosis","drop-offs|form fields","I find where users leave the form."],
+      ["Hypothesis","clear hypothesis","I write a clear hypothesis. For example: a shorter form gives more confirmed requests."],
+      ["Two versions","current version|variant|random split","I compare the current version and a variant, with a random split."],
+      ["Before launch","sample size|significance level|KPIs","Before launch, I set the sample size, the significance level and the KPIs."],
+      ["Main KPI","confirmed request rate","My main KPI is the confirmed request rate, not button clicks."],
+      ["Quality","lead quality","I also watch lead quality."],
+      ["Decision","result|business value|quality","I decide on the result, the business value and the quality."]],
+    piege:"Counting a button click as a confirmed request.",
+    conclusion:"We roll out only if the gain is proven, useful, and quality holds." },
+  C3:{ titre:"Test not conclusive (p-value 0.12)", court:"Not conclusive (0.12)", repere:"p 0.12",
+    etapes:[["Read the result","+8%|p = 0.12|threshold 0.05","We see +8%. The p-value is 0.12. Our threshold was 0.05."],
+      ["Conclusion","promising|not conclusive","It's promising, but not conclusive at our threshold."],
+      ["No roll-out","not on this result alone","I don't recommend a roll-out on this result alone."],
+      ["Test still running","follow the plan|don't extend it","If the test is still running, I follow the plan. I don't extend it just to get a better p-value."],
+      ["Test finished","share the uncertainty|new test if worth it","If it's finished, I explain the uncertainty. We can run a new test if it's worth it."],
+      ["Definition","a gap this big or bigger|if both versions were equal","The p-value says how surprising a gap this big, or bigger, would be if both versions were really equal."]],
+    piege:"Saying the p-value is the chance the variant wins, or the chance both versions are the same.",
+    conclusion:"Promising, but not proven. No roll-out on this basis." },
+  C4:{ titre:"Significant test (p-value 0.04)", court:"Significant (0.04)", repere:"p 0.04",
+    etapes:[["Not yet","no instant roll-out","0.04 is below 0.05, but I don't roll out yet."],
+      ["Sample size","planned size reached","I check we reached the planned sample size."],
+      ["Guardrails","cancellations|no-shows","I check the guardrails, like cancellations or no-shows."],
+      ["Confidence interval","size of the gain","I look at the confidence interval: how big is the gain, really?"],
+      ["Roll-out","if the gain holds","I roll out if the gain holds."],
+      ["Follow-up","after go-live","I follow the real effect after go-live."]],
+    piege:"Rolling out as soon as p is below 0.05, without the other checks.",
+    conclusion:"The gain is confirmed when it holds after go-live." },
+  C5:{ titre:"Weak segment (for example tablet)", court:"Weak segment (tablet)", repere:"Tablet",
+    etapes:[["See it","lower rate|screen size","I see a lower rate on one screen size, like tablet."],
+      ["Volume and mix","enough data|traffic mix","I check we have enough data and a similar traffic mix."],
+      ["By source","same device|compare sources","I compare by traffic source, on the same device."],
+      ["Sources","UTMs|referrers|search","UTMs for campaigns. Referrers and search for the rest."],
+      ["Act","still behind|it's the page","If it's still behind with the same source, it's the page. We fix the page."]],
+    piege:"Blaming the page when the traffic mix explains the gap.",
+    conclusion:"If the gap stays with the same source, we rework the page." },
   C6:{ titre:"Writing a test hypothesis", court:"Test hypothesis", repere:"Hypothesis",
-    etapes:[["Observation","data-backed observation","I start from an observation backed by data."],
-      ["Change","if I change...","If I change one specific element of the page..."],
-      ["Metric","then... goes up or down","...then one specific metric will go up or down..."],
-      ["Reason","because...","...because of a reason grounded in observed behaviour."],
-      ["One metric","single primary metric","I keep a single primary metric to make the decision."]],
-    piege:"“The button will look nicer, so people will click more.”",
-    conclusion:"A good hypothesis fits in one sentence: if I change X, then Y moves, because Z." },
+    etapes:[["Observation","data first","I start from what the data shows."],
+      ["Change","if I change...","If I change one thing on the page..."],
+      ["Metric","then... goes up or down","...then one metric goes up or down..."],
+      ["Reason","because...","...because of what we saw users do."],
+      ["One KPI","one main metric","I keep one main metric to decide."]],
+    piege:"“The button looks nicer, so people will click more.”",
+    conclusion:"One sentence: if I change X, then Y moves, because Z." },
   C7:{ titre:"Conversion drop (3% to 2.5%)", court:"Conversion drop", repere:"Conversion",
-    etapes:[["Quantify","0.5 percentage points|about 17% relative","First, I quantify: 0.5 percentage points on 3% is a relative drop of about 17%."],
-      ["Tracking","TagCommander|broken tracking","First cause to check: broken tracking, in TagCommander."],
-      ["Seasonality","same period last year","Second cause: seasonality, compared with the same period last year."],
-      ["Bots","unusual traffic spikes","Third cause: bots, visible as unusual traffic spikes."],
-      ["Prioritise","quantify|prioritise","I quantify each lead and prioritise the actions."]],
-    piege:"Calling it a 0.5% drop instead of 0.5 points, or concluding without checking the tracking.",
-    conclusion:"I present the confirmed cause, its weight in figures, and the priority action." },
-  K1:{ titre:"Client who wants a guaranteed result", court:"Guaranteed result", repere:"Guarantee",
-    etapes:[["Method over guarantee","no guarantee|a method","I don't guarantee a result; I offer a method."],
-      ["Frame the figure","+1 point = +33% on 3%","I frame the figure: going from 3% to 4% is a 33% relative increase."],
-      ["Step-by-step approach","audit|priority tests|roll-out","I propose a step-by-step approach: audit, priority tests, roll-out."],
-      ["Milestones","check-in at one month|realistic goal at three months","We review progress after one month and aim for a realistic goal at three months."],
-      ["Commercial lever","promotion|measured separately","A commercial lever such as a promotion is measured separately."]],
+    etapes:[["Size it","0.5 points|about 17% relative","It's 0.5 percentage points, so about 17% in relative terms."],
+      ["Tracking","TagCommander|broken tag","First, I check the tracking in TagCommander."],
+      ["Seasonality","same period last year","Second, seasonality: I compare with the same period last year."],
+      ["Bots","traffic spikes","Third, bots: I look for strange traffic spikes."],
+      ["Prioritise","size each cause|first action","I size each cause and choose the first action."]],
+    piege:"Saying “0.5%” instead of “0.5 points”, or skipping the tracking check.",
+    conclusion:"I share the real cause, its size, and the first action." },
+  K1:{ titre:"Client wants a guaranteed result", court:"Guaranteed result", repere:"Guarantee",
+    etapes:[["No promise","a method, not a promise","I don't promise a result. I offer a method."],
+      ["Size the goal","+1 point = +33% on 3%","From 3% to 4% is +1 point. That's +33% more conversions."],
+      ["Step by step","audit|key tests|roll-out","We go step by step: audit, key tests, roll-out."],
+      ["Check-ins","one month|three months","We review after one month and set a realistic goal for three months."],
+      ["Promotions","measured apart","If there's a promotion, we measure it apart."]],
     piege:"Telling the client they're wrong, or saying “it's complicated” with no plan.",
-    conclusion:"No guarantee, but a plan, milestones and a realistic goal." },
-  K2:{ titre:"Explaining a revenue drop", court:"Revenue drop", repere:"Revenue",
-    etapes:[["Scope","scope|period|definition of revenue","I scope it: which perimeter, which period, which definition of revenue."],
-      ["Source of truth","confirm the source","I confirm the reference data source."],
-      ["Break it down","orders × average order value","I break it down: number of orders times average order value."],
-      ["Cancellations and returns","cancellations|returns","I check cancellations and returns."],
-      ["Lever affected","traffic|conversion|channels|devices|seasonality","I dig into the lever affected: traffic, conversion, channels, devices or seasonality."]],
-    piege:"Concluding it's a tracking issue just because orders are down.",
-    conclusion:"I identify the lever behind the drop, then the action that fixes it." },
+    conclusion:"No promise, but a plan, check-ins and a realistic goal." },
+  K2:{ titre:"Online revenue drop", court:"Revenue drop", repere:"Revenue",
+    etapes:[["Scope","period|scope|revenue definition","I set the period, the scope and the revenue definition."],
+      ["Data source","reference source|data consistency","I check the reference source and that the data is consistent."],
+      ["Orders and AOV","number of orders|average order value","I look at the number of orders and the average order value."],
+      ["Cancellations and returns","cancellations|returns|definition","I check cancellations or returns, based on the definition."],
+      ["Driver","traffic|conversion|channels|devices|seasonality","I find the driver: traffic, conversion, channels, devices or seasonality."]],
+    piege:"Blaming tracking straight away, or naming a cause before checking it.",
+    conclusion:"I separate a real drop from a tracking issue, then I suggest the right action." },
   K3:{ titre:"Making a recommendation", court:"Recommend an action", repere:"Recommend",
-    etapes:[["Bottom line","one sentence","I start with the bottom line, in one sentence."],
-      ["Action plan","three actions max|prioritised","I propose up to three actions, prioritised."],
-      ["Assumptions and limits","assumptions|limits","I state the assumptions and the limits of the analysis."],
-      ["What we won't do","out of scope","I also say what we won't do, and why."],
-      ["Next step","decision needed|next steps","I end with the next check-in and the decision needed."]],
-    piege:"Listing ten ideas with no priority.",
-    conclusion:"One decision needed, three actions at most, and a date for the next check-in." },
+    etapes:[["Main point","one sentence","I give the main point in one sentence."],
+      ["Action plan","three actions max|priorities","I suggest three actions max, in order of priority."],
+      ["Limits","assumptions|limits","I explain the assumptions and the limits."],
+      ["What we won't do","out of scope","I say what we won't do, and why."],
+      ["Next step","decision needed|next meeting","I end with the next meeting and the decision we need."]],
+    piege:"Giving ten ideas with no priority.",
+    conclusion:"One decision, three actions max, and a date for the next meeting." },
   K4:{ titre:"Briefing a senior executive", court:"Brief an executive", repere:"Executive",
-    etapes:[["What we know","confirmed finding|scope","What we know: the confirmed finding and its scope."],
-      ["What we don't know","root cause to identify","What we don't know yet: the root cause."],
-      ["What we're doing","priority analyses","What we're doing: the priority analyses under way."],
-      ["When we'll be back","agreed deadline","When we'll come back to you: an agreed deadline."],
-      ["Decision needed","decision","The decision we need from you, if any."]],
-    piege:"Drowning the executive in technical detail, or announcing an unconfirmed cause.",
-    conclusion:"The executive knows what's certain, what's in progress, and when they'll hear from us." },
-  K5:{ titre:"Explaining tracking to a client who says “the site works fine”", court:"“The site works fine”", repere:"Site OK",
-    etapes:[["Define","sends sales data back","Tracking is what sends your sales data back to your reporting tools."],
-      ["Reassure","site works|figures may be incomplete","The site works, but the figures it sends back may be incomplete."],
-      ["Concrete example","one sale in ten|budget steered on wrong figures","If one sale in ten isn't counted, your budget is being steered on the wrong figures."],
-      ["Proposal","two-week audit|testing before each release","I suggest a two-week audit, then testing before every release."],
-      ["Benefit","reliable data","The benefit: steering on reliable data."]],
-    piege:"Using technical jargon instead of starting from the client's business stakes.",
-    conclusion:"Reliable data to decide where the budget goes." },
+    etapes:[["What we know","confirmed facts|scope","What we know: the confirmed facts and the scope."],
+      ["What we don't know","cause not confirmed","What we don't know yet: the cause is not confirmed."],
+      ["What we're checking","checks in progress","What we're checking right now."],
+      ["Next update","date|deadline","When I'll update you. For example: I'll update you in two days."],
+      ["Decision needed","only if there is one","The decision I need from you, only if there is one."]],
+    piege:"Presenting a guess as a fact, inventing results, or using jargon.",
+    conclusion:"You know what's sure, what's in progress, and when you'll hear from me." },
+  K5:{ titre:"Client says “the site works fine”", court:"“The site works fine”", repere:"Site OK",
+    etapes:[["Explain","sends sales data","Tracking sends your sales data to your reports."],
+      ["Reassure","site works|data may be missing","Your site works. But some data may be missing."],
+      ["Example","one sale in ten|wrong budget decisions","If one sale in ten is missing, you make budget decisions on wrong numbers."],
+      ["Offer","two-week audit|testing before releases","I suggest a two-week audit, then testing before each release."],
+      ["Benefit","reliable data","You can trust your numbers."]],
+    piege:"Using tech jargon instead of talking about the client's business.",
+    conclusion:"Reliable data to decide where to spend the budget." },
   K6:{ titre:"Why consulting?", court:"Why consulting", repere:"Consulting",
-    etapes:[["Positive reason","several brands|several sectors","Consulting lets me work across several brands and sectors."],
-      ["Link to my background","facts|background","It's the logical next step in my background, backed by concrete facts."],
-      ["Why this firm","consulting|tracking|experimentation|automotive and mobility","Your firm brings together what interests me: consulting, tracking, experimentation, automotive and mobility."],
-      ["No criticism","no criticism of my current employer","I don't criticise my current employer: I'm moving towards something."]],
-    piege:"Explaining your move by what you're escaping rather than what you're looking for.",
-    conclusion:"I want to apply my method across several clients, in a firm that does exactly this." }
+    etapes:[["Positive reason","many brands|many sectors","I want to work with many brands and sectors."],
+      ["My background","La Poste|Cultura","At La Poste, I did web analytics and CRO. At Cultura, I worked on tracking, consent and reporting."],
+      ["Why you","consulting|tracking|testing|automotive and mobility","Your firm does what I like: consulting, tracking, testing, automotive and mobility."],
+      ["No criticism","no criticism of my employer","I'm not running away from my job. I'm moving towards something new."]],
+    piege:"Talking about what you leave instead of what you want.",
+    conclusion:"I want to use my skills for many clients, in a firm that does exactly this." }
 };
 
 const QUESTIONS_EN = {
-  T1:[["How do you prioritise which events to track?","By the business decision they inform: priority KPIs first, the rest later."],
-      ["Who signs off the tagging plan?","Marketing for the use case, tech for feasibility: a double sign-off."],
-      ["How do you know the tracking is reliable after go-live?","Daily volumes, comparison with the back office, alerts."],
-      ["A blocking issue shows up the day before go-live. What do you do?","No go-live without a fix: I push it back and flag it early."]],
-  T2:[["Why not fire on the button click?","The click counts errors and double clicks: only the actual submission counts."],
-      ["Which parameters would you add?","Those useful for analysis (model, dealership, step), never personal data."],
-      ["What if the user refuses consent?","The event isn't sent to the analytics tool; the CRM remains the reference for the real volume."],
-      ["How do you check it works?","Testing in staging, then a daily comparison of volumes with the CRM."]],
-  T3:[["What gap is normal?","There's no universal figure: I agree a threshold with the client and monitor it over time."],
-      ["How do you tell a bug from a structural gap?","A sharp break on a date is a bug; a stable gap comes from consent and ad blockers."],
-      ["Which breakdown do you look at first?","Browser and device, where collection issues show up fastest."],
-      ["How do you explain the gap to the client?","The size of the gap, its identified causes and the monitoring threshold."]],
-  T4:[["Where do you start?","The list of changes released, then before and after by browser and device."],
-      ["How do you know if it's the tracking or the site?","No confirmation tag means tracking; drop-offs in the journey mean the site."],
-      ["Why not start with bots?","Bots inflate traffic; they don't lower conversions."],
-      ["Who do you inform, and when?","The client and the tech team as soon as the cause is located, with the priority."]],
-  T5:[["How do you confirm the duplicate?","Comparison with the CRM: above a 10% gap, it's a counting issue."],
-      ["Where do you look for the cause?","In the TagCommander firing rules and on the confirmation page."],
-      ["What do you do with the data already affected?","I document the period affected and correct or annotate the reports concerned."],
-      ["How do you stop it happening again?","Systematic testing and a volume check over a week after every release."]],
-  T6:[["Why a shared tagging plan?","To compare web and app with the same definitions."],
-      ["How do you handle an app-only event?","I map it to an equivalent goal on the web, in the mapping table."],
-      ["Who do you validate the plan with?","The web and app teams together, to avoid two naming conventions."],
-      ["What if the figures don't match?","A consistency check before publishing, then an analysis of the gap by platform."]],
-  C1:[["What if neither side gives way?","I go back to the decision the data should support and compare value and cost."],
-      ["Whose side are you on?","Nobody's: the side of the solution that serves the decision at the best cost."],
-      ["How do you stop the topic coming back?","I document the agreed solution and the reason for the choice."],
-      ["Have you been in that situation?","A real example from your background: situation, your action, result."]],
-  C2:[["How long do you run the test?","Until the sample size calculated before launch, not until the first good result."],
-      ["What's the primary KPI?","The confirmed lead rate, with lead quality as a guardrail."],
-      ["More leads, but of lower quality?","No roll-out: the guardrail comes first."],
-      ["How do you choose what to test?","From the diagnosis of the drop-off points."]],
-  C3:[["So the new version has an 88% chance of winning?","No: the p-value measures how surprising the gap would be if both versions were equivalent."],
-      ["Do we stop the test?","Still running: we follow the original plan. Finished: we present the uncertainty."],
-      ["What do you tell a client who wanted a winner?","A promising but unproven uplift, and the proposed next step."],
-      ["What if we extended it until it drops below 0.05?","No: extending until you get the result you want skews the conclusion."]],
-  C4:[["Why not roll out straight away?","I first check the planned sample size and the guardrails."],
-      ["What do you look at besides the p-value?","The confidence interval of the uplift, to see whether it matters in practice."],
-      ["Which guardrails?","For example cancellations or missed appointments."],
-      ["And after the roll-out?","I track the real impact, which can be smaller than during the test."]],
-  C5:[["How do you know it's the page and not the traffic?","I compare at equal source: if the gap persists, it's the page."],
-      ["What if tablet volume is low?","I first check it's enough to draw a conclusion."],
-      ["Which sources do you look at?","UTMs for campaigns, referrers and search for the rest."],
-      ["What do you suggest next?","An analysis of the tablet journey, then a targeted test."]],
-  C6:[["Give me an example of a hypothesis.","If I change [specific element], then [metric] goes up, because [observed reason]."],
-      ["Why a single primary metric?","To decide without ambiguity; the others are guardrails."],
-      ["Where does your observation come from?","From the data: drop-offs, journey analysis, user feedback."],
-      ["What's a bad hypothesis?","One with no observation and no reason, like “it'll look nicer”."]],
-  C7:[["So it's a 0.5% drop?","No: 0.5 percentage points, about 17% in relative terms."],
-      ["Where do you start?","The tracking: if the measurement is broken, everything else is wrong."],
-      ["How do you rule out seasonality?","By comparing with the same period last year."],
-      ["And then?","I quantify each cause and prioritise the actions."]],
-  K1:[["Why not promise the result?","It depends on factors outside our control: I guarantee a method and milestones."],
-      ["The client insists on a figure.","I frame it: +1 point on 3% is +33% in relative terms, and I propose a realistic goal at three months."],
-      ["What do you show after one month?","A progress update: audit done, first tests launched, first learnings."],
-      ["What if they run a promotion at the same time?","I measure it separately so it isn't confused with the effect of the optimisations."]],
-  K2:[["Where do you start?","Scoping: perimeter, period, definition of the figure."],
-      ["How do you break it down?","Number of orders times average order value."],
-      ["What if it's the tracking?","I don't blame the tracking just because orders are down: I check the reference source."],
-      ["Which levers do you look at?","Traffic, conversion, channels, devices, seasonality."]],
-  K3:[["Why three actions at most?","For a simple decision and realistic execution."],
-      ["How do you prioritise?","Expected impact versus effort."],
-      ["What are the limits of your recommendation?","I state them: assumptions, missing data, what we don't know yet."],
-      ["And what you don't recommend?","I say that too, with the reason."]],
-  K4:[["What if you can't find the cause by the agreed deadline?","I still come back on the agreed date, with a progress update and a new deadline."],
-      ["They want an answer right now.","I give what we know and what we're doing, without announcing an unconfirmed cause."],
-      ["How much detail?","The minimum needed for the decision; the technical detail stays available."],
-      ["Which decision do you ask for?","A single, clear one: approve an action, a budget or a deadline."]],
-  K5:[["Why pay for an audit if everything works?","A working site can still send back incomplete figures, and the budget is steered on them."],
-      ["How do you prove it?","By comparing the sales reported with the actual sales in the back office."],
-      ["How long does it take?","A two-week audit, then testing before every release."],
-      ["What does the client gain?","Decisions made on reliable data."]],
-  K6:[["Why leave the in-house side?","For what you're looking for (several brands, several sectors), without criticising your employer."],
-      ["Why our firm?","Consulting, tracking, experimentation, automotive and mobility: the link with your background."],
-      ["What prepares you for consulting?","Facts from your background: projects, presentations, working with teams."],
-      ["Where do you see yourself in a few years?","More autonomous on end-to-end projects, from audit to recommendation."]]
+  T1:[["How do you choose what to track?","Start from the decision. Priority KPIs first."],
+      ["Who signs off the tracking plan?","Marketing for the use. The tech team for the build."],
+      ["How do you know the tracking works after launch?","Daily volumes, back office check, alerts. Explain the gaps."],
+      ["A blocking bug shows up the day before go-live. What do you do?","No go-live without a fix. I warn people early."]],
+  T2:[["Why not fire on the click?","A click can be an error or a double click. Use the real submission."],
+      ["Which parameters?","Useful ones, like model or step. No personal data."],
+      ["What if the user refuses consent?","The event doesn't fire. The CRM still has the real volume."],
+      ["How do you test it?","Test before go-live, then compare daily volumes with the CRM."]],
+  T3:[["What gap is normal?","No magic number. We agree on a threshold and monitor it."],
+      ["Bug or normal gap?","A sharp break on one date is a bug. A stable gap is consent and ad blockers."],
+      ["What do you check first?","Browser and device. Bugs show up there fast."],
+      ["How do you explain it to the client?","The size of the gap, the causes, and the threshold."]],
+  T4:[["Where do you start?","What changed, then before vs after by browser and device."],
+      ["Tracking or website?","No confirmation tag: tracking. Users leaving: website."],
+      ["Why not bots first?","Bots add traffic. They don't remove conversions."],
+      ["Who do you tell?","The client and the tech team, as soon as I know where it is."]],
+  T5:[["How do you confirm it?","Compare with the CRM. Over 10%, it's a counting issue."],
+      ["Where is the cause?","Firing rules in TagCommander, and the thank-you page."],
+      ["What about past data?","I note the period and fix or flag the reports."],
+      ["How do you stop it coming back?","Testing before each release, and a one-week volume check."]],
+  T6:[["Why one tracking plan?","To compare web and app with the same definitions."],
+      ["What about app-only events?","I link them to a similar goal on the web."],
+      ["Who validates the plan?","The web and app teams, together."],
+      ["What if the numbers don't match?","I check before I publish, then look at each platform."]],
+  C1:[["What if nobody agrees?","Go back to the decision the data must support. Compare value and cost."],
+      ["Whose side are you on?","No side. The option that helps the decision at the best cost."],
+      ["How do you avoid the same debate later?","I write down the decision and the reason."],
+      ["Have you seen this before?","Use a real example from your work, or say it's a hypothetical case."]],
+  C2:[["How long do you run the test?","Until the planned sample size. Not until the first good result."],
+      ["What's the main KPI?","Confirmed requests, with lead quality as a guardrail."],
+      ["More requests, but lower quality?","No roll-out. Quality comes first."],
+      ["How do you choose what to test?","From the drop-off analysis."]],
+  C3:[["So the variant has an 88% chance to win?","No. The p-value is not the chance to win."],
+      ["Do we stop the test?","Running: follow the plan. Finished: explain the uncertainty."],
+      ["The client wanted a winner. What do you say?","It's promising, but not proven. Here is the next step."],
+      ["Can we run it longer to get under 0.05?","No. That makes the result unreliable."]],
+  C4:[["Why not roll out now?","First the sample size and the guardrails."],
+      ["What else besides the p-value?","The confidence interval: is the gain big enough to matter?"],
+      ["Which guardrails?","For example cancellations or no-shows."],
+      ["And after the roll-out?","I follow the real effect. It can be smaller."]],
+  C5:[["Is it the page or the traffic?","Compare with the same source. If it's still behind, it's the page."],
+      ["What if tablet volume is low?","First I check there's enough data."],
+      ["Which sources?","UTMs for campaigns, referrers and search for the rest."],
+      ["What next?","Look at the tablet journey, then test a fix."]],
+  C6:[["Give me an example.","If I change [this], then [metric] goes up, because [what users do]."],
+      ["Why one main metric?","To decide clearly. The others are guardrails."],
+      ["Where does the idea come from?","The data: drop-offs, user journeys, feedback."],
+      ["What's a bad hypothesis?","No data and no reason, like “it looks nicer”."]],
+  C7:[["So it's a 0.5% drop?","No. 0.5 percentage points, about 17% in relative terms."],
+      ["Where do you start?","The tracking. If it's broken, everything else is wrong."],
+      ["How do you check seasonality?","Same period last year."],
+      ["And then?","I size each cause and choose the first action."]],
+  K1:[["Why not promise it?","Many things are out of our control. I promise a method."],
+      ["The client wants a number.","+1 point on 3% is +33%. I suggest a realistic goal at three months."],
+      ["What do you show after one month?","Audit done, first tests running, first learnings."],
+      ["What if they run a promotion?","We measure it apart."]],
+  K2:[["Where do you start?","Period, scope, and the revenue definition."],
+      ["How do you split it?","Number of orders times average order value."],
+      ["What if it's the tracking?","I check the reference source first. Fewer orders don't prove a tracking issue."],
+      ["What drivers do you check?","Traffic, conversion, channels, devices, seasonality."]],
+  K3:[["Why three actions max?","Easy to decide, easy to do."],
+      ["How do you prioritise?","Impact versus effort."],
+      ["What are the limits?","I say them: assumptions, missing data, what we don't know."],
+      ["What won't you recommend?","I say it too, with the reason."]],
+  K4:[["What if you don't find the cause in time?","I still update you on the planned date, with a new deadline."],
+      ["They want an answer now.","What we know and what we're checking. No guess as a fact."],
+      ["How much detail?","Only what the decision needs."],
+      ["What decision do you ask for?","One clear decision: an action, a budget or a deadline."]],
+  K5:[["Why pay for an audit if the site works?","The site can work and still miss sales data."],
+      ["How do you prove it?","Compare tracked sales with real sales in the back office."],
+      ["How long does it take?","Two weeks, then testing before each release."],
+      ["What does the client get?","Decisions based on reliable data."]],
+  K6:[["Why leave an in-house role?","Say what you want: many brands, many sectors. No criticism."],
+      ["Why our firm?","Consulting, tracking, testing, automotive and mobility."],
+      ["What prepares you for consulting?","Your work at La Poste and Cultura: tracking, consent, reporting, CRO."],
+      ["Where do you see yourself in a few years?","Running full projects, from audit to recommendation."]]
 };
 
 /* Mots déclencheurs anglais (ajoutés à la recherche de la Saisie, quelle que soit la langue) */
@@ -4024,7 +4051,7 @@ function appliquerLangueMethodes(){
 }
 function annonceEN(m){
   const t = m.etapes.map(e => /^[A-Z][a-z]/.test(e[0]) ? e[0].charAt(0).toLowerCase() + e[0].slice(1) : e[0]);
-  return "I'd approach this in " + (NOMBRES_EN[t.length] || t.length) + " steps: " + t.slice(0, -1).join(", ") + (t.length > 1 ? ", then " : "") + t[t.length - 1] + ".";
+  return "I'd do it in " + (NOMBRES_EN[t.length] || t.length) + " steps: " + t.slice(0, -1).join(", ") + (t.length > 1 ? ", then " : "") + t[t.length - 1] + ".";
 }
 const TXT_METH = {
   regles:["Règles d'or","Golden rules"], etapes:["étapes","steps"], copierAnnonce:["Copier la phrase d'annonce","Copy the opening line"],
@@ -4106,7 +4133,7 @@ const LEXIQUE_EN = [
   ["consulting","senior management","direction","I'd keep the brief short for senior management."],
   /* Phrases pour structurer */
   ["structurer","Let me walk you through my approach.","Je vous présente ma démarche.","Let me walk you through my approach: there are three steps."],
-  ["structurer","I'd approach this in three steps.","J'aborderais ça en trois étapes.","I'd approach this in three steps: scope, analyse, recommend."],
+  ["structurer","I'd do it in three steps.","Je procéderais en trois étapes.","I'd do it in three steps: scope, analyse, recommend."],
   ["structurer","First... Then... Finally...","D'abord... Ensuite... Enfin...","First, I check the tracking. Then, seasonality. Finally, bots."],
   ["structurer","To sum up, ...","Pour résumer...","To sum up, the drop comes from a broken tag."],
   ["structurer","The bottom line is...","L'essentiel, c'est que...","The bottom line is that we can't roll out yet."],
@@ -4115,7 +4142,7 @@ const LEXIQUE_EN = [
   ["structurer","Let me make sure I understood: ...","Je reformule pour être sûr d'avoir compris...","Let me make sure I understood: the leads dropped, not the traffic?"],
   ["structurer","Good question. Let me think for a second.","Bonne question, je réfléchis un instant.","Good question. Let me think for a second."],
   ["structurer","I don't have the exact figure, but here's how I'd find it.","Je n'ai pas le chiffre exact, mais voici comment je le trouverais.","I don't have the exact figure, but here's how I'd find it: I'd compare it with the back office."],
-  ["structurer","In my experience at..., ...","D'après mon expérience chez...","In my experience at Cultura, testing before every release avoided broken tags."],
+  ["structurer","In my experience at..., ...","D'après mon expérience chez...","In my experience at Cultura, I worked with TagCommander and consent rules."],
   ["structurer","The key takeaway was...","Ce que j'en ai retenu...","The key takeaway was to flag issues early."],
   ["structurer","I'd recommend..., because...","Je recommanderais..., parce que...","I'd recommend fixing the tracking first, because every other analysis depends on it."],
   ["structurer","One risk to watch is...","Un risque à surveiller...","One risk to watch is lead quality."],
@@ -4191,53 +4218,54 @@ Object.assign(ACTIONS, {
    Aucun chiffre ajouté : seuls ceux déjà présents dans les méthodes. [à compléter] = à remplir par toi.
    ===================================================================== */
 const REPONSES_TYPES = {
-  T1:{ fr:"Pour piloter un projet de tracking, je procède en six étapes : cadrer, auditer, concevoir, valider, déployer, suivre. D'abord, je cadre avec le métier : quelle décision la donnée doit éclairer, et quels KPI sont prioritaires. Ensuite, j'audite l'existant : ce qui est déjà mesuré, avec quels outils, et les écarts déjà connus. Je conçois le plan de marquage : événements, variables, paramètres, et les règles de consentement RGPD. Je le fais valider deux fois : par le marketing pour l'usage, par la technique pour la faisabilité. Au déploiement, on recette, on corrige les écarts bloquants, et seulement ensuite on met en production. Enfin, je suis les volumes jour par jour, je les compare au back-office et je pose des alertes. Pour conclure : le tracking est validé quand les volumes collent au back-office.",
-       en:"To run a tracking project, I'd approach it in six steps: scope, audit, design, validate, deploy, monitor. First, I scope it with the business team: which decision the data should inform, and which KPIs matter most. Then I audit the current set-up: what's already tracked, with which tools, and the known gaps. I design the tagging plan: events, variables, parameters, and the GDPR consent rules. I get it signed off twice: by marketing for the use case, by tech for feasibility. When we deploy, we test, fix the blocking issues, and only then go live. Finally, I monitor volumes day by day, compare them with the back office and set up alerts. To sum up: the tracking is validated when the volumes match the back office." },
+  T1:{ fr:"Je procède en sept étapes. Je cadre d'abord le besoin métier et les indicateurs, puis j'audite le suivi existant. Je prépare le plan de marquage et je le fais valider par le marketing et par l'équipe technique. L'équipe technique met en place le suivi, j'organise la recette et je fais corriger les problèmes bloquants. Je valide avant la mise en production. Après le lancement, je surveille les données et je les compare au back-office quand c'est pertinent, en expliquant les écarts inattendus : le consentement et des définitions différentes en expliquent une partie. Pour conclure : le suivi est fiable quand les écarts sont connus, stables et expliqués.",
+       en:"I'd do it in seven steps. First, I scope the need and the KPIs, and I audit the current tracking. Then I write the tracking plan, and marketing and the tech team sign it off. The tech team builds it, and we test and fix the blocking issues before go-live. After launch, I monitor the data and explain any gap with the back office." },
   T2:{ fr:"Pour suivre une demande d'essai ou de devis, je procède en six étapes. D'abord le déclencheur : l'événement part à la validation réelle de la demande, pas au clic sur le bouton, sinon on compte les erreurs et les doubles clics. Ensuite, un nom normalisé, par exemple demande_essai_envoyee, selon la convention du plan de marquage. J'ajoute les paramètres utiles à l'analyse, comme le modèle ou l'étape, sans aucune donnée personnelle. L'événement ne part que si l'utilisateur a accepté le consentement. Côté destinations : GA4 pour l'analyse, le CRM pour le suivi commercial. Enfin, je compare les volumes jour par jour entre l'outil d'analyse et le CRM. Pour conclure : la mesure est fiable quand les volumes suivent ceux du CRM jour après jour.",
-       en:"To track a test drive or quote request, I'd approach it in six steps. First, the trigger: the event fires on the actual submission, not on the button click, otherwise we count errors and double clicks. Then a standard name, for instance test_drive_submitted, following the tagging plan's naming convention. I add the parameters that matter for analysis, such as the model or the step, with no personal data. The event only fires if the user has given consent. As for destinations: GA4 for analysis, the CRM for the sales team. Finally, I compare daily volumes between the analytics tool and the CRM. To sum up: the measurement is reliable when the volumes track the CRM day after day." },
+       en:"The event fires when the form is really sent, not on the click. I give it a clear name and useful parameters, with no personal data. It only fires with consent. The data goes to GA4 for analysis and to the CRM for sales. Then I compare daily volumes in both tools." },
   T3:{ fr:"Face à un écart entre l'outil d'analyse et le CRM, je procède en sept étapes. Je prends d'abord le CRM comme référence. Je regarde si l'écart est stable, en gardant en tête qu'un écart stable n'est pas forcément juste. Je le découpe par navigateur, appareil, système et source de trafic. Si je vois une cassure nette à une date précise, c'est un bug de collecte : je le traite en priorité. Ensuite, je chiffre la part structurelle : refus de consentement et bloqueurs de publicité. Je suis quelques demandes de bout en bout, du formulaire jusqu'au CRM, pour vérifier la chaîne complète. Enfin, je fixe un seuil d'écart acceptable avec le client et je le suis dans le temps. Pour conclure : l'écart restant est expliqué, chiffré et surveillé avec un seuil.",
-       en:"Faced with a gap between the analytics tool and the CRM, I'd approach it in seven steps. First, I take the CRM as the baseline. I check whether the gap is stable, bearing in mind that a stable gap isn't necessarily a correct one. I break it down by browser, device, operating system and traffic source. If I see a sharp break on a specific date, it's a collection bug, and I treat it as a priority. Then I quantify the structural part: consent refusals and ad blockers. I follow a few leads end to end, from the form to the CRM, to check the whole chain. Finally, I agree an acceptable threshold with the client and monitor it over time. To sum up: the remaining gap is explained, quantified and monitored against a threshold." },
+       en:"The CRM is my reference. I check if the gap is stable, and I split it by browser, device and source. A sharp break on one date is a tracking bug, so I fix it first. Then I measure the normal part, like consent refusals and ad blockers. I test a few leads end to end, and we agree on an acceptable gap." },
   T4:{ fr:"Après une chute suite à une mise en production, je procède en six étapes. D'abord, je liste tout ce qui a changé dans la mise en production. Je compare avant et après par navigateur, appareil et système, pour localiser la chute. Je vérifie le marquage dans TagCommander : est-ce que la balise de confirmation part toujours ? Avec Contentsquare, je regarde où les utilisateurs abandonnent dans le nouveau parcours. J'écarte les bots : ils gonflent le trafic, ils ne font pas baisser les conversions. Enfin, je fais corriger, et je vérifie que les conversions reviennent au niveau d'avant. Ma priorité est claire : d'abord savoir si c'est la mesure ou le site. Pour conclure : la chute est close quand les conversions retrouvent leur niveau d'avant la mise en production.",
-       en:"After a drop following a release, I'd approach it in six steps. First, I list everything that changed in the release. I compare before and after by browser, device and operating system to pinpoint the drop. I check the tagging in TagCommander: does the confirmation tag still fire? With Contentsquare, I look at where users drop off in the new journey. I rule out bots: they inflate traffic, they don't lower conversions. Finally, I get it fixed and check that conversions return to their previous level. My priority is clear: first find out whether it's the measurement or the site. To sum up: the drop is closed when conversions are back to their pre-release level." },
+       en:"First, I list what changed in the release. I compare before and after, by browser and device. Then I check the confirmation tag in TagCommander and the user journey in Contentsquare. Bots add traffic, but they don't remove conversions. We fix the issue, and I check that conversions come back." },
   T5:{ fr:"Si le volume remonté est le double de celui du CRM, je procède en sept étapes. Mon hypothèse de départ : l'événement est déclenché deux fois. Je prends le CRM comme référence pour mesurer le surplus. Au-delà de 10 % d'écart, je considère que c'est un problème de comptage, pas un écart normal. Je vérifie dans TagCommander combien de règles déclenchent l'événement. Je m'assure que la page de confirmation ne le déclenche qu'une seule fois, y compris en cas de rechargement. Je fais corriger, avec une recette avant la remise en production. Enfin, je contrôle le volume sur une semaine complète. Pour conclure : le doublon est réglé quand le volume rejoint celui du CRM sur une semaine complète.",
-       en:"If the volume reported is twice the CRM's, I'd approach it in seven steps. My starting hypothesis: the event fires twice. I use the CRM as the baseline to measure the excess. Above a 10% gap, I treat it as a counting issue, not a normal discrepancy. I check in TagCommander how many rules fire the event. I make sure the confirmation page fires it only once, including when the page is reloaded. I get it fixed, with testing before it goes back live. Finally, I check the volume over a full week. To sum up: the duplicate is solved when the volume matches the CRM over a full week." },
+       en:"My first idea is that the event fires twice. I use the CRM as the reference: over a 10% gap, it's a counting issue. In TagCommander, I check the firing rules and the thank-you page. We fix it and test it. Then I check the volume for a full week." },
   T6:{ fr:"Pour mesurer à la fois une application et un site, je procède en cinq étapes. Je pars d'un plan de marquage commun : mêmes noms d'événements, mêmes paramètres. Je tiens une table de correspondance entre web et application, qui alimente le tableau de bord. Les événements propres à l'application, comme les notifications ou la navigation native, sont rattachés à des objectifs équivalents côté web. Je fais valider le plan par les équipes web et application ensemble, pour éviter deux nomenclatures. Enfin, je teste la cohérence des chiffres entre les deux supports avant de publier. Pour conclure : site et application se lisent dans un seul tableau de bord, avec les mêmes définitions.",
-       en:"To measure both an app and a website, I'd approach it in five steps. I start from a shared tagging plan: same event names, same parameters. I keep a web to app mapping table, which feeds the dashboard. App-only events, like push notifications or native navigation, are mapped to equivalent goals on the web. I get the plan validated by the web and app teams together, to avoid two naming conventions. Finally, I run a consistency check on the figures across both platforms before publishing. To sum up: website and app read in a single dashboard, with the same definitions." },
-  C1:{ fr:"Face à un désaccord entre le marketing et la technique, je procède en cinq étapes. Je demande d'abord au marketing quelle décision la donnée doit permettre. Je demande ensuite à la technique quelle est la difficulté réelle et l'effort. Je compare la demande initiale et les alternatives, en utilité et en coût, pour que chacun voie les mêmes éléments. On décide ensemble, sur la base de cette comparaison, sans que je prenne parti à l'avance. Enfin, je consigne la solution retenue et la raison du choix, pour que le sujet ne revienne pas. Pour conclure : la solution retenue est écrite et acceptée par le marketing comme par la technique.",
-       en:"Faced with a disagreement between marketing and tech, I'd approach it in five steps. First, I ask marketing which decision the data should support. Then I ask tech what the real difficulty and effort are. I compare the initial request with the alternatives, in value and in cost, so everyone sees the same facts. We decide together, based on that comparison, without me taking sides in advance. Finally, I document the agreed solution and the reason for the choice, so the topic doesn't come back. To sum up: the agreed solution is written down and accepted by both marketing and tech." },
-  C2:{ fr:"Pour un test A/B sur un formulaire, je procède en sept étapes. Je pars du diagnostic : à quels champs les utilisateurs abandonnent. Mon hypothèse : un formulaire plus court donnera plus de demandes confirmées. Je compare la version actuelle et la nouvelle, avec une répartition aléatoire du trafic. Avant de lancer, je fixe la taille d'échantillon et le seuil de décision. Mon KPI principal est le taux de demandes confirmées, et je surveille un garde-fou : la qualité des demandes. Je ne déploie que si le résultat est concluant et que la qualité est préservée. Pour conclure : on déploie la version gagnante seulement si le gain est démontré et la qualité préservée.",
-       en:"For an A/B test on a form, I'd approach it in seven steps. I start from the diagnosis: at which fields users drop off. My hypothesis: a shorter form will bring more confirmed leads. I compare the current version with the new one, with a random traffic split. Before launching, I set the sample size and the decision threshold. My primary KPI is the confirmed lead rate, and I monitor a guardrail metric: lead quality. I only roll out if the result is conclusive and quality is preserved. To sum up: we roll out the winner only if the uplift is proven and quality is preserved." },
-  C3:{ fr:"Avec une p-value de 0,12, je procède en cinq étapes. Le seuil prévu était 0,05 : le test n'est donc pas concluant. La hausse est encourageante, mais elle n'est pas démontrée. Si le test est encore en cours, je poursuis le plan initial, sans m'arrêter en route. S'il est terminé, je présente l'incertitude au client et je propose un nouveau test si c'est utile. Et pour éviter un contresens : la p-value ne donne pas une probabilité de gagner. Elle répond à une question : si les deux versions étaient aussi performantes, l'écart observé serait-il surprenant ? Pour conclure : le résultat n'est pas démontré, on ne déploie pas sur cette seule base.",
-       en:"With a p-value of 0.12, I'd approach it in five steps. The planned threshold was 0.05, so the test is inconclusive. The uplift is promising, but it isn't proven. If the test is still running, I stick to the original plan and don't stop early. If it's finished, I present the uncertainty to the client and suggest a new test if it's worth it. And to avoid a common mistake: the p-value isn't a probability of winning. It answers one question: if both versions performed the same, how surprising would this gap be? To sum up: the result isn't proven, so we don't roll out on that basis alone." },
+       en:"I use one tracking plan for the web and the app, with the same names. A mapping table links both in the dashboard. App-only events get a similar goal on the web. Both teams validate the plan. I compare the numbers before I publish." },
+  C1:{ fr:"Je procède en quatre étapes. Je comprends d'abord le besoin marketing : quelle décision la donnée doit permettre. Je comprends ensuite la difficulté technique et je fais estimer l'effort. Je compare la demande initiale et les alternatives, selon leur utilité et leur coût. Enfin, je fais valider une solution et je consigne la décision. Une collecte complexe n'est pas forcément impossible : c'est une question d'effort et de priorité. Pour conclure : la solution retenue est validée, écrite, et chacun sait pourquoi.",
+       en:"First, I ask marketing what decision the data will help. Then I ask the tech team what is hard and how much effort it takes. I compare the first request with other options, on value and cost. We validate one option, and I write the decision down. Complex doesn't mean impossible." },
+  C2:{ fr:"Je procède en sept étapes. Je diagnostique d'abord les abandons dans le formulaire, puis je formule une hypothèse claire, par exemple qu'un formulaire plus court donnera plus de demandes confirmées. Je compare la version actuelle et une variante, avec une répartition aléatoire. Avant le lancement, je fixe la taille d'échantillon, le seuil statistique et les indicateurs. Mon indicateur principal est le taux de demandes confirmées, car un clic sur le bouton ne prouve pas qu'une demande est confirmée, et je surveille aussi la qualité des demandes. Je décide selon le résultat, son intérêt métier et la qualité. Pour conclure : on déploie seulement si le gain est démontré, utile, et sans perte de qualité.",
+       en:"I start with the drop-offs in the form. My hypothesis: a shorter form gives more confirmed requests. I test the current version against a variant, with a random split. Before launch, I set the sample size, the significance level and the KPIs. My main KPI is confirmed requests, and I also watch lead quality. Then I decide on the result, the business value and the quality." },
+  C3:{ fr:"On observe une hausse de +8 %, avec une p-value de 0,12, alors que le seuil fixé avant le test était 0,05. Le résultat est encourageant, mais non concluant au seuil prévu : je ne recommande pas le déploiement sur ce seul résultat. Si le test est encore en cours, je suis le plan initial, sans le prolonger jusqu'à obtenir une p-value favorable. S'il est terminé, je communique l'incertitude et j'envisage un nouveau test si l'enjeu le justifie. La p-value dit à quel point un écart comme celui-ci, ou plus extrême, serait surprenant si les deux versions étaient en réalité aussi performantes : ce n'est ni la probabilité que la variante gagne, ni celle que les versions soient identiques. Pour conclure : encourageant mais non démontré, pas de déploiement sur cette seule base.",
+       en:"We see +8%, but the p-value is 0.12 and our threshold was 0.05. So it's promising, but not conclusive. I don't recommend a roll-out on this result alone. If the test is still running, we follow the plan and don't extend it just to get a better p-value. If it's finished, I explain the uncertainty, and we can run a new test if it's worth it." },
   C4:{ fr:"Avec une p-value de 0,04, je procède en six étapes. Je ne déploie pas tout de suite, même si 0,04 passe sous le seuil de 0,05. Je vérifie que la taille d'échantillon prévue est atteinte. Je contrôle les garde-fous, comme les annulations ou les rendez-vous non honorés. Je regarde l'intervalle de confiance du gain, pas seulement la p-value, pour savoir si le gain est utile en pratique. Je déploie si le gain tient après ces contrôles. Enfin, je suis l'effet réel après la mise en production, qui peut être plus faible que pendant le test. Pour conclure : le gain est confirmé quand il tient après la mise en production.",
-       en:"With a p-value of 0.04, I'd approach it in six steps. I don't roll out straight away, even though 0.04 is below the 0.05 threshold. I check that the planned sample size has been reached. I check the guardrails, such as cancellations or missed appointments. I look at the confidence interval of the uplift, not just the p-value, to see whether it matters in practice. I roll out if the uplift holds after those checks. Finally, I track the real impact after go-live, which can be smaller than during the test. To sum up: the uplift is confirmed when it holds after go-live." },
+       en:"0.04 is below our 0.05 threshold, but I don't roll out yet. I check the sample size and the guardrails, like cancellations. I look at the confidence interval to see the real size of the gain. If the gain holds, we roll out. Then I follow the effect after go-live." },
   C5:{ fr:"Face à un segment qui sous-performe, par exemple la tablette, je procède en cinq étapes. J'observe d'abord le taux plus faible sur cette résolution. Je vérifie que le volume suffit pour conclure et que le mix de trafic est comparable. Je compare ensuite par source de trafic, à résolution égale. Pour les sources, j'utilise les UTM pour les campagnes, les référents et la recherche pour le reste. Si le retard persiste à source égale, ce n'est plus le trafic : c'est la page, et on agit dessus, par exemple avec une analyse du parcours puis un test ciblé. Pour conclure : si l'écart persiste à source égale, c'est la page qu'il faut retravailler.",
-       en:"Faced with an underperforming segment, tablet for example, I'd approach it in five steps. First, I see the lower rate on that screen size. I check there's enough volume to draw a conclusion and that the traffic mix is comparable. Then I compare by traffic source, at the same screen size. For sources, I use UTMs for campaigns, and referrers and search for the rest. If the gap persists at equal source, it's no longer the traffic: it's the page, and we act on it, for instance with a journey analysis and then a targeted test. To sum up: if the gap persists at equal source, the page needs reworking." },
+       en:"I see a lower rate on tablet. First, I check we have enough data and a similar traffic mix. Then I compare by source, on the same device. If tablet is still behind, it's the page. So we look at the journey and test a fix." },
   C6:{ fr:"Pour formuler une hypothèse de test, je procède en cinq étapes, qui tiennent en une phrase. Je pars d'une observation chiffrée, tirée des données, par exemple un taux d'abandon sur un champ. Ensuite, le changement : si je modifie un élément précis de la page... Puis la mesure : alors tel indicateur va augmenter ou baisser... Puis la raison : car j'ai observé tel comportement. Et je garde une seule métrique principale pour décider, les autres servent de garde-fous. Une mauvaise hypothèse, ce serait « le bouton sera plus joli, donc les gens cliqueront plus » : ni observation, ni raison. Pour conclure : une bonne hypothèse tient en une phrase, si je change X, alors Y bouge, car Z.",
-       en:"To write a test hypothesis, I'd approach it in five steps that fit in one sentence. I start from an observation backed by data, for example a drop-off rate on one field. Then the change: if I change one specific element of the page... Then the metric: then this metric will go up or down... Then the reason: because I've observed this behaviour. And I keep a single primary metric to decide; the others are guardrails. A bad hypothesis would be “the button will look nicer, so people will click more”: no observation, no reason. To sum up: a good hypothesis fits in one sentence, if I change X, then Y moves, because Z." },
+       en:"I start from the data, for example a high drop-off on one field. Then I write one sentence: if I change this, then this metric goes up, because of what users do. I keep one main metric to decide. The other metrics are guardrails." },
   C7:{ fr:"Si le taux de conversion passe de 3 % à 2,5 %, je procède en cinq étapes. Je chiffre d'abord : c'est une baisse de 0,5 point, soit environ 17 % en relatif. Première cause à vérifier : un tracking cassé, dans TagCommander, car si la mesure est fausse, tout le reste l'est aussi. Deuxième cause : la saisonnalité, en comparant à la même période l'an passé. Troisième cause : des bots, visibles par des pics de trafic inhabituels. Enfin, je chiffre le poids de chaque cause et je priorise les actions. Pour conclure : je présente la cause confirmée, son poids chiffré, et l'action prioritaire.",
-       en:"If the conversion rate goes from 3% to 2.5%, I'd approach it in five steps. First, I quantify it: it's a drop of 0.5 percentage points, about 17% in relative terms. First cause to check: broken tracking, in TagCommander, because if the measurement is wrong, everything else is too. Second cause: seasonality, compared with the same period last year. Third cause: bots, visible as unusual traffic spikes. Finally, I quantify the weight of each cause and prioritise the actions. To sum up: I present the confirmed cause, its weight in figures, and the priority action." },
+       en:"From 3% to 2.5% is 0.5 percentage points, about 17% in relative terms. First, I check the tracking in TagCommander. Second, I compare with the same period last year for seasonality. Third, I look for strange traffic spikes from bots. Then I size each cause and choose the first action." },
   K1:{ fr:"Face à un client qui veut un résultat garanti, je procède en cinq étapes. Je ne garantis pas un résultat, je propose une méthode, sans lui dire qu'il se trompe. Je cadre le chiffre : passer de 3 % à 4 %, c'est +1 point, soit +33 % en relatif, ce qui est ambitieux. Je propose une démarche en étapes : audit, tests prioritaires, mise en production. On fait un point d'étape à un mois, et on vise un objectif réaliste à trois mois. Si le client lance une promotion en parallèle, on la mesure à part pour ne pas la confondre avec l'effet des optimisations. Pour conclure : pas de garantie, mais un plan, des jalons et un objectif réaliste.",
-       en:"Faced with a client who wants a guaranteed result, I'd approach it in five steps. I don't guarantee a result; I offer a method, without telling them they're wrong. I frame the figure: going from 3% to 4% is one point, a 33% relative increase, which is ambitious. I propose a step-by-step approach: audit, priority tests, roll-out. We review progress after one month and aim for a realistic goal at three months. If the client runs a promotion at the same time, we measure it separately so it isn't confused with the effect of the optimisations. To sum up: no guarantee, but a plan, milestones and a realistic goal." },
-  K2:{ fr:"Pour expliquer une baisse de chiffre d'affaires, je procède en cinq étapes. Je cadre d'abord : quel périmètre, quelle période, quelle définition du chiffre d'affaires. Je confirme la source de référence, pour être sûr qu'on parle du même chiffre. Je décompose : nombre de commandes multiplié par la valeur moyenne, pour savoir lequel des deux baisse. Je vérifie les annulations et les retours. Enfin, je creuse le levier touché : trafic, conversion, canaux, appareils ou saisonnalité. Je ne conclus pas à un problème de tracking simplement parce que les commandes baissent. Pour conclure : j'identifie le levier qui explique la baisse, puis l'action qui le corrige.",
-       en:"To explain a revenue drop, I'd approach it in five steps. First, I scope it: which perimeter, which period, which definition of revenue. I confirm the reference data source, to make sure we're talking about the same figure. I break it down: number of orders times average order value, to see which of the two is falling. I check cancellations and returns. Finally, I dig into the lever affected: traffic, conversion, channels, devices or seasonality. I don't blame the tracking just because orders are down. To sum up: I identify the lever behind the drop, then the action that fixes it." },
+       en:"I can't promise a result, but I can offer a method. Going from 3% to 4% is +1 point, so +33% more conversions. We start with an audit, then key tests, then a roll-out. We review after one month and set a realistic goal for three months. If there's a promotion, we measure it apart." },
+  K2:{ fr:"Je procède en cinq étapes. Je cadre la période, le périmètre et la définition du chiffre d'affaires, puis je vérifie la source de référence et la cohérence des données. Je regarde le nombre de commandes et la valeur moyenne par commande, et j'examine les annulations ou les retours selon la définition retenue. Enfin, je creuse le levier touché : trafic, conversion, canaux, appareils ou saisonnalité. Je n'attribue pas la baisse au tracking sans l'avoir vérifié, et je n'annonce pas de cause avant de l'avoir confirmée. Pour conclure : je distingue une vraie baisse de performance d'un problème de mesure, puis je propose l'action adaptée.",
+       en:"First, I set the period, the scope and the revenue definition. I check the reference source. Then I split revenue into the number of orders and the average order value. I check cancellations and returns, and I find the driver: traffic, conversion, channels, devices or seasonality. I don't blame tracking before I check it." },
   K3:{ fr:"Pour recommander une action, je procède en cinq étapes. Je commence par la synthèse, en une phrase. Je propose un plan de trois actions au maximum, priorisées selon l'impact attendu et l'effort. Je donne les hypothèses et les limites de l'analyse : ce qu'on sait, ce qui manque encore. Je dis aussi ce qu'on ne fait pas, et pourquoi, pour que le choix soit clair. Je termine par le prochain point et la décision attendue. Pour conclure : une décision attendue, trois actions au plus, et une date pour le prochain point.",
-       en:"To recommend an action, I'd approach it in five steps. I start with the bottom line, in one sentence. I propose up to three actions, prioritised by expected impact and effort. I state the assumptions and the limits of the analysis: what we know and what's still missing. I also say what we won't do, and why, so the choice is clear. I end with the next check-in and the decision needed. To sum up: one decision needed, three actions at most, and a date for the next check-in." },
-  K4:{ fr:"Pour présenter une situation à un dirigeant, je procède en cinq étapes. Ce qu'on sait : le constat confirmé et son périmètre. Ce qu'on ne sait pas encore : la cause, qui reste à identifier, et je ne l'annonce pas tant qu'elle n'est pas confirmée. Ce qu'on fait : les analyses prioritaires en cours. Quand on revient vers lui : un délai convenu, et je reviens à cette date même si on n'a pas tout trouvé. Enfin, la décision qu'on attend de lui, s'il y en a une : une action, un budget ou un délai. Je reste au niveau utile à la décision, le détail technique reste disponible. Pour conclure : le dirigeant sait ce qui est sûr, ce qui est en cours, et quand il aura la suite.",
-       en:"To brief a senior executive, I'd approach it in five steps. What we know: the confirmed finding and its scope. What we don't know yet: the root cause, which I don't announce until it's confirmed. What we're doing: the priority analyses under way. When we'll come back to you: an agreed deadline, and I come back on that date even if we haven't found everything. Finally, the decision we need from you, if any: an action, a budget or a deadline. I stay at the level the decision needs; the technical detail remains available. To sum up: the executive knows what's certain, what's in progress, and when they'll hear from us." },
+       en:"I start with the main point, in one sentence. Then I give three actions max, in order of priority. I explain the assumptions and the limits. I also say what we won't do, and why. I end with the next meeting and the decision we need." },
+  K4:{ fr:"Voici ce que nous savons : la baisse est confirmée, sur ce périmètre. Ce que nous ne savons pas encore : la cause n'est pas confirmée. En ce moment, nous vérifions [les points en cours, par exemple le tracking et les principaux canaux]. Je reviens vers vous avec une mise à jour dans [délai, par exemple deux jours]. Pour l'instant, je n'ai pas de décision à vous demander. Pour conclure : vous savez ce qui est sûr, ce qui est en cours, et quand vous aurez la suite.",
+       en:"Here is what we know: the drop is confirmed, on this scope. We don't know the cause yet. Right now, we're checking [the main points, for example tracking and key channels]. I'll update you in [two days]. For now, I don't need a decision from you." },
   K5:{ fr:"Face à un client qui trouve que le site marche bien, je procède en cinq étapes. Je définis simplement le tracking : c'est ce qui remonte vos données de vente vers vos outils de pilotage. Je rassure : le site fonctionne, mais les chiffres qu'il remonte peuvent être incomplets. Je donne un exemple concret : si une vente sur dix n'est pas comptée, votre budget est piloté sur des chiffres faux. Je propose un audit en deux semaines, puis une recette avant chaque mise en production. Le bénéfice : piloter sur des données fiables. Pour conclure : des données fiables pour décider où mettre le budget.",
-       en:"Faced with a client who says the site works fine, I'd approach it in five steps. I define tracking simply: it's what sends your sales data back to your reporting tools. I reassure them: the site works, but the figures it sends back may be incomplete. I give a concrete example: if one sale in ten isn't counted, your budget is being steered on the wrong figures. I suggest a two-week audit, then testing before every release. The benefit: steering on reliable data. To sum up: reliable data to decide where the budget goes." },
+       en:"Your site works, but some sales data may be missing. Tracking sends your sales data to your reports. If one sale in ten is missing, your budget decisions use wrong numbers. I suggest a two-week audit, then testing before each release. That way, you can trust your numbers." },
   K6:{ fr:"Pourquoi le conseil ? Je réponds en quatre temps. D'abord une raison positive : le conseil me permet de travailler sur plusieurs marques et plusieurs secteurs. C'est la suite logique de mon parcours : côté annonceur, chez La Poste en web analyse et CRO, puis chez Cultura sur le tracking, le consentement et le reporting, et je veux maintenant appliquer cette méthode à plusieurs clients. Ce qui m'attire chez vous en particulier : le conseil, le tracking, l'expérimentation, et les secteurs automobile et mobilité. Et je ne pars pas contre mon employeur actuel : je vais vers quelque chose. Pour conclure : je veux appliquer ma méthode à plusieurs clients, dans un cabinet qui fait exactement ce métier.",
-       en:"Why consulting? I'd answer in four points. First, a positive reason: consulting lets me work across several brands and sectors. It's the logical next step in my background: in-house, at La Poste in web analytics and CRO, then at Cultura on tracking, consent and reporting, and I now want to apply that method to several clients. What attracts me to your firm in particular: consulting, tracking, experimentation, and the automotive and mobility sectors. And I'm not leaving against my current employer: I'm moving towards something. To sum up: I want to apply my method across several clients, in a firm that does exactly this." }
+       en:"I want to work with many brands and sectors. At La Poste, I did web analytics and CRO. At Cultura, I worked on tracking, consent and reporting. Your firm does what I like: consulting, tracking, testing, automotive and mobility. I'm not running away from my job: I'm moving towards something new." }
 };
 function reponseType(code){ const r = REPONSES_TYPES[code]; return r ? (langueMeth() === "en" ? r.en : r.fr) : ""; }
 function blocReponseType(m, ouvert){
-  const t = reponseType(m.id); if(!t) return "";
-  const en = langueMeth() === "en";
-  return '<details class="fb-bloc rep-type"'+(ouvert ? " open" : "")+'><summary><h4>'+ic("texte")+(en ? "Model answer, A to Z" : "Réponse type, de A à Z")+'</h4></summary>'+
-    '<p class="rep-type-txt"'+(en ? ' lang="en"' : "")+'>'+esc(t)+'</p>'+
-    '<div class="flex"><button class="btn btn-petit" data-action="copierReponseType" data-arg="'+m.id+'">'+ic("copier")+(en ? "Copy" : "Copier")+'</button>'+
-    '<button class="btn btn-petit" data-action="ecouterReponseType" data-arg="'+m.id+'">'+ic("lecture")+tr("ecouter")+'</button></div></details>';
+  const r = REPONSES_TYPES[m.id]; if(!r) return "";
+  return '<details class="fb-bloc rep-type"'+(ouvert ? " open" : "")+'><summary><h4>'+ic("texte")+'Réponse type en anglais simple</h4></summary>'+
+    '<p class="muet petit">Un exemple pour t\'aider à parler avec tes mots, pas un texte à réciter.</p>'+
+    '<p class="rep-type-txt" lang="en">'+esc(r.en)+'</p>'+
+    '<div class="flex"><button class="btn btn-petit" data-action="copierReponseType" data-arg="'+m.id+'">'+ic("copier")+'Copy</button>'+
+    '<button class="btn btn-petit" data-action="ecouterReponseType" data-arg="'+m.id+'">'+ic("lecture")+'Listen</button></div>'+
+    '<details class="rep-type-fr"><summary>Version française</summary><p class="rep-type-txt">'+esc(r.fr)+'</p></details></details>';
 }
 /* Durée des derniers appels Gemini, affichée dans Réglages */
 function libDureesGemini(){
@@ -4247,8 +4275,8 @@ function libDureesGemini(){
   return '<p class="muet petit">Derniers appels Gemini : '+d.map(x => s(x.total)+(x.total - x.gemini > 1500 ? " (dont "+s(x.total - x.gemini)+" d'attente)" : "")+", "+esc(x.m)).join(" ; ")+'.</p>';
 }
 Object.assign(ACTIONS, {
-  copierReponseType(el){ copier(reponseType(el.dataset.arg)); },
-  ecouterReponseType(el){ VOIX.taire(); VOIX.parler(reponseType(el.dataset.arg), langueMeth() === "en" ? "en" : "fr"); }
+  copierReponseType(el){ const r = REPONSES_TYPES[el.dataset.arg]; if(r) copier(r.en); },
+  ecouterReponseType(el){ const r = REPONSES_TYPES[el.dataset.arg]; if(r){ VOIX.taire(); VOIX.parler(r.en, "en"); } }
 });
 
 /* =====================================================================
@@ -4339,6 +4367,7 @@ function ouvrirAideClavier(){
     l('<kbd>1</kbd> à <kbd>9</kbd>', "Aller directement à une étape")+
     l('<kbd>Espace</kbd>', "Déplier ou replier la définition de l'étape")+
     l('<kbd>N</kbd>', "Écrire une note sur l'étape (Échap pour sortir)")+
+    l('<kbd>M</kbd>', "Écrire ou dicter ma réponse, puis Corriger (Échap pour sortir)")+
     l('<kbd>R</kbd>', "Descendre à la réponse type, de A à Z")+
     l('<kbd>L</kbd>', "Écouter l'étape choisie, sinon la réponse type")+
     l('<kbd>←</kbd> <kbd>→</kbd>', "Cas précédent ou suivant dans l'historique")+
@@ -4407,6 +4436,7 @@ document.addEventListener("keydown", e => {
   if(e.ctrlKey || e.metaKey || e.altKey) return;
   if(cibleTexte(e.target)){
     if(k === "Escape" && e.target.id === "qc-note"){ e.target.blur(); flashTouche("Échap", "Note enregistrée"); }
+    if(k === "Escape" && e.target.id === "qc-rep"){ e.target.blur(); flashTouche("Échap", "Réponse gardée"); }
     return;
   }
   if(modaleOuverte){
@@ -4445,6 +4475,7 @@ document.addEventListener("keydown", e => {
     return;
   }
   if(lettre === "N"){ e.preventDefault(); if(sel == null) choisirEtapeClavier(0); const t = $("#qc-note"); if(t){ t.focus(); flashTouche("N", tr("notes")); } return; }
+  if(lettre === "M"){ e.preventDefault(); const t = $("#qc-rep"); if(t){ t.focus({ preventScroll:true }); defilerVers(t, "nearest"); flashTouche("M", "Ma réponse"); } return; }
   if(lettre === "R"){ e.preventDefault(); if(allerReponseType()) flashTouche("R", "Réponse type"); return; }
   if(lettre === "L"){
     e.preventDefault();
@@ -4530,10 +4561,10 @@ function casIdentifie(question, texte){
   const r = chercherCas(question || ""); if(r[0]) return r[0];
   const r2 = chercherCas((question || "") + " " + (texte || "")); return r2[0] || null;
 }
-async function genererCorrectionCoach(q, question, texte, lang){
+async function genererCorrectionCoach(q, question, texte, lang, casForce){
   const prenom = (profil().prenom || "le candidat").trim();
   const systeme = PROMPT_COACH.replace("{PRENOM}", prenom) + FORMAT_COACH;
-  const cas = casIdentifie(question, texte);
+  const cas = (casForce && METHODES.find(x => x.id === casForce)) || casIdentifie(question, texte);
   const infoCas = cas ? cas.id + " · " + METHODES_FR[METHODES.indexOf(cas)].titre + ". Étapes attendues : " + METHODES_FR[METHODES.indexOf(cas)].etapes.map(e => e[0]).join(", ") + ". Piège : " + (METHODES_FR[METHODES.indexOf(cas)].piege || "") + ". Conclusion attendue : " + (METHODES_FR[METHODES.indexOf(cas)].conclusion || "")
     : (q && q.attendu && q.attendu.length ? "Non identifié parmi les méthodes. Points attendus pour cette question : " + q.attendu.map(a => a.point).join(", ") : "Non identifié");
   const contenu = "Question posée par le manager : " + question + "\nRéponse du candidat (transcription) : " + texte + "\nCas d'usage attendu : " + infoCas;
@@ -4547,10 +4578,10 @@ async function genererCorrectionCoach(q, question, texte, lang){
 
 /* Correction locale par règles (instantanée) : mêmes critères que le prompt, version corrigée = réponse type du cas */
 const MOTS_A_BANNIR = [["euh","euh","rien, une courte pause"],["voila","voilà","rien, termine ta phrase"],["surement","sûrement","« probablement » ou un fait vérifié"],["en dualite","en dualité","« en parallèle » ou « en comparaison »"],["mere de surete","mère de sûreté","« marge de sécurité »"],["fiery","Fiery","le nom exact de l'outil (Adobe Analytics)"],["dashboard","dashboard","« tableau de bord »"]];
-function correctionLocale(q, question, texte, ev, lang){
+function correctionLocale(q, question, texte, ev, lang, casForce){
   ev = ev || {};
   const n = norm(texte || ""), en = lang === "en", ph = phrases(texte || ""), nw = mots(texte || "").length;
-  const cas = casIdentifie(question, texte), pts = [];
+  const cas = (casForce && METHODES.find(x => x.id === casForce)) || casIdentifie(question, texte), pts = [];
   /* Règles de fond */
   if(/chances? de gagner|probabilite que la variante|% de chance|chance of winning/.test(n)) pts.push({ p:"p-value mal définie.", a:"Dis : c'est le risque d'observer un écart aussi grand par hasard si les versions sont identiques, pas la probabilité que la variante gagne." });
   if(/\bbots?\b/.test(n) && /(baisse|chute|drop|lower)/.test(n) && /conversion/.test(n)) pts.push({ p:"Bots mal placés.", a:"Les bots gonflent surtout le trafic ; ils ne font pas baisser les conversions, ils peuvent seulement fausser le taux par le dénominateur." });
@@ -4597,6 +4628,137 @@ function blocCoach(r, i, cible){
   '</div>';
 }
 
+/* =====================================================================
+   Fiches « Quel cas ? » : question possible (FR et EN), plan en mots-clés, mots utiles,
+   points de vigilance, et coach de correction branché sur le cas affiché.
+   FICHES[code] = { qFr, qEn, mots:[[anglais, français]], vig:[français], vigEn:[anglais] }
+   ===================================================================== */
+const FICHES = {
+  T1:{ qFr:"Comment piloterais-tu le projet de tracking d'un nouveau site ?", qEn:"How would you run a tracking project for a new website?",
+    mots:[["tracking plan","plan de marquage"],["KPI","indicateur clé"],["QA, testing","recette"],["go-live","mise en production"],["back office","back-office"],["consent","consentement"]],
+    vig:["Dire le rôle du marketing (l'usage) et celui de l'équipe technique (la faisabilité, la mise en place).","Comparer avec le back-office quand c'est pertinent.","Chercher et expliquer les écarts inattendus."],
+    vigEn:["Say who does what: marketing (the use) and tech (the build).","Compare with the back office when it makes sense.","Look for unexpected gaps and explain them."] },
+  T2:{ qFr:"Comment suivrais-tu les demandes d'essai sur le site d'un constructeur ?", qEn:"How would you track test drive requests on a car brand's website?",
+    mots:[["lead","demande, contact commercial"],["trigger","déclencheur"],["event parameter","paramètre d'événement"],["consent","consentement"],["CRM","outil de gestion de la relation client"]] },
+  T3:{ qFr:"GA4 et le CRM ne donnent pas le même nombre de demandes. Que fais-tu ?", qEn:"GA4 and the CRM don't show the same number of leads. What do you do?",
+    mots:[["source of truth","source de référence"],["data gap, discrepancy","écart de données"],["tracking bug","bug de collecte"],["ad blocker","bloqueur de publicité"],["threshold","seuil"]] },
+  T4:{ qFr:"Les conversions chutent juste après une mise en production. Par quoi commences-tu ?", qEn:"Conversions drop right after a release. Where do you start?",
+    mots:[["release, go-live","mise en production"],["drop-off","abandon"],["confirmation tag","balise de confirmation"],["user journey","parcours utilisateur"],["bot traffic","trafic de robots"]] },
+  T5:{ qFr:"GA4 remonte deux fois plus de commandes que le CRM. Que fais-tu ?", qEn:"GA4 shows twice as many orders as the CRM. What do you do?",
+    mots:[["duplicate","doublon"],["firing rule","règle de déclenchement"],["thank-you page","page de confirmation"],["page reload","rechargement de la page"]] },
+  T6:{ qFr:"Comment mesurer une application et un site de la même façon ?", qEn:"How do you track an app and a website the same way?",
+    mots:[["tracking plan","plan de marquage"],["mapping table","table de correspondance"],["push notification","notification"],["dashboard","tableau de bord"]] },
+  C1:{ qFr:"Le marketing veut une donnée que l'équipe technique juge trop complexe. Comment gères-tu ?", qEn:"Marketing wants data that the tech team finds too complex. How do you handle it?",
+    mots:[["stakeholder","partie prenante"],["effort estimate","estimation de l'effort"],["trade-off","compromis"],["sign-off","validation"]],
+ },
+  C2:{ qFr:"Comment préparerais-tu un test A/B sur un formulaire de demande ?", qEn:"How would you set up an A/B test on a request form?",
+    mots:[["A/B test","test A/B"],["variant","variante"],["random split","répartition aléatoire"],["sample size","taille d'échantillon"],["significance level","seuil statistique"],["lead quality","qualité des demandes"]],
+    vig:["Fixer l'échantillon, le seuil et les indicateurs avant le lancement."],
+    vigEn:["Set the sample size, the threshold and the KPIs before launch."] },
+  C3:{ qFr:"Ton test montre +8 % avec une p-value de 0,12. Que recommandes-tu ?", qEn:"Your test shows +8% with a p-value of 0.12. What do you recommend?",
+    mots:[["p-value","p-value"],["threshold","seuil"],["not conclusive","non concluant"],["uplift","hausse"],["roll-out","déploiement"]],
+    vig:["Ne pas recommander le déploiement sur ce seul résultat.","Ne pas prolonger le test jusqu'à obtenir une p-value favorable."],
+    vigEn:["Don't recommend a roll-out on this result alone.","Don't extend the test just to get a better p-value."] },
+  C4:{ qFr:"Ton test est significatif à 0,04. On déploie ?", qEn:"Your test is significant at 0.04. Do we roll out?",
+    mots:[["statistically significant","statistiquement significatif"],["confidence interval","intervalle de confiance"],["guardrail metric","indicateur garde-fou"],["sample size","taille d'échantillon"]] },
+  C5:{ qFr:"Le taux de conversion est plus faible sur tablette. Que fais-tu ?", qEn:"The conversion rate is lower on tablet. What do you do?",
+    mots:[["segment","segment"],["traffic mix","mix de trafic"],["traffic source","source de trafic"],["UTM","paramètre de campagne"]] },
+  C6:{ qFr:"Comment formules-tu une hypothèse de test ?", qEn:"How do you write a test hypothesis?",
+    mots:[["hypothesis","hypothèse"],["primary metric","indicateur principal"],["guardrail metric","indicateur garde-fou"],["drop-off rate","taux d'abandon"]] },
+  C7:{ qFr:"Le taux de conversion passe de 3 % à 2,5 %. Comment l'analyses-tu ?", qEn:"The conversion rate went from 3% to 2.5%. How do you analyse it?",
+    mots:[["conversion rate","taux de conversion"],["percentage point","point de pourcentage"],["in relative terms","en relatif"],["seasonality","saisonnalité"]] },
+  K1:{ qFr:"Le client veut +1 point de conversion garanti en un mois. Que lui réponds-tu ?", qEn:"The client wants a guaranteed +1 point of conversion in one month. What do you say?",
+    mots:[["realistic goal","objectif réaliste"],["check-in","point d'étape"],["roll-out","déploiement"],["promotion","opération commerciale"]] },
+  K2:{ qFr:"Le chiffre d'affaires en ligne baisse. Comment l'expliques-tu ?", qEn:"Online revenue is down. How do you explain it?",
+    mots:[["revenue","chiffre d'affaires"],["average order value (AOV)","valeur moyenne par commande, panier moyen"],["cancellations","annulations"],["returns","retours"],["driver","levier"]],
+    vig:["Distinguer une vraie baisse de performance d'un problème de mesure."],
+    vigEn:["Separate a real drop from a tracking issue."] },
+  K3:{ qFr:"Quelle recommandation ferais-tu au client ?", qEn:"What would you recommend to the client?",
+    mots:[["main point, bottom line","l'essentiel"],["priority","priorité"],["assumption","hypothèse de travail"],["next steps","prochaines étapes"]] },
+  K4:{ qFr:"Comment présenterais-tu cette situation au directeur général ?", qEn:"How would you brief the CEO on this?",
+    mots:[["update","mise à jour, point"],["root cause","cause racine"],["deadline","délai, échéance"],["decision","décision"]],
+    vig:["Parler directement au dirigeant (« vous »), avec des mots simples."],
+    vigEn:["Talk to the executive directly (“you”), with simple words."] },
+  K5:{ qFr:"Le client dit que son site marche bien. Pourquoi un audit du tracking ?", qEn:"The client says the site works fine. Why a tracking audit?",
+    mots:[["tracking audit","audit du tracking"],["reliable data","données fiables"],["release","mise en production"],["budget decisions","décisions budgétaires"]] },
+  K6:{ qFr:"Pourquoi le conseil ?", qEn:"Why consulting?",
+    mots:[["consulting","conseil"],["in-house","côté annonceur"],["background","parcours"],["to move towards","aller vers"]] }
+};
+
+function blocQuestionFiche(m){
+  const f = FICHES[m.id]; if(!f) return "";
+  return '<div class="fiche-q"><span class="fiche-lbl">Question possible</span><p>'+esc(f.qFr)+'</p><p class="fiche-q-en" lang="en">'+esc(f.qEn)+'</p></div>';
+}
+function blocPlanFiche(m){
+  return '<div class="fiche-plan"><span class="fiche-lbl">'+(langueMeth() === "en" ? "Plan" : "Plan à retenir")+'</span><ol>'+
+    m.etapes.map((e, i) => '<li><b>'+(i+1)+'</b>'+esc(e[0])+'</li>').join("")+'</ol></div>';
+}
+function blocPiegesFiche(m){
+  const f = FICHES[m.id] || {}, en = langueMeth() === "en";
+  const vig = (en ? f.vigEn : f.vig) || [];
+  const items = [m.piege].concat(vig).filter(Boolean);
+  if(!items.length) return "";
+  return '<div class="fb-bloc ton-orange"><h4>'+ic("eclair")+(en ? "Watch out" : "Pièges à éviter")+'</h4>'+
+    (items.length === 1 ? '<p>'+esc(items[0])+'</p>' : '<ul class="fiche-vig">'+items.map(x => '<li>'+esc(x)+'</li>').join("")+'</ul>')+'</div>';
+}
+function blocMotsFiche(m){
+  const f = FICHES[m.id]; if(!f || !f.mots) return "";
+  return '<div class="fiche-mots"><span class="fiche-lbl">Mots utiles</span><ul>'+f.mots.map(x => '<li><b lang="en">'+esc(x[0])+'</b><span>'+esc(x[1])+'</span></li>').join("")+'</ul></div>';
+}
+
+/* ---------- Coach dans l'Affichage : ma réponse, puis correction ---------- */
+QC.rep = QC.rep || {};
+function blocEntrainementQC(m){
+  const t = QC.rep[m.id] || "";
+  return '<section class="fb-bloc entraine"><h4>'+ic("micro")+'Ma réponse <kbd>M</kbd></h4>'+
+    '<p class="muet petit">Réponds avec tes mots, au micro ou à l\'écrit, puis demande la correction du coach. La fiche est une aide pour parler, pas un texte à réciter.</p>'+
+    '<label class="sr" for="qc-rep">Ma réponse</label><textarea id="qc-rep" rows="4" placeholder="Ta réponse, telle que tu la dirais...">'+esc(t)+'</textarea>'+
+    '<div class="flex"><button class="btn btn-petit" data-action="microQC" id="qc-micro">'+ic("micro")+'Micro</button>'+
+      '<button class="btn btn-petit btn-bleu" data-action="corrigerQC">'+ic("coche")+'Corriger</button>'+
+      '<button class="btn btn-petit" data-action="effacerRepQC">Effacer</button></div>'+
+    '<div id="qc-correction">'+(QC.correction && QC.correction.cas === m.id ? rendreCorrectionQC(QC.correction) : "")+'</div></section>';
+}
+function rendreCorrectionQC(r){ return blocCoach(r, "qc", "qc").replace(/data-action="ecouterModele"/g, 'data-action="ecouterCorrectionQC"'); }
+function brancherEntrainementQC(){
+  const t = $("#qc-rep"); if(!t) return;
+  t.addEventListener("input", () => { QC.rep[QC.affiche] = t.value; });
+}
+async function corrigerReponseQC(){
+  const m = METHODES.find(x => x.id === QC.affiche), t = $("#qc-rep"), z = $("#qc-correction");
+  if(!m || !t || !z) return;
+  const texte = t.value.trim(); if(!texte){ toast("Écris ou dicte d'abord ta réponse."); t.focus(); return; }
+  if(VOIX.ecoute) VOIX.arreter();
+  const f = FICHES[m.id] || {}, lang = langueMeth() === "en" ? "en" : "fr";
+  const question = lang === "en" ? (f.qEn || m.titre) : (f.qFr || m.titre);
+  const ev = evaluerLocal(texte, null, { lang });
+  let r;
+  if(geminiActif()){
+    z.innerHTML = '<p class="muet">Correction en cours par Gemini...</p>';
+    try{ r = await genererCorrectionCoach(null, question, texte, lang, m.id); }
+    catch(e){ r = correctionLocale(null, question, texte, ev, lang, m.id); r.erreur = (e && e.message) || "Gemini indisponible."; }
+  } else r = correctionLocale(null, question, texte, ev, lang, m.id);
+  r.cas = m.id; QC.correction = r;
+  if(QC.affiche === m.id && $("#qc-correction")){ $("#qc-correction").innerHTML = rendreCorrectionQC(r); defilerVers($("#qc-correction"), "nearest"); }
+}
+function majMicroQC(){ const b = $("#qc-micro"); if(b){ b.classList.toggle("btn-bleu", VOIX.ecoute); b.lastChild.textContent = VOIX.ecoute ? "Arrêter" : "Micro"; } }
+
+Object.assign(ACTIONS, {
+  corrigerQC(){ corrigerReponseQC(); },
+  effacerRepQC(){ const t = $("#qc-rep"); if(t){ t.value = ""; QC.rep[QC.affiche] = ""; t.focus(); } QC.correction = null; const z = $("#qc-correction"); if(z) z.innerHTML = ""; },
+  microQC(){
+    const t = $("#qc-rep"); if(!t) return;
+    if(VOIX.ecoute){ VOIX.arreter(); setTimeout(majMicroQC, 150); return; }
+    if(!VOIX.dispo){ toast("Reconnaissance vocale indisponible sur ce navigateur : réponds à l'écrit."); return; }
+    const R = reglages(), lang = langueMeth() === "en" ? (R.langueEn || "en-GB") : (R.langue || "fr-FR");
+    VOIX.reinit(t.value);
+    VOIX.onMaj = x => { const z = $("#qc-rep"); if(z){ z.value = x; QC.rep[QC.affiche] = x; } };
+    VOIX.onFin = () => majMicroQC();
+    VOIX.onErreur = c => { majMicroQC(); if(c !== "no-speech") toast("Micro : " + (c === "not-allowed" ? "autorise le micro dans le navigateur." : c)); };
+    VOIX.demarrer(lang); majMicroQC();
+  },
+  ecouterCorrectionQC(){ const r = QC.correction; if(r && r.texte){ VOIX.taire(); VOIX.parler(r.texte, langueMeth() === "en" ? "en" : "fr"); } }
+});
+
 /* ---------- Méthodes : liste des cas d'usage et feuille stepper ---------- */
 function methodesFaites(){ const o = store.get("methodes", {}); return (o && typeof o === "object") ? o : {}; }
 function rMethodes(){
@@ -4629,13 +4791,14 @@ function feuilleMethode(id, revision){
     '<div class="ligne-titre"><span class="etiquette"><span class="anneau"></span>'+esc(f.nom)+' · '+m.id+'</span>'+
       '<button class="btn-icone" data-action="fermerFeuille" aria-label="Fermer">'+ic("retour")+'</button></div>'+
     '<h2>'+esc(m.titre)+'</h2>'+
+    blocQuestionFiche(m)+blocPlanFiche(m)+
     '<div class="annonce-meth"><p>« '+esc(annonceMethode(m))+' »</p>'+
       '<button class="btn btn-petit" data-action="copierAnnonce" data-arg="'+m.id+'">'+ic("copier")+tr("copierAnnonce")+'</button>'+'<button class="btn btn-petit" data-action="ecouterAnnonce" data-arg="'+m.id+'">'+ic("lecture")+tr("ecouter")+'</button>'+'</div>'+
     (revision ? '<p class="muet petit">Mode révision : récite les mots-clés de chaque étape, puis touche-la pour vérifier.</p>' : '<p class="muet petit">Touche une étape pour lire sa phrase de développement.</p>')+
     '<ol class="stepper">'+etapes+'</ol>'+
-    '<div class="fb-bloc ton-orange"><h4>'+ic("eclair")+tr("piege")+'</h4><p>'+esc(m.piege||"")+'</p></div>'+
+    blocPiegesFiche(m)+
     '<div class="fb-bloc ton-vert"><h4>'+ic("drapeau")+tr("conclusion")+'</h4><p>« '+esc(m.conclusion||"")+' »</p></div>'+
-    blocReponseType(m, false)+
+    blocReponseType(m, false)+blocMotsFiche(m)+
     '<div class="flex actions-meth"><button class="btn" data-action="revisionMethode" aria-pressed="'+(!!revision)+'">'+ic("oeil")+(revision ? "Quitter le mode révision" : "Mode révision")+'</button>'+
       '<button class="btn '+(fait ? "" : "btn-bleu")+'" data-action="marquerMethode" aria-pressed="'+fait+'">'+ic("coche")+(fait ? "Révisé, annuler" : "Marquer révisé")+'</button></div>'+
   '</div>');
