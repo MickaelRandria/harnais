@@ -729,6 +729,27 @@ html[data-theme="nuit"] .qc-info:hover{color:#9CC2FF;border-color:#9CC2FF}
 .qc-affiche .fb-bloc p{font-size:clamp(1.25rem,2vw,1.45rem)}
 .qc-histo .flex{gap:8px}
 @media (min-width:1024px){ .qc{max-width:1100px} .qc-codes{grid-template-columns:repeat(auto-fill,minmax(180px,1fr))} .qc-codes-compact{grid-template-columns:repeat(auto-fill,minmax(90px,1fr))} .qc-liste{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr))} }
+/* Carnet de préparation : surfaces papier, encre et repères de parcours. */
+:root{--r:16px;--bleu:#2858a8;--bleu-fonce:#193f82}
+html[data-theme="jour"]{--fond:#f7f6f1;--fond2:#ebece5;--page1:#ebeae2;--page2:#e1e4db;--txt:#192a31;--txt2:#42555c;--txt3:#53676e;--verre:#fffefa;--verre-bord:#d7dcd5;--ligne:#d5dbd6;--carte:#fffefa;--nav:#152a32;--ombre:0 2px 5px #20332c09}
+html[data-theme="nuit"],.force-nuit{--fond:#121c21;--fond2:#223037;--page1:#142126;--page2:#0b1216;--txt:#f0f4f1;--txt2:#c2cfcf;--txt3:#a5b8ba;--carte:#1c292f;--verre:#213037;--verre-bord:#38494c;--ligne:#37484c;--champ:#1b292f;--nav:#101c21;--ombre:0 2px 8px #0002}
+.decor{display:none}.carte{box-shadow:var(--ombre)}
+h1,h2{letter-spacing:-.035em;text-wrap:balance}.entete h1,.hero h1{font-family:Georgia,'Times New Roman',serif;font-weight:500}
+.nav button[aria-current="page"]{background:#ffffff18;color:#fff}.nav button[aria-current="page"] .point{background:#ffd59d}
+.hero{background:var(--fond);color:var(--txt);isolation:isolate;min-height:0;border-bottom:1px solid var(--ligne)}
+.hero>svg.paysage{left:auto;right:0;width:46%;mask-image:linear-gradient(to right,transparent,#000 70%);opacity:.7;z-index:-1}
+.hero-haut{padding:26px 18px 0}.hero-haut .btn-icone{background:var(--carte);border:1px solid var(--ligne)}
+.carnet-label{display:block;font-size:.72rem;font-weight:800;letter-spacing:.14em;text-transform:uppercase;color:var(--txt2);margin-bottom:8px}
+.hero h1{font-size:clamp(2.1rem,5vw,4.2rem);line-height:1.05;overflow-wrap:anywhere}.hero .date{color:var(--txt2)}
+.hero-corps{padding:14px 18px 22px}.hero .chip{background:var(--carte)!important}.carte.aujourdhui{background:#19353f;color:#fff;border:0;box-shadow:none}
+.aujourdhui .etiquette{color:#ffdaaa}.aujourdhui .muet{color:#d1dfdf}.aujourdhui .titre{font-size:clamp(1.25rem,2vw,1.7rem);letter-spacing:-.025em}.aujourdhui .btn{background:#ffdaaa;border-color:#ffdaaa;color:#233239;margin-top:8px}
+.badge-serie .chip{font-variant-numeric:tabular-nums;font-size:.88rem;background:transparent;border:1px solid var(--ligne)}
+.rangee{display:grid;grid-template-columns:1fr;margin:0;padding:0;overflow:visible;gap:0;border-top:1px solid var(--ligne)}
+.rangee .tuile-act{min-width:0;min-height:74px;background:transparent;border:0;border-bottom:1px solid var(--ligne);border-radius:0;box-shadow:none;padding:14px 8px}.tuile-act strong{color:var(--txt)}.tuile-act::after{content:'›';margin-left:auto;color:var(--txt3);font-size:1.35rem}.tuile-act .ic{width:25px;height:25px}
+.qc-pan-piste,.qc-affiche .fb-bloc p,.qc-et-corps{max-width:65ch}.qc-pan-piste{line-height:1.6}.qc-fam-onglets button[aria-pressed="true"],.qc-onglet[aria-pressed="true"]{font-weight:800;box-shadow:inset 0 -3px #ffffff65}
+@media(min-width:1024px){.hero-haut{padding:38px 48px 0}.hero-corps{padding:16px 48px 32px;max-width:730px}.aujourdhui .btn{width:auto;min-width:10rem}.rangee{grid-template-columns:repeat(2,minmax(0,1fr));column-gap:36px}.nav-marque{border-bottom:1px solid #ffffff29;margin-bottom:12px}.hero>svg.paysage{width:50%}}
+@media(hover:hover){.tuile-act:hover{background:var(--fond2)}}
+@media(prefers-reduced-motion:no-preference){html:not(.taille-bus) .btn{transition:transform 120ms ease-out,background-color 120ms ease-out}html:not(.taille-bus) .btn:active:not(:disabled){transform:scale(.98)}}
 @media print{.nav,.decor{display:none}#app{box-shadow:none;margin:0}}
 </style>
 </head>
@@ -2266,10 +2287,10 @@ function rAccueil(){
     ["ouvrirAtelier","etiquette","Atelier plan de marquage","Recommandé sur PC"],
     ["ouvrirQuelCas","etapes","Quel cas ?","Téléphone et ordinateur reliés"],
     ["ouvrirPresentation","personne","Présentation","Pitch 90 s et projets"]
-  ].map(t => '<button class="tuile-act" role="listitem" data-action="'+t[0]+'">'+ic(t[1])+'<span><strong>'+t[2]+'</strong><span>'+t[3]+'</span></span></button>').join("");
+  ].map(t => '<button class="tuile-act" data-action="'+t[0]+'">'+ic(t[1])+'<span><strong>'+t[2]+'</strong><span>'+t[3]+'</span></span></button>').join("");
   E().innerHTML =
   '<section class="hero">'+(nuit ? paysageNuit() : paysageJour())+
-   '<div class="hero-haut"><div><h1>Bonjour, '+esc(p.prenom || "toi")+'</h1><div class="date">'+dateLongue()+'</div></div>'+
+   '<div class="hero-haut"><div><span class="carnet-label">Carnet de préparation</span><h1>Bonjour, '+esc(p.prenom || "toi")+'</h1><div class="date">'+dateLongue()+'</div></div>'+
    '<button class="btn-icone" data-go="reglages" aria-label="Réglages">'+ic("engrenage")+'</button></div>'+
    '<div class="hero-corps"><div><button class="chip" data-action="modifierDate">'+ic("calendrier")+esc(libelleEntretien(p))+'</button></div>'+
    '<div class="carte verre aujourdhui"><div class="ligne-titre"><span class="etiquette"><span class="anneau"></span>Aujourd\'hui</span><span class="muet">'+nx.duree+'</span></div>'+
@@ -2277,8 +2298,8 @@ function rAccueil(){
    '<button class="btn btn-bleu btn-bloc" data-action="'+nx.action+'" data-arg="'+nx.arg+'">Commencer</button></div></div></section>'+
   '<div class="contenu">'+
    '<div class="badge-serie"><span class="chip">'+ic("eclair")+'Série : '+serie+' jour'+(serie>1?"s":"")+'</span><span class="chip">'+ic("etoile")+xp+' XP, '+niveau(xp)+'</span></div>'+
-   '<div class="ligne-titre"><h2>De quoi as-tu besoin aujourd\'hui ?</h2><button class="btn-rond" data-action="sessionLibre" aria-label="Ajouter une session libre">'+ic("plus")+'</button></div>'+
-   '<div class="rangee" role="list">'+tuiles+'</div>'+
+   '<div class="ligne-titre"><h2>Choisir un entraînement</h2><button class="btn-rond" data-action="sessionLibre" aria-label="Ajouter une session libre">'+ic("plus")+'</button></div>'+
+   '<div class="rangee">'+tuiles+'</div>'+
    '<div class="carte"><span class="etiquette"><span class="anneau"></span>Défi du jour</span><p style="font-weight:600">'+esc(dj.enonce)+'</p><p class="muet petit">Module : '+esc(nomModule(dj.module))+'</p><button class="btn btn-bleu" data-action="lancerQuestion" data-arg="'+dj.id+'">Relever le défi</button></div>'+
   '</div>';
 }
